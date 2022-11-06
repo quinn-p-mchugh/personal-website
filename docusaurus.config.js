@@ -47,6 +47,7 @@ const config = {
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
         },
+        pages: {},
       }),
     ],
   ],
@@ -63,7 +64,7 @@ const config = {
         items: [
           {
             type: "doc",
-            docId: "intro",
+            docId: "welcome",
             position: "left",
             label: "Tutorial",
           },
@@ -98,32 +99,6 @@ const config = {
         style: "dark",
         links: [
           {
-            title: "Docs",
-            items: [
-              {
-                label: "Tutorial",
-                to: "/docs/intro",
-              },
-            ],
-          },
-          {
-            title: "Community",
-            items: [
-              {
-                label: "Stack Overflow",
-                href: "https://stackoverflow.com/questions/tagged/docusaurus",
-              },
-              {
-                label: "Discord",
-                href: "https://discordapp.com/invite/docusaurus",
-              },
-              {
-                label: "Twitter",
-                href: "https://twitter.com/docusaurus",
-              },
-            ],
-          },
-          {
             title: "More",
             items: [
               {
@@ -131,13 +106,34 @@ const config = {
                 to: "/blog",
               },
               {
+                label: "Projects",
+                to: "/docs/welcome",
+              },
+            ],
+          },
+          {
+            title: "Quinn on the net",
+            items: [
+              {
+                label: "LinkedIn",
+                href: "https://www.linkedin.com/in/quinnpmchugh/",
+              },
+              {
                 label: "GitHub",
-                href: "https://github.com/facebook/docusaurus",
+                href: "https://github.com/quinn-p-mchugh",
+              },
+              {
+                label: "Instagram",
+                href: "https://www.instagram.com/qm_creative/",
+              },
+              {
+                label: "Bicycle Travels",
+                href: "https://www.polarsteps.com/QuinnPMcHugh",
               },
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © 2017-${new Date().getFullYear()} Quinn McHugh. All rights reserved.`,
       },
       prism: {
         theme: lightCodeTheme,
