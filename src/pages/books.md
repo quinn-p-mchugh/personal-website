@@ -1,0 +1,13 @@
+---
+title: Books
+description: Books I've read
+hide_table_of_contents: false
+---
+
+# Books
+Ever since I was young, I was honestly never much a fan of reading until I realized what a valuable resource of
+knowledge a book can be to those who read it. Since I came to that realization, I’ve been supplementing my education by
+reading primarily nonfiction as well as a few self-improvement books in order to keep my mind engaged and open to
+learning new things.
+
+A library of the books I’ve read over the years can be seen below:

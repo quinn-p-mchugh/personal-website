@@ -8,6 +8,7 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 const config = {
   title: "Quinn McHugh",
   tagline: "Engineer. Designer. Developer.",
+  customFields: {},
   url: "https://quinnmchugh.net",
   baseUrl: "/",
   onBrokenLinks: "throw",
@@ -48,6 +49,10 @@ const config = {
           customCss: require.resolve("./src/css/custom.css"),
         },
         pages: {},
+        googleAnalytics: {
+          trackingID: "UA-121689368-1",
+          anonymizeIP: true,
+        },
       }),
     ],
   ],
@@ -66,9 +71,28 @@ const config = {
             type: "doc",
             docId: "welcome",
             position: "left",
-            label: "Tutorial",
+            label: "Docs",
           },
           { to: "/blog", label: "Blog", position: "left" },
+          {
+            label: "Resume",
+            to: "/resume",
+          },
+          {
+            type: "dropdown",
+            label: "About",
+            position: "left",
+            items: [
+              {
+                label: "Books",
+                to: "/books",
+              },
+              {
+                label: "Travels",
+                to: "/travels",
+              },
+            ],
+          },
           {
             href: "https://www.linkedin.com/in/quinnpmchugh/",
             position: "right",
