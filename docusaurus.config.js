@@ -79,6 +79,10 @@ const config = {
             to: "/resume",
           },
           {
+            label: "Contact",
+            to: "/contact",
+          },
+          {
             type: "dropdown",
             label: "About",
             position: "left",
