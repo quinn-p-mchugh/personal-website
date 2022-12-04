@@ -6,7 +6,7 @@ tags: [Personal Knowledge Managemement, Knowledge Sharing, Learn in Public]
 ---
 
 ## Objective
-This post provides some basic instructions for creating a [public Zotero library](../pages/library) for sharing resources with friends, colleagues, and groups you're apart of.
+This post provides some basic instructions for creating a [public Zotero library](../src/pages/library.md) for sharing resources with friends, colleagues, and groups you're apart of.
 
 ## Motivation
 Have you ever been in conversation with someone and said "*Oh! There's a couple articles I think you'd love. Let me email them to you.*"
@@ -44,7 +44,7 @@ To share your library, simply send the URL of your library to whoever you'd like
 
 As of December 2022, Zotero online libraries *cannot* be embedded in websites using an HTML `<iframe>`.
 
-Optionally, you can embed a list of recently added items using [BibBase](https://bibbase.org/) to give visitors a sense for what you've been interested in, as I have done [here](../library).
+Optionally, you can embed a list of recently added items using [BibBase](https://bibbase.org/) to give visitors a sense for what you've been interested in, as I have done [here](../src/pages/library.md).
 
 ## Learn more about Zotero
 To learn more about Zotero's other features and capabilities, please see their the **[Zotero Quick Start Guide](https://www.zotero.org/support/quick_start_guide)**
