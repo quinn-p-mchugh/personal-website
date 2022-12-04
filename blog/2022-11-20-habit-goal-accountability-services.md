@@ -1,5 +1,4 @@
 ---
-slug: habit-goal-accountability-services
 title: Habit/Goal Accountability Services
 authors: qmchugh
 draft: true

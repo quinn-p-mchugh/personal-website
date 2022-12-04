@@ -1,5 +1,4 @@
 ---
-slug: post-slug
 title: Post Title
 authors: qmchugh
 tags: []
