@@ -1,6 +1,6 @@
 ---
 title: Travels
-description: Where I've been
+description: Where I've been in and around the United States.
 hide_table_of_contents: false
 ---
 

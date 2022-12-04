@@ -1,6 +1,6 @@
 ---
 title: Books
-description: Books I've read
+description: Books I've read.
 hide_table_of_contents: false
 ---
 
