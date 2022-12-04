@@ -87,6 +87,10 @@ const config = {
             to: "/resume",
           },
           {
+            label: "My Library",
+            to: "/library",
+          },
+          {
             label: "Contact",
             to: "/contact",
           },
