@@ -3,6 +3,8 @@
 
 const lightCodeTheme = require("prism-react-renderer/themes/github");
 const darkCodeTheme = require("prism-react-renderer/themes/dracula");
+const theme = require("shiki/themes/nord.json");
+const { remarkCodeHike } = require("@code-hike/mdx");
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -34,6 +36,7 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
+          beforeDefaultRemarkPlugins: [[remarkCodeHike, { theme }]],
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
@@ -46,7 +49,10 @@ const config = {
           editUrl: "https://github.com/quinn-p-mchugh/personal-website",
         },
         theme: {
-          customCss: require.resolve("./src/css/custom.css"),
+          customCss: [
+            require.resolve("@code-hike/mdx/styles.css"),
+            require.resolve("./src/css/custom.css"),
+          ],
         },
         pages: {},
         googleAnalytics: {
@@ -56,6 +62,8 @@ const config = {
       }),
     ],
   ],
+
+  themes: ["mdx-v2"],
 
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
@@ -157,6 +165,19 @@ const config = {
               {
                 label: "Bicycle Travels",
                 href: "https://www.polarsteps.com/QuinnPMcHugh",
+              },
+            ],
+          },
+          {
+            title: "Support my work",
+            items: [
+              {
+                html: `<a href="https://www.buymeacoffee.com/quinnpmchugh" rel="noopener" target="_blank">
+                  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" loading="lazy" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;">
+                </a>
+                <br>
+                <b>Found something of value here?</b> Consider buying me a coffee to say thanks and support my work. ☕
+                <br>10%+ of all donations go to <a href="https://www.givewell.org/top-charities-fund">GiveWell's Top Charities Fund</a>.`,
               },
             ],
           },
