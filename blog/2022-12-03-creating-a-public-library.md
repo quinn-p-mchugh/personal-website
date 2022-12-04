@@ -39,7 +39,7 @@ With a public Zotero library, you'll be able to create collections of resources 
 To add items to your newly created library, please see **[Adding Items to Zotero](https://www.zotero.org/support/adding_items_to_zotero)**.
 
 ### Sharing your library with others
-To share your library, simply send the URL of your library to whoever you'd like. If you wish to send a specific collection, click on the collection in the left sidebar and send the 
+To share your library, simply send the URL of your library to whoever you'd like. If you wish to send a specific collection, click on the collection in the left sidebar and send them that URL instead.
 
 As of December 2022, Zotero online libraries *cannot* be embedded in websites using an HTML `<iframe>`.
 
