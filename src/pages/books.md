@@ -14,7 +14,7 @@ Nowadays, I primarily read nonfiction with the occasional autobiography or self-
 
 My favorite books are:
 1. [Why Fish Don't Exist: A Story of Loss, Love, and the Hidden Order of Life](https://www.goodreads.com/book/show/50887097-why-fish-don-t-exist) by Lulu Miller
-   * The audibook version of this book (as read by the author) is a rollercoaster of emotion and a profound reflection on the chaos of life, finding meaning in everyday experience, and the things we hold to be true. Read it and "give up the fish" may become your new mantra.
+   * The audiobook version of this book (as read by the author) is a rollercoaster of emotion and a profound reflection on the chaos of life, finding meaning in everyday experience, and the things we hold to be true. Read it and "give up the fish" may become your new mantra.
 2. [Creativity, Inc: Overcoming the Unseen Forces That Stand in the Way of True Inspiration](https://www.goodreads.com/book/show/18077903-creativity-inc) by Ed Camull & Amy Wallace
    * This book is a wonderful reflection on how to create an organizational culture that inspires creativity, solicits great feedback, and empowers its members to do exceptional work. I read it soon after graduating undergrad and my interests in management, collaboration, organizational culture, and psychological safety have continued to flourish since.
 3. [Sapiens: A Brief History of Humankind](https://www.goodreads.com/book/show/23692271-sapiens) by Yuval Noah Harari

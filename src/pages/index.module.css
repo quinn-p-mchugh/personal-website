@@ -11,7 +11,8 @@
 }
 
 .heroBanner a {
-  color: var(--ifm-color-primary-lightest);
+  color: #ffffff;
+  font-weight: 100;
 }
 
 @media screen and (max-width: 996px) {
