@@ -1,0 +1,9 @@
+{
+  "label": "Undergraduate",
+  "collapsible": true,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "title": "Undergraduate Projects"
+  }
+}
