@@ -66,14 +66,14 @@ function HomepageHeader() {
             <a href="./contact">contact page</a>.
           </p>
         </div>
-        <p>
+        <h2>
           🏗️{" "}
           <b>
             Please pardon the look and feel of this site - it's under
             construction!
           </b>{" "}
           🏗️
-        </p>
+        </h2>
         {/*<div className={styles.buttons}>
           <Link
             className="button button--secondary button--lg"
