@@ -4,7 +4,7 @@ title: EA Explorer
 tags: []
 ---
 
-**EA Explorer is a network visualization of the EA Forum, using post and tag data queried using the [EA Forum's GraphQL framework](https://www.lesswrong.com/posts/LJiGhpq8w4Badr5KJ/graphql-tutorial-for-lesswrong-and-effective-altruism-forum)**
+**EA Explorer is a network visualization of the EA Forum, using post and tag data queried using the [EA Forum's GraphQL framework](https://www.lesswrong.com/posts/LJiGhpq8w4Badr5KJ/graphql-tutorial-for-lesswrong-and-effective-altruism-forum)**.
 
 The goal of this project is to develop a tool to help make sense of the diverse and complex interests of those in the EA community and provide an alternative means of exploring and discovering EA content in hopes of improving the community's overall intellectual diversity & coordination efforts.
 
