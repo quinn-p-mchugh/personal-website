@@ -47,6 +47,10 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl: "https://github.com/quinn-p-mchugh/personal-website",
+          feedOptions: {
+            type: "all",
+            copyright: `Copyright © 2017-${new Date().getFullYear()} Quinn McHugh`,
+          },
         },
         theme: {
           customCss: [
