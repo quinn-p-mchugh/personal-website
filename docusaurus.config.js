@@ -184,7 +184,7 @@ const config = {
             title: "Support my work",
             items: [
               {
-                html: `<a href="https://www.buymeacoffee.com/quinnpmchugh" rel="noopener" target="_blank">
+                html: `<a href="https://ko-fi.com/quinnmchugh" rel="noopener" target="_blank">
                   <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" loading="lazy" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;">
                 </a>
                 <br>
