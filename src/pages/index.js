@@ -13,26 +13,37 @@ function HomepageHeader() {
     <header className={clsx("hero hero--primary", styles.heroBanner)}>
       <div className="container">
         <h1 className="hero__title">{siteConfig.title}</h1>
-        <p className="he~~ro__subtitle">{siteConfig.tagline}</p>
+        <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div class="hero__bio">
           <p>
             My name is Quinn and I'm a mechanical engineer, software developer,
-            designer, and aspiring manager with a passion for organizational
-            culture, workflow optimization, digital transformation, thoughtful
-            design, and effective giving. Outside of my professional life, I
-            serve as a community coordinator of{" "}
+            designer, and aspiring project manager possessing interests in{" "}
+            <a href="https://en.wikipedia.org/wiki/Continual_improvement_process">
+              continuous improvement
+            </a>
+            , process design, workflow optimization, personal development,
+            knowledge management, meta-learning, organizational culture, and
+            high-impact charitable giving.
+          </p>
+          <p>
+            Outside of my professional life, I serve as a volunteer community
+            organizer of{" "}
             <a href="https://web.archive.org/web/20211217045253/https://www.meetup.com/eaphiladelphia/">
               Effective Altruism Philadelphia
             </a>
-            , a global community of individuals trying to do the most good in
-            the world through their time, talents, and donations.
+            , a global community of passionate people dedicated to using their
+            careers, donations, time, and other resources to effect positive
+            change in high-impact ways.
           </p>
           <p>
-            Most notably, I completed a 4,230 mile bicycle tour across the
-            United States to challenge myself, push my comfort zone, and expand
-            my worldview. Learn more here about the journey here —{" "}
+            I'm also an avid bicycle traveler. In 2019, I completed a{" "}
             <a href="https://web.archive.org/web/20211217045253/https://web.archive.org/web/20201128223402/https://tourde10percent.com/">
-              tourde10percent.com
+              4,230 bicycle tour
+            </a>{" "}
+            across the United States to challenge myself, push my comfort zone,
+            and expand my worldview. You can see my other travels on{" "}
+            <a href="https://www.polarsteps.com/QuinnPMcHugh">
+              my Polarsteps profile.
             </a>
             .
           </p>
@@ -66,7 +77,8 @@ function HomepageHeader() {
           <p>
             In my leisure time, I enjoy listening to though-provoking podcasts,
             (not) troubleshooting my 3D printer, designing logos in Illustrator,
-            listening to jazz funk, and watching BBC Nature documentaries.
+            bopping to jazz funk, and indulging in the latest BBC Nature
+            documentary.
           </p>
         </div>
         <div className={styles.buttons}>
