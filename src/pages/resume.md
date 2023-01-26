@@ -1,6 +1,6 @@
 ---
 title: Resume
-description: My resume
+description: Resume of Quinn McHugh
 hide_table_of_contents: false
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: Contact Me
-description: Contact information
+description: Contact information for Quinn McHugh.
 hide_table_of_contents: false
 ---
 

@@ -14,7 +14,13 @@
   --ifm-color-primary-lighter: #4ac7ef;
   --ifm-color-primary-lightest: #a7e4f7;
   --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1); 
+
+  --ifm-font-color-base-inverse: #a7e4f7;
+  --ifm-footer-background-color: #008080 !important;
+  --ifm-footer-color-base: #06222b !important;
+  --ifm-footer-color: #06222b !important;
+  --ifm-footer-title-color: #06222b !important;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
@@ -29,51 +35,75 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
-.header-linkedin-link:hover {
-  opacity: 0.6;
-}
-
-.header-linkedin-link::before {
-  content: '';
-  width: 24px;
+.navbar-icon {
+  border-radius: 50%;
+  display: flex;
   height: 24px;
-  display: flex;
-  background: url("@site/static/img/linkedin-logo.svg") no-repeat;
-}
-
-.header-github-link:hover {
-  opacity: 0.6;
-}
-
-.header-github-link::before {
-  content: '';
   width: 24px;
-  height: 24px;
+  margin-right:20px;
+  padding: 0;
+}
+
+.navbar-icon:hover {
+  fill: #50C9F0;
+  transition: fill var(--ifm-transition-fast);
+}
+
+.navbar__items:hover {
+  transition: color var(--ifm-transition-slow);
+}
+
+.hero {
+    background-image: url("/static/img/hero-section-bg.png");
+    height: calc((8600/5000) * 100vw);
+    background-size: 100%;
+    background-position: center bottom;
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
+
+.hero__title {
+  font-size: 57px;
+  font-weight: 300;
+}
+
+.hero__bio {
+  color: var(--ifm-font-color-base-inverse);
+}
+
+.hero__container {
   display: flex;
-  background: url("@site/static/img/github-logo.svg") no-repeat;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin:auto;
+  margin-top:10vh;
+  text-align: left;
+  width: 1000px;
 }
 
-.header-insta-link:hover {
-  opacity: 0.6;
+.container {
+  top: 20em;
+  margin: 100px;
+  
 }
 
-.header-insta-link::before {
-  content: '';
-  width: 24px;
-  height: 24px;
-  display: flex;
-  background: url("@site/static/img/instagram-logo.svg") no-repeat;
+.footer {
+  background-color: #082958;
+  padding: 0px;
 }
 
-.header-bicycle-link:hover {
-  opacity: 0.6;
+.footer__links {
+  margin-bottom: 50px;
 }
 
-.header-bicycle-link::before {
-  content: '';
-  width: 30px;
-  height: 30px;
-  margin-top: 5px;
-  display: flex;
-  background: url("@site/static/img/bicycle-icon.svg") no-repeat;
+.testimonials ul {
+  padding-left: 10px;
+  list-style-type: none;
+}
+
+
+.testimonials li:before {
+    content: "- ";
+    margin: 0 0 0 -10px;
 }
