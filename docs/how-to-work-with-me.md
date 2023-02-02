@@ -2,6 +2,7 @@
 id: working-with-me
 title: Working with Me
 tags: [collaboration]
+sidebar_position: 3
 ---
 
 _This document was inspired by a Medium post called [Why you shold write a "how to work with me" user manual](https://medium.com/swlh/user-manual-to-me-92c8ce68f960) by Mark Saric. The inspiration for ***that*** piece is [here](https://growth.eladgil.com/book/the-role-of-the-ceo/insights-working-with-claire/)._
