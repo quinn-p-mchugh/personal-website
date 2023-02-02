@@ -1,4 +1,3 @@
-
 ---
 title: Post Title
 authors: qmchugh
