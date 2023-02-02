@@ -1,9 +1,23 @@
 ---
-title: Creating the Perfect Information Diet
+title: An algorithm for creating your perfect
 authors: qmchugh
 tags: []
 draft: true
 ---
+
+# An algorithm to start
+1. Use Unroll.me and Kill the Newsletter to move your newsletters into RSS
+2. Organizer RSS feeds into 
+3. Either unfollow the feeds you don't actually care about or move them to an Archive folder "so you don't forget that you deliberately decided to stop reading those feeds
+4. Declare email bankruptcy and mark as read/archive all the emails you have
+
+
+
+## 3 types of information:
+
+- Serendipitous information flows
+- Intentional information flows
+- Curated information flows
 
 
 Use NewsBlur or Feedly

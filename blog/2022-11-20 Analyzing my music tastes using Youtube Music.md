@@ -1,6 +1,6 @@
 ---
-slug: selecting-a-podcast-app
-title: Selecting a podcast app
+slug: music-taste-analysis
+title: Music Taste Analysis
 authors: qmchugh
 draft: true
 tags: [Music, Quantified Self, Youtube Music]
