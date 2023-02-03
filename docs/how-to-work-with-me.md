@@ -1,7 +1,7 @@
 ---
 id: working-with-me
 title: Working with Me
-tags: [collaboration]
+tags: []
 sidebar_position: 3
 ---
 
@@ -10,7 +10,7 @@ _This document was inspired by a Medium post called [Why you should write a "how
 **This document is a work in progress.**
 
 ## When you're my manager
-TBA
+- I am a fan of [reasoning transparency](https://forum.effectivealtruism.org/topics/reasoning-transparency), which means sometimes I can be a bit verbose.
 
 ## When I'm your manager
 
