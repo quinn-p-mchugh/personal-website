@@ -23,7 +23,7 @@ _This document was inspired by a Medium post called [Why you shold write a "how 
 ### Management Style - Collaborative
 - I value transparent collaboration. As a manager, I believe its by job to actively solicit perspectives from everyone on my team. I expect your to share your thoughts freely and honestly.  
 - I am a fan of [reasoning transparency](https://forum.effectivealtruism.org/topics/reasoning-transparency). I want to know what you think and _why_ (i.e. how you arrived to those conclusions).
-- I very much appreciate when people flag things (e.g. "this is something we might be undervalueing" or "have we considered this approach instead?" or "we have 15min left in this meeting - we might want to move to the next item in our agenda").
+- I very much appreciate when people flag things (e.g. "this is something we might be undervaluing" or "have we considered this approach instead?" or "we have 15min left in this meeting - we might want to move to the next item in our agenda").
 
 ### Documentation
 - I'm big on documentation - tasks, meeting notes, decisions, you name it. If it isn't written down, it doesn't exist. If it is written down, I expect you to keep track of it. If anything isn't written down, let me know and let's agree on a good place to put it.
