@@ -35,8 +35,8 @@ _This document was inspired by a Medium post called [Why you shold write a "how 
 - The _last_ thing I want is for everyone to invent their own process/frameworks without sharing their ideas with the rest of the team. We're all stakeholders of each other's work - remember that. 
 
 ### 1:1s
-- Our one-on-one meetings is our time to talk about _**your** life_. I consider these meetings to be indepensible for developing rapport, understanding, and better communication with the people on my team. 
-- During these meetings, let's talk about challenges you're facing (in life or at work), blockers that are preventing from you doing your best work, and how you, as an employee and a person, are making out. If we must talk about work things, we may, but I do not want 1:1 time to be syonymous with "updates and decision-making meeting with Quinn". If it becomes that, feel free to flag it.
+- Our one-on-one meetings is our time to talk about _**your** life_. I consider these meetings to be indispensable for developing rapport, understanding, and better communication with the people on my team. 
+- During these meetings, let's talk about challenges you're facing (in life or at work), blockers that are preventing from you doing your best work, and how you, as an employee and a person, are making out. If we must talk about work things, we may, but I do not want 1:1 time to be synonymous with "updates and decision-making meeting with Quinn". If it becomes that, feel free to flag it.
 - I'm big of feedback, positive or negative. As a manager, I don't see everything, nor do I think of everything. I need your input to better understand my blindspots, biases, and how I can better support you in your work.
 
 
