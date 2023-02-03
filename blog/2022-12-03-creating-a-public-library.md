@@ -1,7 +1,7 @@
 ---
 title: Creating an online library for curating and sharing resources with others in your life
 authors: qmchugh
-tags: [Personal Knowledge Managemement, Knowledge Sharing, Learn in Public]
+tags: [Personal Knowledge Management, Knowledge Sharing, Learn in Public]
 ---
 
 ## Objective
