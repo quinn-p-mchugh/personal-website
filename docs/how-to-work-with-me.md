@@ -10,13 +10,7 @@ _This document was inspired by a Medium post called [Why you should write a "how
 **This document is a work in progress.**
 
 ## When you're my manager
-
-### Communication
-
-### Slack & Email
-- In an ideal world, I would have email used only for external communication and important, department- or company-wide announcements and Slack for everything else.
-- If there's a thing we discuss regularly, let's make a new Slack channel, even if it's for a temporary. With channels, I find it easier to compartmentalize our conversations into different buckets and reference them later rather than navigate a sea of direct messages consisting of one or more people.
-- I appreciate when Slack channels are prefixed like "proj-" for projects. Let's agree on a standard for this and stick with it.
+TBA
 
 ## When I'm your manager
 
@@ -38,5 +32,13 @@ _This document was inspired by a Medium post called [Why you should write a "how
 - Our one-on-one meetings is our time to talk about _**your** life_. I consider these meetings to be indispensable for developing rapport, understanding, and better communication with the people on my team. 
 - During these meetings, let's talk about challenges you're facing (in life or at work), blockers that are preventing from you doing your best work, and how you, as an employee and a person, are making out. If we must talk about work things, we may, but I do not want 1:1 time to be synonymous with "updates and decision-making meeting with Quinn". If it becomes that, feel free to flag it.
 - I'm big of feedback, positive or negative. As a manager, I don't see everything, nor do I think of everything. I need your input to better understand my blindspots, biases, and how I can better support you in your work.
+
+
+### Communication
+
+#### Slack & Email
+- In an ideal world, I would have email used only for external communication and important, department- or company-wide announcements and Slack for everything else.
+- If there's a thing we discuss regularly, let's make a new Slack channel, even if it's for a temporary. With channels, I find it easier to compartmentalize our conversations into different buckets and reference them later rather than navigate a sea of direct messages consisting of one or more people.
+- I appreciate when Slack channels are prefixed like "proj-" for projects. Let's agree on a standard for this and stick with it.
 
 
