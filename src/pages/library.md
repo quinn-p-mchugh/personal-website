@@ -17,5 +17,5 @@ When viewing the library, press `Ctrl+F` and type a keyword of your choice to se
 
 ---
 
-## Recent entries
+## Recent Additions
 <iframe src="https://bibbase.org/show?bib=https%3A%2F%2Fapi.zotero.org%2Fgroups%2F4878976%2Fitems%3Fkey%3DcXefukju7DOFmCniuquhJKrK%26format%3Dbibtex%26limit%3D100" height="1000px" width="100%"></iframe>
