@@ -30,7 +30,27 @@ const config = {
     locales: ["en"],
   },
 
-  plugins: [["drawio", {}]],
+  plugins: [
+    ["drawio", {}],
+    [
+      "@docusaurus/plugin-content-blog",
+      {
+        /**
+         * Required for any multi-instance plugin
+         */
+        id: "blog-micro",
+        /**
+         * URL route for the blog section of your site.
+         * *DO NOT* include a trailing slash.
+         */
+        routeBasePath: "blog-micro",
+        /**
+         * Path to data on filesystem relative to site dir.
+         */
+        path: "./blog-micro",
+      },
+    ],
+  ],
 
   presets: [
     [
@@ -82,24 +102,21 @@ const config = {
         },
         items: [
           {
+            label: "Resume",
+            to: "/resume",
+          },
+          {
             type: "doc",
             docId: "/category/projects",
             position: "left",
             label: "Projects",
           },
-          { to: "/blog", label: "Blog", position: "left" },
-          {
-            label: "Resume",
-            to: "/resume",
-          },
           {
             label: "My Library",
             to: "/library",
           },
-          {
-            label: "Contact",
-            to: "/contact",
-          },
+          { to: "/blog", label: "Blog", position: "left" },
+          { to: "/blog-micro", label: "Microblog", position: "left" },
           {
             type: "dropdown",
             label: "About",
@@ -114,6 +131,10 @@ const config = {
                 to: "/travels",
               },
             ],
+          },
+          {
+            label: "Contact",
+            to: "/contact",
           },
           {
             href: "https://www.linkedin.com/in/quinnpmchugh/",
@@ -156,8 +177,16 @@ const config = {
                 to: "/blog",
               },
               {
+                label: "Microblog",
+                to: "/blog-micro",
+              },
+              {
                 label: "Projects",
                 to: "/docs/category/projects",
+              },
+              {
+                label: "My Library",
+                to: "/library",
               },
             ],
           },
