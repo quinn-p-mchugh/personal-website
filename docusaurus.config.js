@@ -43,7 +43,7 @@ const config = {
          * URL route for the blog section of your site.
          * *DO NOT* include a trailing slash.
          */
-        routeBasePath: "blog-micro",
+        routeBasePath: "/blog-micro",
         /**
          * Path to data on filesystem relative to site dir.
          */
