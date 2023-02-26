@@ -17,7 +17,7 @@ If so, you've come to the right post.
 
 Using [Zotero](https://www.zotero.org/), a free & open source reference manager, let's learn how to alleviate this resource sharing calamity by creating our own public Zotero library. 
 
-With a public Zotero library, you'll be able to create collections of resources you've found (including bibliographic information) and send just a *single URL* to the person you wish to share a set of articles with. From there, that person will be able to download those resouces in a variety of formats, including CSV and JSON.
+With a public Zotero library, you'll be able to create collections of resources you've found (including bibliographic information) and send just a *single URL* to the person you wish to share a set of articles with. From there, that person will be able to download those resources in a variety of formats, including CSV and JSON.
 
 ## Steps
 
