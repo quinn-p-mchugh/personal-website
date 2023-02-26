@@ -1,5 +1,6 @@
 ---
 title: Creating an online library for curating and sharing resources with others in your life
+slug: creating-a-public-library
 authors: qmchugh
 tags: [Personal Knowledge Management, Knowledge Sharing, Learn in Public]
 ---

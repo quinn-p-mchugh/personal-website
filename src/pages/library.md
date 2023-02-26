@@ -11,7 +11,7 @@ At the link below, you'll find a curated library of resources I've saved that ma
 
 When viewing the library, press `Ctrl+F` and type a keyword of your choice to see if there are any collections on the left sidebar that might peak your interest.
 
-**If you'd like to set one of these up yourself, I've outlined how in [this post](../../blog/2022/2022-12-03-creating-a-public-library).**
+**If you'd like to set one of these up yourself, I've outlined how in [this post](../../blog/2022-12-03-creating-a-public-library.md).**
 
 ## [Click here to access my public Zotero library](https://www.zotero.org/groups/4878976/quinn_mchugh_public/library)
 
