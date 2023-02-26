@@ -36,10 +36,6 @@ const config = {
       "@docusaurus/plugin-content-blog",
       {
         /**
-         * Required for any multi-instance plugin
-         */
-        id: "blog-micro",
-        /**
          * URL route for the blog section of your site.
          * *DO NOT* include a trailing slash.
          */
@@ -116,7 +112,6 @@ const config = {
             to: "/library",
           },
           { to: "/blog", label: "Blog", position: "left" },
-          { to: "/blog-micro", label: "Microblog", position: "left" },
           {
             type: "dropdown",
             label: "About",
@@ -175,10 +170,6 @@ const config = {
               {
                 label: "Blog",
                 to: "/blog",
-              },
-              {
-                label: "Microblog",
-                to: "/blog-micro",
               },
               {
                 label: "Projects",
