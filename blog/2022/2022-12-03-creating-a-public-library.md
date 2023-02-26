@@ -6,7 +6,7 @@ tags: [Personal Knowledge Management, Knowledge Sharing, Learn in Public]
 ---
 
 ## Objective
-This post provides some basic instructions for creating a [public Zotero library](/library) for sharing resources with friends, colleagues, and groups you're apart of.
+This post provides some basic instructions for creating a [public Zotero library](../../src/pages/library.md)) for sharing resources with friends, colleagues, and groups you're apart of.
 
 ## Motivation
 Have you ever been in conversation with someone and said "*Oh! There's a couple articles I think you'd love. Let me email them to you.*"
