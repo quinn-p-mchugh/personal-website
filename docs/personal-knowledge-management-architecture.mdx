@@ -23,4 +23,48 @@ Why Zotero for everything?
 
 // (Include limitations)
 
+```mermaid
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->D;
+```
+
+```mermaid
+flowchart TB
+	1["My Personal Productivity (PP) System"]
+	2["Establishing Intention"]
+	3["Managing Attention"]
+	4["Goals"]
+	5["Reviews"]
+	6["Daily Notes"]
+	7["Weekly Reviews"]
+	8["Annual Reviews"]
+	10["Time Blocking"]
+	11["Habits"]
+	12["Managing Energy"]
+	13["Managing Time"]
+	14["Projects"]
+	15["Sleeping well"]
+	16["Eating well"]
+	17["Exercising"]
+	18["Calendar"]
+	19["Managing Focus"]
+	20["Scheduling tasks at specific<br>times in the day based on how much<br> focus they require and how much<br> focus I typically have at that point in the day"]
+
+	1 --> 2 & 3
+
+	2 --> 5
+	2 --> 4
+	4 --> 14 & 11
+
+	5 --> 6 & 7 & 8
+
+	3 --> 12 & 13 & 19
+	13 --> 10 & 18
+	12 --> 15 & 16 & 17
+	19 --> 20
+```
+
 <Drawio content={pkmArchitecture} />
