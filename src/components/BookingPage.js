@@ -1,5 +1,5 @@
 import Cal, { getCalApi } from "@calcom/embed-react";
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 
 export default function BookingPage() {
   useEffect(() => {
