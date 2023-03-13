@@ -28,7 +28,7 @@ The following tools and technologies are what I currently use to run my life. Fo
 - [Notion.so](https://www.notion.so/) (for anything collaborative)
 
 ## Knowledge Management
-Also see: [personal knowledge management architecture](./personal-knowledge-management-architecture.mdx)
+Also see: [personal knowledge management architecture](personal-knowledge-management-architecture.mdxx)
 
 - [Obsidian.md](https://obsidian.md/) - A powerful and extensible knowledge base and note-taking software that works on top of a folder of markdown files.
 - [Readwise](https://readwise.io/) - Synchronizes annotations from a variety of sources
