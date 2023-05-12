@@ -50,7 +50,7 @@ const config = {
         /**
          * Path to data on filesystem relative to site dir.
          */
-        path: "./blog-micro",
+        path: "blog-micro",
       },
     ],
   ],
