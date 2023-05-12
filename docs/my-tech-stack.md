@@ -5,7 +5,7 @@ tags: []
 sidebar_position: 2
 ---
 
-The following tools and technologies are what I currently use to run my life. For additional tools you may find useful, please see [my library](https://www.zotero.org/groups/4878976/quinn_mchugh_public/collections/X6NH5G54).
+The following tools and technologies are what I currently use to run my life. For additional tools you may find useful, please see [my library](./library).
 
 ## Habits/Routines
 
@@ -35,7 +35,7 @@ The following tools and technologies are what I currently use to run my life. Fo
 
 ## Knowledge Management
 
-Also see: [personal knowledge management architecture](personal-knowledge-management-architecture.mdx)
+Also see: [personal knowledge management architecture](docs/personal-knowledge-management-architecture.mdx)
 
 - [Obsidian.md](https://obsidian.md/) - A powerful and extensible knowledge base and note-taking software that works on top of a folder of markdown files.
 - [Readwise](https://readwise.io/) - Synchronizes annotations from a variety of sources
