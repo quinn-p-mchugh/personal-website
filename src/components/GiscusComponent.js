@@ -15,7 +15,7 @@ export default function GiscusComponent() {
       repo="quinn-p-mchugh/personal-website"
       repoId="R_kgDOIYZ3OQ"
       category="Announcements"
-      categoryId="DIC_kwDOF1L2fM4B-hVS"
+      categoryId="DIC_kwDOIYZ3Oc4CWcmr"
       mapping="pathname"
       strict="0"
       reactionsEnabled="1"
