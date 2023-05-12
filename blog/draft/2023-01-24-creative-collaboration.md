@@ -1,8 +1,9 @@
 ---
-title: Post Title
+title: Facilitating Creative Collaboration in Any Organization
 authors: qmchugh
 tags: []
 draft: true
+enableComments: true
 ---
 
 ## First Section
@@ -20,6 +21,7 @@ function lorem(ipsum, dolor = 1) {
 Where, when, or what are your most creative moments?
 Anytime my brain is in idle mode (e.g. doing anything that's (1) not cognitively demanding and (2) not related to the problem - walking, showering, cooking, brushing teeth, etc)
 When there's a deadline (mileage varies :sweat_smile:)
+
 Where have you seen a team use creative problem solving to dramatically change an outcome?
 In general...
 Restricting scope 

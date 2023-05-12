@@ -3,6 +3,7 @@ title: How I select which books to read
 authors: qmchugh
 tags: []
 draft: true
+enableComments: true
 ---
 
 ## 

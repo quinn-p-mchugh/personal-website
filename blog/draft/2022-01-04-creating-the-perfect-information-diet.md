@@ -3,6 +3,7 @@ title: An algorithm for creating your perfect
 authors: qmchugh
 tags: []
 draft: true
+enableComments: true
 ---
 
 # An algorithm to start

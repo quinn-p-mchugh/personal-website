@@ -7,6 +7,7 @@ tags: []
 #keywords: []
 hide_table_of_contents: false
 draft: true
+enableComments: true
 ---
 
 This is my microblog. Random thoughts, tips, and musings from my everyday life.

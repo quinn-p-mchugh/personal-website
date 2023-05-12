@@ -3,6 +3,7 @@ title: Post Title
 authors: qmchugh
 tags: []
 draft: true
+enableComments: true
 ---
 
 ## A list of RSS feeds (product release notes/changelogs) you might want to susbcribe to...
