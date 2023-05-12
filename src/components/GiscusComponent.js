@@ -1,11 +1,15 @@
 import React from "react";
 import Giscus from "@giscus/react";
 import { useColorMode } from "@docusaurus/theme-common";
+import { useLocation } from "@docusaurus/router";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 
 export default function GiscusComponent() {
   const { colorMode } = useColorMode();
-
-  return (
+  const location = useLocation();
+  const { siteConfig } = useDocusaurusContext();
+  const { forbiddenGiscusPaths } = siteConfig.customFields;
+  const giscusComponent = (
     <Giscus
       id="comments"
       repo="quinn-p-mchugh/personal-website"
@@ -20,8 +24,13 @@ export default function GiscusComponent() {
       theme={colorMode}
       lang="en"
       loading="lazy"
-      crossorigin="anonymous"
-      async
     />
+  );
+  return (
+    <React.Fragment>
+      <hr />
+      <br></br>
+      {!forbiddenGiscusPaths.includes(location.pathname) && giscusComponent}
+    </React.Fragment>
   );
 }

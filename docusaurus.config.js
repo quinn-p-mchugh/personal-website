@@ -8,7 +8,9 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 const config = {
   title: "Quinn McHugh",
   tagline: "Engineer. Designer. Developer.",
-  customFields: {},
+  customFields: {
+    forbiddenGiscusPaths: [], // See GiscusComponent.js - Example: "/docs/tutorials/intro"
+  },
   url: "https://quinnmchugh.net",
   baseUrl: "/",
   onBrokenLinks: "throw",
