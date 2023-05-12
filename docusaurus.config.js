@@ -80,8 +80,8 @@ const config = {
           customCss: [require.resolve("./src/css/custom.css")],
         },
         pages: {},
-        googleAnalytics: {
-          trackingID: "UA-121689368-1",
+        gtag: {
+          trackingID: ["G-WSVD3SVT4R", "UA-121689368-1"],
           anonymizeIP: true,
         },
       }),
