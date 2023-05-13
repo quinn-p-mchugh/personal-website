@@ -36,6 +36,15 @@ const config = {
   plugins: [
     ["drawio", {}],
     [
+      "@docusaurus/plugin-content-docs",
+      {
+        id: "projects",
+        path: "docs-projects",
+        routeBasePath: "projects",
+        //sidebarPath: require.resolve("./sidebarsProjects.js"),
+      },
+    ],
+    [
       "@docusaurus/plugin-content-blog",
       {
         /**
@@ -61,10 +70,9 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
-          sidebarPath: require.resolve("./sidebars.js"),
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl: "https://github.com/quinn-p-mchugh/personal-website",
+          id: "docs",
+          path: "docs",
+          routeBasePath: "docs",
         },
         blog: {
           showReadingTime: true,
@@ -105,14 +113,19 @@ const config = {
             to: "/resume",
           },
           {
-            type: "doc",
-            docId: "/category/projects",
+            label: "Docs",
+            to: "/docs/my-tech-stack",
             position: "left",
+          },
+          {
             label: "Projects",
+            to: "/projects/ea-explorer",
+            position: "left",
           },
           {
             label: "My Library",
             to: "/library",
+            position: "left",
           },
           { to: "/blog", label: "Blog", position: "left" },
           {

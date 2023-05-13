@@ -2,7 +2,7 @@
   "position": 1000,
   "label": "Projects",
   "collapsible": true,
-  "collapsed": false,
+  "collapsed": true,
   "link": {
     "type": "generated-index",
     "title": "Projects"
