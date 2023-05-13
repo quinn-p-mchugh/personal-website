@@ -4,6 +4,21 @@
 const lightCodeTheme = require("prism-react-renderer/themes/github");
 const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
+const blogConfig = {
+  blog: {
+    title: "Quinn McHugh's Blog",
+    description: "Quinn McHugh's blog. For longer-form posts.",
+  },
+  microBlog: {
+    title: "Quinn McHugh's Micro Blog",
+    description:
+      "Quinn McHugh's micro blog. For short notes, ideas, thoughts, and other morsels.",
+  },
+  sidebarCount: 10,
+  feedType: "all",
+  copyright: `Copyright © 2017-${new Date().getFullYear()} Quinn McHugh`,
+};
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "Quinn McHugh",
@@ -60,6 +75,16 @@ const config = {
          * Path to data on filesystem relative to site dir.
          */
         path: "blog-micro",
+        blogTitle: blogConfig.microBlog.title,
+        blogDescription: blogConfig.microBlog.description,
+        blogSidebarCount: blogConfig.sidebarCount,
+        showReadingTime: false,
+        feedOptions: {
+          title: blogConfig.microBlog.title,
+          description: blogConfig.microBlog.description,
+          type: blogConfig.feedType,
+          copyright: blogConfig.copyright,
+        },
       },
     ],
   ],
@@ -75,13 +100,15 @@ const config = {
           routeBasePath: "docs",
         },
         blog: {
+          blogTitle: blogConfig.blog.title,
+          blogDescription: blogConfig.blog.description,
+          blogSidebarCount: blogConfig.sidebarCount,
           showReadingTime: true,
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl: "https://github.com/quinn-p-mchugh/personal-website",
           feedOptions: {
-            type: "all",
-            copyright: `Copyright © 2017-${new Date().getFullYear()} Quinn McHugh`,
+            title: blogConfig.blog.title,
+            description: blogConfig.blog.description,
+            type: blogConfig.feedType,
+            copyright: blogConfig.copyright,
           },
         },
         theme: {
