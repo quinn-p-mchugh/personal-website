@@ -19,6 +19,12 @@ const blogConfig = {
   copyright: `Copyright © 2017-${new Date().getFullYear()} Quinn McHugh`,
 };
 
+const docsConfig = {
+  projects: {
+    linkId: "ea-explorer",
+  },
+};
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "Quinn McHugh",
@@ -141,12 +147,12 @@ const config = {
           },
           {
             label: "Docs",
-            to: "/docs/my-tech-stack",
+            to: "/docs/welcome",
             position: "left",
           },
           {
             label: "Projects",
-            to: "/projects/ea-explorer",
+            to: `/projects/${docsConfig.projects.linkId}`,
             position: "left",
           },
           {
@@ -216,7 +222,7 @@ const config = {
               },
               {
                 label: "Projects",
-                to: "/docs/category/projects",
+                to: `/projects/${docsConfig.projects.linkId}`,
               },
               {
                 label: "My Library",
