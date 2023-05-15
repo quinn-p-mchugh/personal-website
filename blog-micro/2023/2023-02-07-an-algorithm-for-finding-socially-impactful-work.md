@@ -1,11 +1,11 @@
 ---
 title: "Finding an impactful job: a simple algorithm"
 #description: 
+#keywords: []
+tags: []
 authors: qmchugh
 #image: 
 #slug: 
-tags: []
-#keywords: []
 hide_table_of_contents: false
 draft: true
 ---
