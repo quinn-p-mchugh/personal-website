@@ -3,7 +3,6 @@ title: Post Title
 authors: qmchugh
 tags: []
 draft: true
-enableComments: true
 ---
 
 ## First Section

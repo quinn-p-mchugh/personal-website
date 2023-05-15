@@ -3,7 +3,6 @@ title: Facilitating Creative Collaboration in Any Organization
 authors: qmchugh
 tags: []
 draft: true
-enableComments: true
 ---
 
 ## First Section

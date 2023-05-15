@@ -8,7 +8,6 @@ tags: []
 #keywords: []
 hide_table_of_contents: false
 draft: true
-enableComments: true
 ---
 
 1. Find what you truly care about

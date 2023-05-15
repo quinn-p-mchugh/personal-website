@@ -3,7 +3,6 @@ title: Syncing your highlights into Obsidian
 authors: qmchugh
 tags: []
 draft: true
-enableComments: true
 ---
 
 ## First Section
