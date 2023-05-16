@@ -1,14 +1,14 @@
 import React from "react";
 import { useLocation } from "@docusaurus/router";
-import { Link } from "react-router-dom";
 
 export default function RSSButton() {
   const location = useLocation();
-  const rssUrl = `${location.pathname}/rss.xml`;
+  const blogSlug = location.pathname.split("/")[1];
+  const rssUrl = `/${blogSlug}/rss.xml`;
 
   return (
-    <Link to={rssUrl}>
+    <a href={rssUrl}>
       <button>RSS</button>
-    </Link>
+    </a>
   );
 }
