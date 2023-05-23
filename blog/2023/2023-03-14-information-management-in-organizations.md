@@ -1,20 +1,11 @@
-
 ---
-
 title: (Title)
-
 # description
-
 authors: qmchugh
-
 # image
-
 # slug
-
 tags: []
-
 # keywords: []
-
 hide_table_of_contents: false
 draft: true
 ---
