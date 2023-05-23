@@ -104,6 +104,7 @@ const config = {
           id: "docs",
           path: "docs",
           routeBasePath: "docs",
+          showLastUpdateTime: true,
         },
         blog: {
           blogTitle: blogConfig.blog.title,
