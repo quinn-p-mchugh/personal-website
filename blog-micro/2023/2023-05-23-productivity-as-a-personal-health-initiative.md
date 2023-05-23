@@ -1,14 +1,4 @@
----
-title: "Productivity as a personal health initiative"
-#description: 
-#keywords: []
-tags: []
-authors: qmchugh
-#image: 
-#slug: 
-hide_table_of_contents: false
-draft: true
----
+# Productivity as a personal health initiative 
 
 Creating a productivity system that works for your unique life situation can yield numerous of benefits.
 
