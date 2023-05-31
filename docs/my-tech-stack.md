@@ -1,8 +1,13 @@
 ---
-id: tech-stack
 title: My Tech Stack
+#sidebar_label: 
+slug: my-tech-stack
+#description: 
+#keywords: []
 tags: []
+#image: 
 sidebar_position: 2
+draft: true
 ---
 
 The following tools and technologies are what I currently use to run my life. For additional tools you may find useful, please see [my library](./library).
