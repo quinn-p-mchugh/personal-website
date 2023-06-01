@@ -162,6 +162,7 @@ const config = {
             position: "left",
           },
           { to: "/blog", label: "Blog", position: "left" },
+          { to: "/blog-micro", label: "Microblog", position: "left" },
           {
             type: "dropdown",
             label: "About",
