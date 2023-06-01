@@ -8,7 +8,7 @@ authors: qmchugh
 #image: 
 hide_table_of_contents: true
 draft: false
-date: "2023-05-24"
+date: "2023-05-20"
 ---
 
 This is my microblog. It consists of random ideas, tips, and musings from my everyday life.
