@@ -4,13 +4,13 @@ Creating a productivity system that works for your unique life situation can yie
 
 Benefits such as:
 - Reduced mental load
-- Reduced decision fatigue
-- Improved meta-attention
+- Reduced [decision fatigue](https://en.wikipedia.org/wiki/Decision_fatigue)
+- Improved [meta-attention](https://dictionary.apa.org/meta-attention)
 
-However, I think it's easy to assume these benefits are valuable *because* they help increase your individual capacity (i.e. they help you "get more stuff done").
+However, it's too easy to view these systems purely as mechanisms to boost your productivity. That is, viewing them as valuable because they help you "get more stuff done".
 
-To me, these benefits are not only  valuable in this way but *also* because reducing the amount of things your brain has to remember and keep track of is valuable in and of itself.
+To me, these systems aren't only valuable because they increase your individual capacity - they also play an integral role in preserving your cognitive health. Reducing the clutter your mind has to remember and keep track of is not just a strategy for staying organized; it's a way to care for your brain.
 
-In other words, an overloaded, overworked brain is not a healthy brain.
+A brain drowning in information is not a healthy brain.
 
-Your brain is a muscle. Remember that.
+Consider your brain as a muscle. Over-exertion and continuous strain can lead to fatigue and damage, impairing its long-term functionality. So, as you exercise your body for physical health, remember to care for your mental muscle too - it's equally vital, if not more.
