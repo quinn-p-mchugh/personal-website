@@ -1,4 +1,14 @@
-# Productivity as a personal health initiative 
+---
+title: "Productivity as a personal health initiative"
+slug: llms-as-translators 
+#description: 
+#keywords: []
+tags: [Productivity, Mental Health]
+authors: qmchugh
+#image: 
+hide_table_of_contents: true
+draft: false
+---
 
 Creating a productivity system that works for your unique life situation can yield numerous of benefits.
 
