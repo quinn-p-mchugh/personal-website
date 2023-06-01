@@ -19,7 +19,7 @@ Benefits such as:
 
 However, it's too easy to view these systems purely as mechanisms to boost your productivity. That is, viewing them as valuable because they help you "get more stuff done".
 
-To me, these systems aren't only valuable because they increase your individual capacity - they also play an integral role in preserving your cognitive health. Reducing the clutter your mind has to remember and keep track of is not just a strategy for staying organized; it's a way to care for your brain.
+**To me, these systems aren't only valuable because they increase your individual capacity - they also play an integral role in preserving your cognitive health.** Reducing the clutter your mind has to remember and keep track of is not just a strategy for staying organized; it's a way to care for your brain.
 
 A brain drowning in information is not a healthy brain.
 
