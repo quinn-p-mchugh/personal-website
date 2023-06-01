@@ -1,5 +1,5 @@
 ---
-title: "Large Language Models can translate any language, even languages no human can understand"
+title: "LLMs: Translators of languages no human can understand"
 slug: llms-as-translators
 #description: 
 #keywords: []
@@ -7,7 +7,6 @@ tags: [Productivity, Mental Health]
 authors: qmchugh
 #image: 
 hide_table_of_contents: true
-draft: false
 ---
 
 I happened upon [this great introductory talk](https://youtu.be/xoVJKj8lcNQ) on the non-apocalyptic dangers of generative large language models (LLMs). This might be useful to share with folks who don't have a good sense for the current pace change in AI capabilities research.
@@ -15,4 +14,4 @@ I happened upon [this great introductory talk](https://youtu.be/xoVJKj8lcNQ) on 
 **Key insight for me:**
 Generative LLMs are able to act as translators of a surprisingly diverse number of languages. Whether those languages are traditional (e.g. written or verbal ) or non-obvious (e.g. images, electrical signals in the brain, wifi traffic) necessarily doesn't matter, what matters is that events in that language can be quantified and measured.
 
-While this has all sorts of amazing applications (e.g. translating animal vocalizations to human language, enabling blind individuals to see using a sensor on their tongue), this has a range of concerning implications for privacy of thought, mass surveillance, further erosion of truth, etc.
+While this has all sorts of amazing applications (e.g. translating animal vocalizations to human language, enabling blind individuals to see), this has a range of concerning implications for privacy of thought, mass surveillance, further erosion of truth, etc.
