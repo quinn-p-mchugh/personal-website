@@ -1,6 +1,6 @@
 ---
 title: "Productivity as a personal health initiative"
-slug: llms-as-translators 
+slug: productivity-as-a-personal-health-initiative
 #description: 
 #keywords: []
 tags: [Productivity, Mental Health]
@@ -13,7 +13,7 @@ draft: false
 Creating a productivity system that works for your unique life situation can yield numerous of benefits.
 
 Benefits such as:
-- Reduced mental load
+- Reduced [mental load](https://en.wikipedia.org/wiki/Cognitive_load)
 - Reduced [decision fatigue](https://en.wikipedia.org/wiki/Decision_fatigue)
 - Improved [meta-attention](https://dictionary.apa.org/meta-attention)
 
