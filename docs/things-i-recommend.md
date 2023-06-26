@@ -22,9 +22,13 @@ Please note that none of the links provided here are sponsored - this list is ba
      - e.g. 
        - 1st side button -> Go forward a page
        - 2nd side button -> Go back a page
+2. Bluetooth noise-canceling headphones (e.g. Bose QuietComforts)
+   - Great for listening to podcasts, articles, etc. on the go
+   - A must-have for commuting by train or trolley!
 
 ## Cooking
 - A great chef's knife and pairing knife - I used an 10-inch [Victorinox](https://www.victorinox.com/us/en/Products/Cutlery/Chef%27s-Knives/c/CUT_ChefKnives) Fibrox Pro chef's knife and pairing knife, which I periodically sharpen using [this 3D printed sharpening system](https://www.thingiverse.com/thing:4135236)
+- A rice cooker
 
 ## Health
 
