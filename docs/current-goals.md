@@ -9,7 +9,7 @@ title: "My Tech Stack"
 tags: []
 #image: ""
 sidebar_position: 2
-draft: true
+draft: false
 publish: true
 publish-path: "docs"
 publish-filename: "current-goals"
