@@ -1,6 +1,6 @@
 ---
 created: 2023-05-02T11:30:38-04:00
-modified: 2023-07-01T12:11:19-04:00
+modified: 2023-07-01T12:40:49-04:00
 title: "My Tech Stack"
 #sidebar_label: "" 
 #slug: 
@@ -20,55 +20,38 @@ publish-filename: "current-goals"
 - I have done `<thing>`
 - I love `<thing>`
 
-
 # Quinn’s Impossible List
-
-Inspired by Joel Runyon: [http://impossiblehq.com/impossible-list/](http://impossiblehq.com/impossible-list/) \
-
+Inspired by Joel Runyon: [http://impossiblehq.com/impossible-list/](http://impossiblehq.com/impossible-list/)
 
 Note: This is an ever-evolving list, so certain goals that may have been listed in the past may no longer be present. These goals were either no longer achievable or were simply removed due to a shift in priorities
 
-
-
-
 # Last 5 Completed Goals
-
-
-
 - [x] Acquire a full-time engineering position (January 2<sup>nd</sup>, 2020)
 - [x] Bicycle tour across America (August 20<sup>th</sup>, 2019)
 - [x] Visit Glacier National Park (August 1<sup>st</sup>, 2019)
 - [x] Graduate college (May 16<sup>th</sup>, 2019)
 - [x] Come out of college with zero debt (May 16<sup>th</sup>, 2019)
 
-
 # Fitness/Health Goals
-
-
-
 - Bike…
-		- [x] 25 miles in a day ([https://ridewithgps.com/trips/3235919](https://ridewithgps.com/trips/3235919) – August 2014)
-		- [x] 50 miles in a day ([https://ridewithgps.com/trips/9036792](https://ridewithgps.com/trips/9036792) – May 19<sup>th</sup>, 2016)
-		- [x] 100 miles in a day ([https://ridewithgps.com/trips/9664730](https://ridewithgps.com/trips/9664730) – June 26<sup>th</sup>, 2016)
-		- 125 miles in a day
+	- [x] 25 miles in a day ([https://ridewithgps.com/trips/3235919](https://ridewithgps.com/trips/3235919) – August 2014)
+	- [x] 50 miles in a day ([https://ridewithgps.com/trips/9036792](https://ridewithgps.com/trips/9036792) – May 19<sup>th</sup>, 2016)
+	- [x] 100 miles in a day ([https://ridewithgps.com/trips/9664730](https://ridewithgps.com/trips/9664730) – June 26<sup>th</sup>, 2016)
+	- 125 miles in a day
 - Run a 5K
-		- Run a 10K
-				- Run a marathon
+	- Run a 10K
+		- Run a marathon
 - Maintain a good diet e.g. “[Eat food. Not to much. Mostly plants.](https://michaelpollan.com/reviews/how-to-eat/)”
 
-
 # Professional/Educational Goals
-
-
-
 - [x] Graduate college (May 16<sup>th</sup>, 2019)
 	- [x] Land a summer internship (Ridgewood Water – January 9<sup>th</sup>, 2017)
-		- [x] Achieve a minor computer science (May 16<sup>th</sup>, 2019)
-		- [x] Graduate with a concentration in honors (May 16<sup>th</sup>, 2019)
-		- [x] Hold an E-board position in a club that I care about (Senator for the United States States Green Building Council – Rowan University Chapter – Spring 2016)
-				- [x] Be on the IEEE E-board (Elected Public Relations Chair – December 9<sup>th</sup>, 2016)
-				- [x] Found the Rowan Cycling Club (January 2018)
-						- [x] Acquire at least 25 members ([https://i.imgur.com/tmR5uo3.jpg](https://i.imgur.com/tmR5uo3.jpg%20--%20September%202018) – September 2018)
+	- [x] Achieve a minor computer science (May 16<sup>th</sup>, 2019)
+	- [x] Graduate with a concentration in honors (May 16<sup>th</sup>, 2019)
+	- [x] Hold an E-board position in a club that I care about (Senator for the United States States Green Building Council – Rowan University Chapter – Spring 2016)
+	- [x] Be on the IEEE E-board (Elected Public Relations Chair – December 9<sup>th</sup>, 2016)
+	- [x] Found the Rowan Cycling Club (January 2018)
+			- [x] Acquire at least 25 members ([https://i.imgur.com/tmR5uo3.jpg](https://i.imgur.com/tmR5uo3.jpg%20--%20September%202018) – September 2018)
 		- [x] Become a Resident Assistant (March 2<sup>nd</sup>, 2016)
 				- [x] Become an Assistant Resident Director (March 16<sup>th</sup>, 2018)
 		- [x] Maintain a GPA of at least 3.5 (GPA: 3.89 – May 16<sup>th</sup>, 2019)
@@ -85,22 +68,14 @@ Note: This is an ever-evolving list, so certain goals that may have been listed 
 - Miscellaneous
 - [x] Work at a bike shop (Ridgewood Cycles – Summer 2018)
 
-
 # Financial Goals
-
-
-
 - [x] Come out of college with zero debt (May 16<sup>th</sup>, 2019)
 - [x] Go into college with at least $15,000 in the bank (February 2015)
 - Buy an electric car
 - Be financially independent
 - Be location independent
 
-
 # Habit Goals
-
-
-
 - [x] Read for at least 10 minutes for 100 days in a row (March 27<sup>th</sup>, 2015 – July 5<sup>th</sup>, 2015)
 - [x] Take a cold shower 100 days in a row (September 5<sup>th</sup>, 2015 – December 14<sup>th</sup>, 2015)
 		- [x] Do it for 365 days in a row (January 15<sup>th</sup>, 2017 – January 25<sup>th</sup>, 2018)
@@ -108,14 +83,9 @@ Note: This is an ever-evolving list, so certain goals that may have been listed 
 - Meditate for 5 minutes 100 days in a row
 - Read a new Wikipedia page 100 days in a row
 
-
 # Creative Goals
-
-
-
 - [x] Publish a poster on RedBubble (July 2015)
-
-		Publish two more posters on RedBubble (August 12<sup>th</sup>, 2016)
+	- Publish two more posters on RedBubble (August 12<sup>th</sup>, 2016)
 
 
 		Make at least ten sales on RedBubble (September 18<sup>th</sup>, 2018 – *Only took 2 years, but hey, I made 24 bucks!*)
@@ -125,13 +95,9 @@ Note: This is an ever-evolving list, so certain goals that may have been listed 
 - Learn how to play the harmonica
 - Start a band and play a live show
 
-
 # Skill Goals
-
-
-
 - Programming
-		- Learn the basics of various programming languages
+	- Learn the basics of various programming languages
 				- [x] C++ (Spring 2016)
 				- [x] Python (Summer 2016)
 				- [x] Java (Spring 2017)
@@ -292,7 +258,7 @@ Note: This is an ever-evolving list, so certain goals that may have been listed 
 - Ride a bullet train
 - Live a zero waste lifestyle
 - Be location independent
-- Read/listen to *<span style="text-decoration:underline;">X</span>* number of books
+- Read/listen to X number of books
 		- 50
 		- 100
 		- 200
