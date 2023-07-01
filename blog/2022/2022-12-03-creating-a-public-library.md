@@ -2,7 +2,7 @@
 created: 2023-07-01T11:53:11-04:00
 modified: 2023-07-01T13:04:15-04:00
 title: "Creating an online library for curating and sharing resources with others in your life"
-#slug: creating-a-public-library
+slug: creating-a-public-library
 #description: ""
 #keywords: []
 tags: [Personal Knowledge Management, Knowledge Sharing, Learn in Public]
@@ -18,7 +18,7 @@ publish-filename:
 <!--
 Test
 -->
-[current-goals](../../docs/current-goals.md#)
+[current-goals](../../docs/current-goals)
 
 # Objective
 This post provides some basic instructions for creating a [public Zotero library](./library) for sharing resources with friends, colleagues, and groups you're apart of.
