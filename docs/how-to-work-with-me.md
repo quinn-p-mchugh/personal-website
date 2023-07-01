@@ -13,7 +13,7 @@ _This document was inspired by a Medium post called [Why you should write a "how
 
 ### Communication
 
-- I strive to demonstrate good [reasoning transparency](https://forum.effectivealtruism.org/topics/reasoning-transparency), which means sometimes I can be a bit more verbose than necessary. If you find that my answers are a bit too long than what you're looking for, please let me know and I'll happily use your feedback to improve the  in the future.
+- I strive to demonstrate good [reasoning transparency](https://forum.effectivealtruism.org/topics/reasoning-transparency), which means sometimes I can be a bit more verbose than necessary. If you find that my answers are a bit too long than what you're looking for, please let me know and I'll happily use your feedback to improve in the future.
 - I prefer Slack as my primary asynchronous communication tool.
 
 ### Feedback
