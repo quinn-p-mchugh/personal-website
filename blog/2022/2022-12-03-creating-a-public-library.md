@@ -1,4 +1,6 @@
 ---
+created: 2023-07-01T11:53:11-04:00
+modified: 2023-07-01T12:11:41-04:00
 title: "Creating an online library for curating and sharing resources with others in your life"
 #slug: creating-a-public-library
 #description: ""
@@ -8,8 +10,6 @@ authors: qmchugh
 #image: ""
 hide_table_of_contents: false
 draft: false
-created: 2023-07-01T11:53:11-04:00
-modified: 2023-07-01T12:01:12-04:00
 publish: true
 publish-path: blog/2022
 publish-filename: 

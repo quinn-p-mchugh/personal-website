@@ -1,6 +1,15 @@
 ---
 created: 2023-05-02T11:30:38-04:00
-modified: 2023-06-30T19:45:04-04:00
+modified: 2023-07-01T12:11:19-04:00
+title: "My Tech Stack"
+#sidebar_label: "" 
+#slug: 
+#description: ""
+#keywords: []
+tags: []
+#image: ""
+sidebar_position: 2
+draft: true
 publish: true
 publish-path: "docs"
 publish-filename: "current-goals"
