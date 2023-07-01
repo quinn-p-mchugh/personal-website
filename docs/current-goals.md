@@ -1,7 +1,7 @@
 ---
 created: 2023-05-02T11:30:38-04:00
-modified: 2023-07-01T12:40:49-04:00
-title: "My Tech Stack"
+modified: 2023-07-01T12:53:51-04:00
+title: "Current Goals"
 #sidebar_label: "" 
 #slug: 
 #description: ""
@@ -26,17 +26,17 @@ Inspired by Joel Runyon: [http://impossiblehq.com/impossible-list/](http://impos
 Note: This is an ever-evolving list, so certain goals that may have been listed in the past may no longer be present. These goals were either no longer achievable or were simply removed due to a shift in priorities
 
 # Last 5 Completed Goals
-- [x] Acquire a full-time engineering position (January 2<sup>nd</sup>, 2020)
-- [x] Bicycle tour across America (August 20<sup>th</sup>, 2019)
-- [x] Visit Glacier National Park (August 1<sup>st</sup>, 2019)
-- [x] Graduate college (May 16<sup>th</sup>, 2019)
-- [x] Come out of college with zero debt (May 16<sup>th</sup>, 2019)
+- [x] Acquire a full-time engineering position ✅ 2020-01-20
+- [x] Bicycle tour across America ✅ 2019-08-20
+- [x] Visit Glacier National Park ✅ 2019-08-01
+- [x] Graduate college ✅ 2019-05-16
+- [x] Come out of college with zero debt ✅ 2019-05-16
 
 # Fitness/Health Goals
 - Bike…
-	- [x] 25 miles in a day ([https://ridewithgps.com/trips/3235919](https://ridewithgps.com/trips/3235919) – August 2014)
-	- [x] 50 miles in a day ([https://ridewithgps.com/trips/9036792](https://ridewithgps.com/trips/9036792) – May 19<sup>th</sup>, 2016)
-	- [x] 100 miles in a day ([https://ridewithgps.com/trips/9664730](https://ridewithgps.com/trips/9664730) – June 26<sup>th</sup>, 2016)
+	- [x] 25 miles in a day ✅ 2014-01-01 - https://reactjs.org/docs/error-decoder.html?invariant=62
+	- [x] 50 miles in a day ([https://ridewithgps.com/trips/9036792](https://ridewithgps.com/trips/9036792) – ✅ 2016-05-19 
+	- [x] 100 miles in a day ✅ 2016-06-26 - [https://ridewithgps.com/trips/9664730](https://ridewithgps.com/trips/9664730)
 	- 125 miles in a day
 - Run a 5K
 	- Run a 10K
@@ -44,16 +44,16 @@ Note: This is an ever-evolving list, so certain goals that may have been listed 
 - Maintain a good diet e.g. “[Eat food. Not to much. Mostly plants.](https://michaelpollan.com/reviews/how-to-eat/)”
 
 # Professional/Educational Goals
-- [x] Graduate college (May 16<sup>th</sup>, 2019)
+- [x] Graduate college ✅ 2019-05-16
 	- [x] Land a summer internship (Ridgewood Water – January 9<sup>th</sup>, 2017)
-	- [x] Achieve a minor computer science (May 16<sup>th</sup>, 2019)
-	- [x] Graduate with a concentration in honors (May 16<sup>th</sup>, 2019)
+	- [x] Achieve a minor computer science ✅ 2019-05-16
+	- [x] Graduate with a concentration in honors ✅ 2019-05-16
 	- [x] Hold an E-board position in a club that I care about (Senator for the United States States Green Building Council – Rowan University Chapter – Spring 2016)
 	- [x] Be on the IEEE E-board (Elected Public Relations Chair – December 9<sup>th</sup>, 2016)
 	- [x] Found the Rowan Cycling Club (January 2018)
 			- [x] Acquire at least 25 members ([https://i.imgur.com/tmR5uo3.jpg](https://i.imgur.com/tmR5uo3.jpg%20--%20September%202018) – September 2018)
 		- [x] Become a Resident Assistant (March 2<sup>nd</sup>, 2016)
-				- [x] Become an Assistant Resident Director (March 16<sup>th</sup>, 2018)
+				- [x] Become an Assistant Resident Director ✅ 2018-03-16
 		- [x] Maintain a GPA of at least 3.5 (GPA: 3.89 – May 16<sup>th</sup>, 2019)
 - Mechanical Engineering
 		- Become a Certified SolidWorks…
@@ -69,7 +69,7 @@ Note: This is an ever-evolving list, so certain goals that may have been listed 
 - [x] Work at a bike shop (Ridgewood Cycles – Summer 2018)
 
 # Financial Goals
-- [x] Come out of college with zero debt (May 16<sup>th</sup>, 2019)
+- [x] Come out of college with zero debt ✅ 2019-05-16
 - [x] Go into college with at least $15,000 in the bank (February 2015)
 - Buy an electric car
 - Be financially independent
@@ -85,7 +85,7 @@ Note: This is an ever-evolving list, so certain goals that may have been listed 
 
 # Creative Goals
 - [x] Publish a poster on RedBubble (July 2015)
-	- Publish two more posters on RedBubble (August 12<sup>th</sup>, 2016)
+	- Publish two more posters on RedBubble ✅ 2016-08-12
 
 
 		Make at least ten sales on RedBubble (September 18<sup>th</sup>, 2018 – *Only took 2 years, but hey, I made 24 bucks!*)
@@ -103,8 +103,8 @@ Note: This is an ever-evolving list, so certain goals that may have been listed 
 				- [x] Java (Spring 2017)
 - [x] Learn the basics of Adobe Illustrator (October 2016)
 - Learn to breakdance
-- [x] Learn how to knit (September 13<sup>th</sup>, 2016)
-		- [x] Knit a scarf (December 25<sup>th</sup>, 2016)
+- [x] Learn how to knit ✅ 2016-09-13
+		- [x] Knit a scarf ✅ 2016-December-25
 - [x] Learn how to rock climb/belay (Rowan Rock Climbing Club – September 26<sup>th</sup>, 2017)
 - Snowboarding & Skiing
 		- Snowboarding
@@ -225,7 +225,7 @@ Note: This is an ever-evolving list, so certain goals that may have been listed 
 
 
 
-- [x] Complete the entire Halo trilogy (December 28<sup>th</sup>, 2015)
+- [x] Complete the entire Halo trilogy ✅ 2015-December-28
 
 
 # Travel Goals
