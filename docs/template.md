@@ -1,11 +1,11 @@
 ---
-title: My Tech Stack
-#sidebar_label: 
+title: "My Tech Stack"
+#sidebar_label: "" 
 #slug: 
-#description: 
+#description: ""
 #keywords: []
 tags: []
-#image: 
+#image: ""
 sidebar_position: 2
 draft: true
 ---
