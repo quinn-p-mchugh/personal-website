@@ -1,11 +1,11 @@
 ---
 title: ""
 #slug: 
-#description: 
+#description: ""
 #keywords: []
 tags: []
 authors: qmchugh
-#image: 
+#image: ""
 hide_table_of_contents: false
 draft: true
 ---
