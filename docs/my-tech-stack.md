@@ -1,5 +1,5 @@
 ---
-title: My Tech Stack
+title: "My Tech Stack"
 #sidebar_label: 
 slug: my-tech-stack
 #description: 
