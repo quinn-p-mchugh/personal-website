@@ -1,6 +1,6 @@
 ---
 created: 2023-07-01T11:53:11-04:00
-modified: 2023-07-01T12:11:41-04:00
+modified: 2023-07-01T13:04:15-04:00
 title: "Creating an online library for curating and sharing resources with others in your life"
 #slug: creating-a-public-library
 #description: ""
@@ -14,7 +14,9 @@ publish: true
 publish-path: blog/2022
 publish-filename: 
 ---
-
+<!--
+Test
+-->
 [current-goals](../../docs/current-goals.md#)
 
 # Objective
