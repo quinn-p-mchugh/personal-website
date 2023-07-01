@@ -1,9 +1,13 @@
 ---
-title: Creating an online library for curating and sharing resources with others in your life
-slug: creating-a-public-library
-authors: qmchugh
+title: "Creating an online library for curating and sharing resources with others in your life"
+#slug: creating-a-public-library
+#description: ""
+#keywords: []
 tags: [Personal Knowledge Management, Knowledge Sharing, Learn in Public]
-enableComments: true
+authors: qmchugh
+#image: ""
+hide_table_of_contents: false
+draft: false
 ---
 
 ## Objective
