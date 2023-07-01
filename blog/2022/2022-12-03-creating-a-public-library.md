@@ -9,11 +9,13 @@ authors: qmchugh
 hide_table_of_contents: false
 draft: false
 created: 2023-07-01T11:53:11-04:00
-modified: 2023-07-01T11:58:34-04:00
+modified: 2023-07-01T12:01:12-04:00
 publish: true
 publish-path: blog/2022
 publish-filename: 
 ---
+
+[current-goals](../../docs/current-goals.md#)
 
 # Objective
 This post provides some basic instructions for creating a [public Zotero library](./library) for sharing resources with friends, colleagues, and groups you're apart of.
