@@ -1,6 +1,6 @@
 ---
 created: 2023-07-01T11:53:11-04:00
-modified: 2023-07-01T14:38:31-04:00
+modified: 2023-07-03T20:33:09-04:00
 title: "Creating an online library for curating and sharing resources with others in your life"
 slug: creating-a-public-library
 #description: ""
@@ -14,7 +14,7 @@ publish: true
 publish-path: blog/2022
 publish-filename: 
 ---
-
+[current-goals](../../docs/current-goals.md#)
 # Objective
 This post provides some basic instructions for creating a [public Zotero library](./library) for sharing resources with friends, colleagues, and groups you're apart of.
 
