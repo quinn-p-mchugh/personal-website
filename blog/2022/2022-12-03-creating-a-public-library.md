@@ -1,6 +1,6 @@
 ---
 created: 2023-07-01T11:53:11-04:00
-modified: 2023-07-01T14:38:31-04:00
+modified: 2023-07-03T20:33:09-04:00
 title: "Creating an online library for curating and sharing resources with others in your life"
 slug: creating-a-public-library
 #description: ""
