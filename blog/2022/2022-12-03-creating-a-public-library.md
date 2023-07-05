@@ -14,7 +14,7 @@ publish: true
 publish-path: blog/2022
 publish-filename: 
 ---
-[current-goals](../../docs/current-goals//#)
+[current-goals](../../docs/current-goals.md#)
 # Objective
 This post provides some basic instructions for creating a [public Zotero library](./library) for sharing resources with friends, colleagues, and groups you're apart of.
 
