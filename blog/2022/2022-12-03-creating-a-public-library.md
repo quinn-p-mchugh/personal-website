@@ -1,11 +1,9 @@
 ---
-created: 2023-07-01T11:53:11-04:00
-modified: 2023-07-03T20:33:09-04:00
 title: "Creating an online library for curating and sharing resources with others in your life"
 slug: creating-a-public-library
 #description: ""
 #keywords: []
-tags: [Personal Knowledge Management, Knowledge Sharing, Learn in Public]
+tags: ["Personal Knowledge Management", "Knowledge Sharing", "Learn in Public"]
 authors: qmchugh
 #image: ""
 hide_table_of_contents: false
@@ -13,6 +11,8 @@ draft: false
 publish: true
 publish-path: blog/2022
 publish-filename: 
+created: 2023-07-01T11:53:11-04:00
+modified: 2023-07-06T16:26:57-04:00
 ---
 
 # Objective
