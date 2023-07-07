@@ -8,6 +8,11 @@ authors: qmchugh
 #image: 
 hide_table_of_contents: true
 draft: false
+publish: true
+publish-path: blog-micro/2023
+publish-filename: 
+created: 2023-07-01T11:53:11-04:00
+modified: 2023-07-06T16:28:43-04:00
 ---
 
 I recently came across [this great introductory talk](https://youtu.be/xoVJKj8lcNQ) from the Center for Humane Technology, discussing the less catastrophic, but still significant risks of generative large language models (LLMs). This might be a valuable resource to share with those unfamiliar with the staggering pace of AI capabilities research.

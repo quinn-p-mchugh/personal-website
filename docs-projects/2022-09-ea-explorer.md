@@ -1,7 +1,18 @@
 ---
-id: ea-explorer
-title: EA Explorer
+title: "EA Explorer"
+#sidebar_label: "" 
+slug: ea-explorer 
+#description: ""
+#keywords: []
 tags: []
+#image: ""
+sidebar_position: 2
+draft: false
+publish: true
+publish-path: docs-projects
+publish-filename: 
+created: 2023-07-01T11:53:11-04:00
+modified: 2023-07-06T21:54:53-04:00
 ---
 
 **EA Explorer is a network visualization of the [Effective Altruism (EA) Forum](https://forum.effectivealtruism.org/), using post and tag data queried using the [EA Forum's GraphQL framework](https://www.lesswrong.com/posts/LJiGhpq8w4Badr5KJ/graphql-tutorial-for-lesswrong-and-effective-altruism-forum)**.
@@ -14,4 +25,4 @@ In the graph below, each node represents either a tag (from [here](https://forum
 
 **GitHub Repository: https://github.com/quinn-p-mchugh/ea-explorer**
 
-![EA Explorer screenshot](./assets/2022-12-11-ea-explorer-screenshot.png)
+![EA Explorer screenshot](../docs/2022-12-11-ea-explorer-screenshot.png)

@@ -1,6 +1,4 @@
 ---
-created: 2023-05-02T11:30:38-04:00
-modified: 2023-07-06T09:33:42-04:00
 title: "Current Goals"
 #sidebar_label: "" 
 #slug: 
@@ -11,8 +9,10 @@ tags: []
 sidebar_position: 2
 draft: false
 publish: true
-publish-path: "docs"
-publish-filename: "current-goals"
+publish-path: docs
+publish-filename: current-goals
+created: 2023-05-02T11:30:38-04:00
+modified: 2023-07-06T16:29:52-04:00
 ---
 
 *Write in the **present tense**, as if you have already achieved said goal.*
@@ -201,7 +201,7 @@ Note: This is an ever-evolving list, so certain goals that may have been listed 
 	- [ ] Places on my Bucket List - [Quinn's Travels - Google My Maps](https://www.google.com/maps/d/u/0/edit?mid=1f8yl-f64iHLaWGpgEwBasJlDJ28&ll=38.04194468276051%2C-107.0244766131301&z=3)
 
 # Life Goals
-*See [Quinn's Life Plan](Quinn's%20Life%20Plan#) document for more specific goals. Not available to everyone. Sorry.* ☹
+*See [Quinn's Life Plan](../Quinn's%20Life%20Plan#) document for more specific goals. Not available to everyone. Sorry.* ☹
 <!-- Comment -->
 - [ ] Watch all commencement speeches on [The Best Commencement Speeches, Ever : NPR](https://apps.npr.org/commencement/)
 - [ ] Move out of New Jersey
