@@ -12,10 +12,10 @@ publish: true
 publish-path: docs
 publish-filename: 
 created: 2023-07-01T11:53:11-04:00
-modified: 2023-07-06T21:54:36-04:00
+modified: 2023-07-06T22:08:17-04:00
 ---
 
-Inspired by: [this post](https://www.sambowman.co/p/things-i-recommend-you-buy-2020-sam-bowman)
+*This page was inspired by [this post](https://www.sambowman.co/p/things-i-recommend-you-buy-2020-sam-bowman) from Sam Bowman.*
 
 This is a living document where I highlight some less obvious things I love using or that significantly improve my quality of life. I hope you find some useful recommendations here!
 
