@@ -1,6 +1,6 @@
 ---
 title: "Welcome!"
-#sidebar_label: 
+#sidebar_label: ""
 slug: welcome
 #description: 
 #keywords: []
