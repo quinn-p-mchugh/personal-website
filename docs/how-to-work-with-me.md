@@ -12,10 +12,10 @@ publish: true
 publish-path: docs
 publish-filename: 
 created: 2023-05-02T11:30:38-04:00
-modified: 2023-07-06T16:31:05-04:00
+modified: 2023-07-06T22:06:23-04:00
 ---
 
-*This document was inspired by a Medium post called [Why you should write a "how to work with me" user manual](https://medium.com/swlh/user-manual-to-me-92c8ce68f960) by Mark Saric. The inspiration for ***that*** piece is [here](https://growth.eladgil.com/book/the-role-of-the-ceo/insights-working-with-claire/).*
+*This document was inspired by a Medium post called [Why you should write a "how to work with me" user manual](https://medium.com/swlh/user-manual-to-me-92c8ce68f960) by Mark Saric. The inspiration for **that* piece is [here](https://growth.eladgil.com/book/the-role-of-the-ceo/insights-working-with-claire/).*
 
 **This document is a work in progress.**
 
