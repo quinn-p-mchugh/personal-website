@@ -32,23 +32,23 @@ YearSpread features one-way syncing (spreadsheet → calendar) with a Google Cal
 :::
 
 ### Part 2 of 2: Setup Periodic Syncing
-_Now that the calendar ID is added, we will setup a [time-driven trigger](https://developers.google.com/apps-script/guides/triggers/installable#time-driven_triggers) to sync spreadsheet entries with our Google Calendar each hour.
+Now that the calendar ID is added, we will setup a [time-driven trigger](https://developers.google.com/apps-script/guides/triggers/installable#time-driven_triggers) to sync spreadsheet entries with our Google Calendar each hour:
 
 1. On the top menu bar, click **Extensions > Apps Script**. You should be directed to the Google Apps Script interface.
 2. Hover over the left sidebar and click **Triggers** (clock icon).
 3. On the bottom right, press the **Add Trigger** button.
 4. Specify the following settings:
-  - Set **Choose which function to run** to **syncEventsWithGoogleCalendar**.
-  - Set **Select event source** to **Time-driven**.
-  - Set **Select type of time based trigger** to **Hour timer**.
-  - Set **Select hour interval** to **Every hour** (or whichever selection you prefer).
+  - Set **Choose which function to run** to `syncEventsWithGoogleCalendar`.
+  - Set **Select event source** to `Time-driven`.
+  - Set **Select type of time based trigger** to `Hour timer`.
+  - Set **Select hour interval** to `Every hour` (or whichever selection you prefer).
 6. Click **Save**. An authorization window should appear.
 7. In the authorization window, select your Google account.
 
 :::info
-After selecting your Google Account, you should receive a warning that "Google hasn't verified this app". This is a standard warning indicating that the script you're authorizing requires sensitive info from your Google Account (in this case, authorization to write to your calendar). Each time the trigger fires, it will run this script.
+After selecting your Google Account, you should receive a warning that "Google hasn't verified this app". This is a standard warning indicating that the script you're authorizing requires sensitive info from your Google Account (in this case, authorization to write to your calendar). While this warning should give you pause, there is no need to be alarmed here. The script is meant to simply create a calendar event for each entry in the calendar spreadsheet. There is no malicious code being run.
 
-If you are hesitant to proceed, you are welcome to press **Back to Safety**, go to the **Editor** tab and inspect the script yourself. This code is local to your account and cannot be edited by external parties, so feel free to modify as you please.
+If you are hesitant to proceed, you are welcome to press **Back to Safety**, go to the **Editor** tab and inspect the script yourself. This code is local to your account and can only be edited by you, so feel free to modify as you please.
 :::
 
 8. In the authorization window, click **Advanced**.
