@@ -15,11 +15,11 @@ created: 2023-07-01T11:53:11-04:00
 modified: 2023-07-06T21:54:53-04:00
 ---
 
-**YearSpread** is a handy yearly calendar template to help you plan out your year(s) in a digital format. I've found this calendar to be extremely useful for blocking out time for all-day events, weekend trips, vacations, etc. and keeping track of annual events like festivals or conferences. I hope you also find it useful!
+**YearSpread** is a yearly calendar template to help you plan out your year(s) in a digital format. I've found this calendar to be extremely useful for blocking out time for all-day events, weekend trips, vacations, etc. and keeping track of annual events like festivals or conferences. I hope you also find it useful!
 
 ## 👉 [Get the spreadsheet](https://docs.google.com/spreadsheets/d/1UezLLrUs2CTYpgBbuxlh0Mds6k-ykcy1hNU9sLdnbeQ/edit?usp=sharing)
 
-## Sync the spreadsheet with a Google Calendar
+## Sync your spreadsheet with a Google Calendar
 YearSpread features one-way syncing (spreadsheet → calendar) with a Google Calendar of your choice. To enable this, follow the steps below:
 
 ### Part 1 of 2: Add Your Calendar ID
@@ -56,3 +56,13 @@ If you are hesitant to proceed, you are welcome to press **Back to Safety**, go 
 10. Review the information. If you are ready to proceed, click **Allow**.
 
 🎉 **Woo hoo! Any events you add to your year calendar will now be automatically synced to the calendar specified.**
+
+### Testing
+- To verify that sync is working, navigate to the `2024` sheet and enter an event title into any of the cells.
+
+### Adding Multiple Events To One Date
+- To add multiple events for a single date, enter the title of each event separated by a "|". There is no limit to how many events you can add per cell.
+  - For example: Let's say you wanted to add two events, "My First Event" and "My Second Event" on January 1st, 2024.
+    - Navigate to the `2024` sheet and edit the cell next to January 1st.
+    - Enter "**My First Event | My Second Event**".
+    - During the next sync, the script create two separate calendar events for **My First Event** and **My Second Event**.
