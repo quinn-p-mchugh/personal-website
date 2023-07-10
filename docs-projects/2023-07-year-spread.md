@@ -38,10 +38,10 @@ Now that the calendar ID is added, we will setup a [time-driven trigger](https:/
 2. Hover over the left sidebar and click **Triggers** (clock icon).
 3. On the bottom right, press the **Add Trigger** button.
 4. Specify the following settings:
-  - Set **Choose which function to run** to `syncEventsWithGoogleCalendar`.
-  - Set **Select event source** to `Time-driven`.
-  - Set **Select type of time based trigger** to `Hour timer`.
-  - Set **Select hour interval** to `Every hour` (or whichever selection you prefer).
+    - Set **Choose which function to run** to `syncEventsWithGoogleCalendar`.
+    - Set **Select event source** to `Time-driven`.
+    - Set **Select type of time based trigger** to `Hour timer`.
+    - Set **Select hour interval** to `Every hour` (or whichever selection you prefer).
 6. Click **Save**. An authorization window should appear.
 7. In the authorization window, select your Google account.
 
