@@ -201,7 +201,7 @@ Note: This is an ever-evolving list, so certain goals that may have been listed 
 	- [ ] Places on my Bucket List - [Quinn's Travels - Google My Maps](https://www.google.com/maps/d/u/0/edit?mid=1f8yl-f64iHLaWGpgEwBasJlDJ28&ll=38.04194468276051%2C-107.0244766131301&z=3)
 
 # Life Goals
-*See [Quinn's Life Plan](Quinn's%20Life%20Plan.md#) document for more specific goals. Not available to everyone. Sorry.* ☹
+*See [Quinn's Life Plan] document for more specific goals. Not available to everyone. Sorry.* ☹
 <!-- Comment -->
 - [ ] Watch all commencement speeches on [The Best Commencement Speeches, Ever : NPR](https://apps.npr.org/commencement/)
 - [ ] Move out of New Jersey
