@@ -22,7 +22,7 @@ This is a living document where I highlight some less obvious things I love usin
 Please note that none of the links provided here are sponsored - this list is based on my own, (un)biased experience.
 
 # Productivity
-1. **A computer mouse with at [least 2 side buttons](./computer-mouse-with-two-side-buttons.png)**
+1. **A computer mouse with at [least 2 side buttons](./assets/computer-mouse-with-two-side-buttons.png)**
 	 - Allows you to easily navigate between previously visited browser pages (and other applications!) with your thumb.
 		 - e.g. 
 			 - 1st side button -> Go forward a page
