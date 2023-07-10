@@ -19,7 +19,7 @@ modified: 2023-07-06T21:54:53-04:00
 
 ## 👉 [Get the spreadsheet](https://docs.google.com/spreadsheets/d/1UezLLrUs2CTYpgBbuxlh0Mds6k-ykcy1hNU9sLdnbeQ/edit?usp=sharing)
 
-## Setting up syncing
+## Sync the spreadsheet with a Google Calendar
 YearSpread features one-way syncing (spreadsheet → calendar) with a Google Calendar of your choice. To enable this, follow the steps below:
 
 ### Part 1 of 2: Add Your Calendar ID
