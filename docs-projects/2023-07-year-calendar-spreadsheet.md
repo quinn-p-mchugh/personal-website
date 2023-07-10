@@ -25,7 +25,7 @@ YearSpread features one-way syncing (spreadsheet → calendar) with a Google Cal
 ### Part 1 of 2: Specify your calendar ID
 1. If you have not already done so, [make a copy of the spreadsheet](https://support.google.com/docs/answer/49114?hl=en&co=GENIE.Platform%3DDesktop#zippy=%2Cmake-a-copy-of-a-file).
 2. Navigate to the `⚙️CONFIG` sheet.
-3. In cell B3 (white box), enter the ID of the calendar you wish to sync spreadsheet entries with. [Find your calendar ID using these instructions](https://it.umn.edu/services-technologies/how-tos/google-calendar-find-your-google#:~:text=Finding%20Your%20Google%20Calendar%20ID&text=Click%20on%20the%20three%20vertical,will%20find%20your%20Calendar%20ID.).
+3. In cell B3 (white box), enter the ID of the Google Calendar you wish to sync spreadsheet entries with. [Find your Google Calendar ID using these instructions](https://it.umn.edu/services-technologies/how-tos/google-calendar-find-your-google#:~:text=Finding%20Your%20Google%20Calendar%20ID&text=Click%20on%20the%20three%20vertical,will%20find%20your%20Calendar%20ID.). It should look something like `<list of letters and numbers>@group.calendar.google.com`.
 
 :::danger
 **All events in the calendar you specify will be DELETED prior to syncing.** It is strongly recommended you create a new calendar to use exclusively with this spreadsheet.
