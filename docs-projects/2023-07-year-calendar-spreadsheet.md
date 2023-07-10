@@ -17,7 +17,7 @@ modified: 2023-07-06T21:54:53-04:00
 
 **YearSpread** is a handy yearly calendar template to help you plan out your year(s) in a digital format. I've found this calendar to be extremely useful for blocking out time for all-day events, weekend trips, vacations, etc. and keeping track of annual events like festivals or conferences. I hope you also find it useful!
 
-## [Get the spreadsheet](https://docs.google.com/spreadsheets/d/1UezLLrUs2CTYpgBbuxlh0Mds6k-ykcy1hNU9sLdnbeQ/edit?usp=sharing)
+## 👉 [Get the spreadsheet](https://docs.google.com/spreadsheets/d/1UezLLrUs2CTYpgBbuxlh0Mds6k-ykcy1hNU9sLdnbeQ/edit?usp=sharing)
 
 ## Setting up syncing
 YearSpread features one-way syncing (spreadsheet → calendar) with a Google Calendar of your choice. To enable this, follow the steps below:
