@@ -59,6 +59,7 @@ If you are hesitant to proceed, you are welcome to press **Back to Safety**, go 
 
 ### Testing
 - To verify that sync is working, navigate to the `2024` sheet and enter an event title into any of the cells.
+- After an hour passes, search for the event title in your Google Calendar - it should come up. 
 
 ### Adding Multiple Events To One Date
 - To add multiple events for a single date, enter the title of each event separated by a "|". There is no limit to how many events you can add per cell.
@@ -66,3 +67,7 @@ If you are hesitant to proceed, you are welcome to press **Back to Safety**, go 
     - Navigate to the `2024` sheet and edit the cell next to January 1st.
     - Enter "**My First Event | My Second Event**".
     - During the next sync, the script create two separate calendar events for **My First Event** and **My Second Event**.
+   
+## Issues
+If you encounter any issues with this spreadsheet or would like to submit a feature request for review, please **[submit an issue](https://github.com/quinn-p-mchugh/year-calendar/issues/new/choose)** in the associated GitHub repository. A GitHub account is required to submit issues. [If you do not have a GitHub account, you can create one here.](https://github.com/join)
+
