@@ -15,8 +15,6 @@ created: 2023-05-02T11:30:38-04:00
 modified: 2023-07-06T16:29:52-04:00
 ---
 
-[2022-12-03-creating-a-public-library](../blog/2022/2022-12-03-creating-a-public-library#)
-
 *Write in the **present tense**, as if you have already achieved said goal.*
 - I am `<type of person>`
 - I have done `<thing>`
