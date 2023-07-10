@@ -25,4 +25,4 @@ In the graph below, each node represents either a tag (from [here](https://forum
 
 **GitHub Repository: https://github.com/quinn-p-mchugh/ea-explorer**
 
-![EA Explorer screenshot](./assets/2022-12-11-ea-explorer-screenshot.png)
+![EA Explorer screenshot](../docs/2022-12-11-ea-explorer-screenshot.png)
