@@ -1,5 +1,5 @@
 ---
-title: "YearSpread: A handy calendar spreadsheet to visualize and sync annual events, trips, and more to a specified Google Calendar."
+title: "YearSpread: Visualize your year in a spreadsheet."
 sidebar_label: "YearSpread" 
 slug: year-spread 
 description: "A handy calendar spreadsheet to visualize and sync annual events, trips, and more to a specified Google Calendar."
