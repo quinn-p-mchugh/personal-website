@@ -24,8 +24,8 @@ YearSpread features one-way syncing (spreadsheet → calendar) with a Google Cal
 
 ### Part 1 of 2: Add Your Calendar ID
 1. If you have not already done so, [make a copy of the spreadsheet](https://docs.google.com/spreadsheets/d/1UezLLrUs2CTYpgBbuxlh0Mds6k-ykcy1hNU9sLdnbeQ/copy).
-2. Navigate to the `⚙️CONFIG` sheet.
-3. In cell B3 (white box), enter the ID of the Google Calendar you wish to sync spreadsheet entries with. [Find your Google Calendar ID using these instructions](https://it.umn.edu/services-technologies/how-tos/google-calendar-find-your-google#:~:text=Finding%20Your%20Google%20Calendar%20ID&text=Click%20on%20the%20three%20vertical,will%20find%20your%20Calendar%20ID.). It should look something like `<list of letters and numbers>@group.calendar.google.com`.
+2. In your spreadsheet, navigate to the `⚙️CONFIG` sheet.
+1. In cell B3 (white box), enter the ID of the Google Calendar you wish to sync spreadsheet entries with. [Find your Google Calendar ID using these instructions](https://it.umn.edu/services-technologies/how-tos/google-calendar-find-your-google#:~:text=Finding%20Your%20Google%20Calendar%20ID&text=Click%20on%20the%20three%20vertical,will%20find%20your%20Calendar%20ID.). It should look something like `<list of letters and numbers>@group.calendar.google.com`.
 
 :::danger
 **All events in the calendar you specify will be DELETED prior to syncing.** It is strongly recommended you **[create a new calendar](https://support.google.com/calendar/answer/37095)** to use exclusively with this spreadsheet.
@@ -46,14 +46,16 @@ Now that the calendar ID is added, we will setup a [time-driven trigger](https:/
 7. In the authorization window, select your Google account.
 
 :::info
-After selecting your Google Account, you should receive a warning that "Google hasn't verified this app". This is a standard warning indicating that the script you're authorizing requires sensitive info from your Google Account (in this case, authorization to write to your calendar). While this warning should give you pause, there is no need to be alarmed here. The script is meant to simply create a calendar event for each entry in the calendar spreadsheet. There is no malicious code being run.
+After selecting your Google Account, you should receive a warning that "Google hasn't verified this app". This is a standard warning indicating that the script you're authorizing requires sensitive info from your Google Account (in this case, authorization to create events in calendar you specified on the `⚙️CONFIG` sheet). 
+
+While this warning should give you pause, there is no need to be alarmed. ALl the script does is create a calendar event for each entry in the calendar spreadsheet. There is no malicious code being run.
 
 If you are hesitant to proceed, you are welcome to press **Back to Safety**, go to the **Editor** tab and inspect the script yourself. This code is local to your account and can only be edited by you, so feel free to modify as you please.
 :::
 
-8. In the authorization window, click **Advanced**.
-9. Click **Go to sync-spreadsheet-events-with-google-calendar (unsafe)**.
-10. Review the information. If you are ready to proceed, click **Allow**.
+1. In the authorization window, click **Advanced**.
+2. Click **Go to sync-spreadsheet-events-with-google-calendar (unsafe)**.
+3.  Review the information. If you are ready to proceed, click **Allow**.
 
 🎉 **Woo hoo! Any events you add to your year calendar will now be automatically synced to the calendar specified.**
 
