@@ -1,4 +1,5 @@
 ---
+dg-publish: false
 title: "Welcome!"
 #sidebar_label: ""
 slug: welcome
@@ -7,7 +8,7 @@ slug: welcome
 tags: []
 #image: 
 sidebar_position: 1
-draft: false
+draft: true
 publish: true
 publish-path: docs
 publish-filename: 
