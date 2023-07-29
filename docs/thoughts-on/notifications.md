@@ -1,4 +1,5 @@
 ---
+dg-publish: false
 title: "Notifications"
 #sidebar_label: "" 
 slug: notifications
@@ -7,12 +8,12 @@ slug: notifications
 tags: []
 #image: ""
 sidebar_position: 2
-draft: true
+draft: false
 publish: true
 publish-path: docs/thoughts-on
 publish-filename: 
 created: 2023-07-01T11:53:11-04:00
-modified: 2023-07-06T16:28:00-04:00
+modified: 2023-07-18T18:49:26-04:00
 ---
 
 # Through your phone
