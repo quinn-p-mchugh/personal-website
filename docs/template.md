@@ -1,4 +1,5 @@
 ---
+dg-publish: false
 title: "My Tech Stack"
 #sidebar_label: "" 
 #slug: 
