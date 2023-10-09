@@ -146,11 +146,11 @@ const config = {
             label: "Resume",
             to: "/resume",
           },
-          /*{
+          {
             label: "Docs",
             to: "/docs/welcome",
             position: "left",
-          },*/
+          },
           {
             label: "Projects",
             to: `/projects/${docsConfig.projects.linkId}`,

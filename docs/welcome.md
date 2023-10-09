@@ -8,7 +8,7 @@ slug: welcome
 tags: []
 #image: 
 sidebar_position: 1
-draft: true
+draft: false
 publish: true
 publish-path: docs
 publish-filename: 
