@@ -1,8 +1,9 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-const lightCodeTheme = require("prism-react-renderer/themes/github");
-const darkCodeTheme = require("prism-react-renderer/themes/dracula");
+const {themes} = require('prism-react-renderer');
+const lightCodeTheme = themes.github;
+const darkCodeTheme = themes.dracula;
 
 const blogConfig = {
   blog: {
@@ -90,6 +91,7 @@ const config = {
           description: blogConfig.microBlog.description,
           type: blogConfig.feedType,
           copyright: blogConfig.copyright,
+          limit: 100,
         },
       },
     ],
@@ -116,6 +118,7 @@ const config = {
             description: blogConfig.blog.description,
             type: blogConfig.feedType,
             copyright: blogConfig.copyright,
+            limit: 100,
           },
         },
         theme: {
@@ -272,6 +275,7 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
+        additionalLanguages: ["markup", "bash", "css", "css-extras", "javascript", "jsx", "js-extras", "js-templates", "diff", "git", "graphql", "markup-templating", "json", "makefile", "markdown", "python", "sql", "tsx", "typescript", "yaml"]
       },
       colorMode: {
         defaultMode: "light",
