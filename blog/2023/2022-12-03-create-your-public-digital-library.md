@@ -1,6 +1,6 @@
 ---
-title: "Creating an online library for curating and sharing resources with others in your life"
-slug: creating-a-public-library
+title: "Creating a public digital library for curating and sharing resources with others in your life"
+slug: create-your-public-digital-library
 #description: ""
 #keywords: []
 tags: ["Personal Knowledge Management", "Knowledge Sharing", "Learn in Public"]
