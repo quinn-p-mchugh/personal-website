@@ -29,7 +29,7 @@ modified: 2023-07-06T22:06:23-04:00
 
 ## Feedback
 
-- In large group (<5 person) settings, I am sometimes hesitant to share my perspective. This largely depends on the group I am with and the level of [psychological safety](https://en.wikipedia.org/wiki/Psychological_safety) I feel in the environment.
+- In large group (\<5 person) settings, I am sometimes hesitant to share my perspective. This largely depends on the group I am with and the level of [psychological safety](https://en.wikipedia.org/wiki/Psychological_safety) I feel in the environment.
 - If you notice I'm note participating in a discussion as much as you'd like, feel free to ask for my feedback directly. It may be the case that I'm working on something else or am hesitant to share for the reasons indicated above.
 
 # When I'm your manager
