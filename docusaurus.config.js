@@ -1,9 +1,56 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
+//import remarkRehype from 'remark-rehype';
+//import remarkRetext from 'remark-retext';
+import remarkLint from 'remark-lint';
+import remarkGfm from 'remark-gfm';
+import remarkMdx from 'remark-mdx';
+//import remarkGithub from 'remark-github';
+import remarkMath from 'remark-math';
+//import remarkFrontmatter from 'remark-frontmatter';
+import remarkA11yEmoji from '@fec/remark-a11y-emoji';
+//import remarkCodeTitle from 'remark-code-title';
+import remarkCodeSandbox from 'remark-codesandbox';
+import remarkCopyLinkedFiles from 'remark-copy-linked-files';
+import remarkDefinitionList from 'remark-definition-list';
+import remarkFlexibleCodeTitles from 'remark-flexible-code-titles';
+import remarkWikiLinkPlus from 'remark-wiki-link-plus';
+//import remarkPresetLintRetextEnglish from 'remark-preset-lint-retext-english';
+import remarkValidateLinks from 'remark-validate-links';
+import remarkPrism from 'remark-prism';
+
+//import rehypeRemark from 'rehype-remark'
+//import rehypeRetext from 'rehype-retext';
+
 const {themes} = require('prism-react-renderer');
 const lightCodeTheme = themes.github;
 const darkCodeTheme = themes.dracula;
+
+const plugins = {
+  remarkPlugins: [
+    //[remarkRehype, {}],             // https://github.com/remarkjs/remark-rehype?tab=readme-ov-file#options
+    //[remarkRetext, {}],             // https://github.com/remarkjs/remark-retext?tab=readme-ov-file#options
+    [remarkLint, {}],               // https://github.com/remarkjs/remark-lint
+    //[remarkToc, {}],                // https://github.com/remarkjs/remark-toc?tab=readme-ov-file#fields
+    [remarkGfm, {}],                // https://github.com/remarkjs/remark-gfm?tab=readme-ov-file#options
+    [remarkMdx, {}],                // https://github.com/mdx-js/mdx/tree/main/packages/remark-mdx#options
+    //[remarkGithub, {}],           // https://github.com/remarkjs/remark-github?tab=readme-ov-file#options
+    [remarkMath, {}],               // https://github.com/remarkjs/remark-math
+    //[remarkFrontmatter, {}],        // https://github.com/remarkjs/remark-frontmatter?tab=readme-ov-file#options
+    [remarkA11yEmoji, {}],          // https://github.com/remarkjs/remark-frontmatter?tab=readme-ov-file#options
+    //[remarkCodeTitle, {}],        // https://github.com/remarkjs/remark-frontmatter?tab=readme-ov-file#options
+    [remarkCodeSandbox, {}],        // https://github.com/kevin940726/remark-codesandbox?tab=readme-ov-file#options
+    [remarkCopyLinkedFiles, {}],    // https://github.com/sergioramos/remark-copy-linked-files
+    [remarkDefinitionList, {}],     // https://github.com/wataru-chocola/remark-definition-list
+    [remarkFlexibleCodeTitles, {}], // https://github.com/ipikuka/remark-flexible-code-titles?tab=readme-ov-file#options
+    [remarkWikiLinkPlus, {}],       // https://github.com/datopian/remark-wiki-link-plus?tab=readme-ov-file#configuration-options
+    //[remarkPresetLintRetextEnglish, {}],  // https://github.com/keplersj/remark-preset-lint-retext-english
+    [remarkValidateLinks, {}],      // https://github.com/remarkjs/remark-validate-links?tab=readme-ov-file#options
+    [remarkPrism, {}],              // https://github.com/sergioramos/remark-prism?tab=readme-ov-file
+  ],
+  rehypePlugins: [],
+}
 
 // https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog
 const blogConfig = {
@@ -95,6 +142,8 @@ const config = {
           copyright: blogConfig.copyright,
           limit: blogConfig.feedLimit,
         },
+        remarkPlugins: plugins.remarkPlugins,
+        rehypePlugins: plugins.rehypePlugins,
       },
     ],
   ],
@@ -109,6 +158,8 @@ const config = {
           path: "docs",
           routeBasePath: "docs",
           showLastUpdateTime: true,
+          remarkPlugins: plugins.remarkPlugins,
+          rehypePlugins: plugins.rehypePlugins,
         },
         blog: {
           blogTitle: blogConfig.blog.title,
