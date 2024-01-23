@@ -11,7 +11,7 @@ import remarkMath from 'remark-math';
 //import remarkFrontmatter from 'remark-frontmatter';
 import remarkA11yEmoji from '@fec/remark-a11y-emoji';
 //import remarkCodeTitle from 'remark-code-title';
-//import remarkCodeSandbox from 'remark-codesandbox';
+import remarkCodeSandbox from 'remark-codesandbox';
 import remarkCopyLinkedFiles from 'remark-copy-linked-files';
 import remarkDefinitionList from 'remark-definition-list';
 import remarkFlexibleCodeTitles from 'remark-flexible-code-titles';
@@ -40,13 +40,13 @@ const plugins = {
     //[remarkFrontmatter, {}],        // https://github.com/remarkjs/remark-frontmatter?tab=readme-ov-file#options
     [remarkA11yEmoji, {}],          // https://github.com/remarkjs/remark-frontmatter?tab=readme-ov-file#options
     //[remarkCodeTitle, {}],        // https://github.com/remarkjs/remark-frontmatter?tab=readme-ov-file#options
-    //[remarkCodeSandbox, {}],        // https://github.com/kevin940726/remark-codesandbox?tab=readme-ov-file#options
+    [remarkCodeSandbox, {}],        // https://github.com/kevin940726/remark-codesandbox?tab=readme-ov-file#options
     [remarkCopyLinkedFiles, {}],    // https://github.com/sergioramos/remark-copy-linked-files
     [remarkDefinitionList, {}],     // https://github.com/wataru-chocola/remark-definition-list
     [remarkFlexibleCodeTitles, {}], // https://github.com/ipikuka/remark-flexible-code-titles?tab=readme-ov-file#options
     [remarkWikiLinkPlus, {}],       // https://github.com/datopian/remark-wiki-link-plus?tab=readme-ov-file#configuration-options
     //[remarkPresetLintRetextEnglish, {}],  // https://github.com/keplersj/remark-preset-lint-retext-english
-    [remarkValidateLinks, {}],      // https://github.com/remarkjs/remark-validate-links?tab=readme-ov-file#options
+    [remarkValidateLinks, {repository: "https://github.com/quinn-p-mchugh/personal-website"}],      // https://github.com/remarkjs/remark-validate-links?tab=readme-ov-file#options
     [remarkPrism, {}],              // https://github.com/sergioramos/remark-prism?tab=readme-ov-file
   ],
   rehypePlugins: [],
