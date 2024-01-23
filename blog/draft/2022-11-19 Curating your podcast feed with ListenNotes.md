@@ -30,6 +30,8 @@ There are a number of great tools available for finding podcasts based on certai
 #### Discover similar podcasts using [Rephonic Graph](https://rephonic.com/graph)
 Rephonic is a podcast database that helps agencies and brands to find, qualify and pitch the right podcasts for any topic or niche. Fortunately for us, Rephonic has provided a 3D network graph to allow anyone on the Internet to discover related podcasts. The data for this project is provided from "Listeners Also Subscribed To" data from Apple Podcasts.
 
+Also see: [ListenNotes Podcast Explorer](https://www.listennotes.com/similar-podcasts-explorer/)
+
 ### Technical
 
 #### Find episodes using an [ListenNotes API](https://www.listennotes.com/api/)
