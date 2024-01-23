@@ -5,6 +5,7 @@ const {themes} = require('prism-react-renderer');
 const lightCodeTheme = themes.github;
 const darkCodeTheme = themes.dracula;
 
+// https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog
 const blogConfig = {
   blog: {
     title: "Quinn McHugh's Blog",
@@ -17,6 +18,7 @@ const blogConfig = {
   },
   sidebarCount: 10,
   feedType: "all",
+  feedLimit: 100,
   copyright: `Copyright © 2017-${new Date().getFullYear()} Quinn McHugh`,
 };
 
@@ -91,7 +93,7 @@ const config = {
           description: blogConfig.microBlog.description,
           type: blogConfig.feedType,
           copyright: blogConfig.copyright,
-          limit: 100,
+          limit: blogConfig.feedLimit,
         },
       },
     ],
@@ -118,7 +120,7 @@ const config = {
             description: blogConfig.blog.description,
             type: blogConfig.feedType,
             copyright: blogConfig.copyright,
-            limit: 100,
+            limit: blogConfig.feedLimit,
           },
         },
         theme: {
