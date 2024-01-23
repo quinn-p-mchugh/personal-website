@@ -363,6 +363,16 @@ const config = {
 
         //... other Algolia params
       },
+      zoom: {
+        selector: '.markdown > img',
+        background: {
+          light: 'rgb(255, 255, 255)',
+          dark: 'rgb(50, 50, 50)'
+        },
+        config: {
+          // options you can specify via https://github.com/francoischalifour/medium-zoom?tab=readme-ov-file#options
+        }
+      }
     }),
 };
 
