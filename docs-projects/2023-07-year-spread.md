@@ -1,7 +1,7 @@
 ---
 dg-publish: false
 title: "YearSpread: Visualize your year in a spreadsheet"
-sidebar_label: "YearSpread" 
+sidebar_label: "YearSpread: Visualize your year" 
 slug: year-spread 
 description: "A handy calendar spreadsheet to visualize and sync annual events, trips, and more to a specified Google Calendar."
 keywords: ["google sheets to google calendar", "sync spreadsheet to calendar", "year view google calendar", "yearly planning spreadsheet", "annual planning spreadsheet", "google sheets calendar sync", "spreadsheet integration with calendar", "google calendar synchronization", "yearly view in google calendar", "planning in spreadsheets"]
