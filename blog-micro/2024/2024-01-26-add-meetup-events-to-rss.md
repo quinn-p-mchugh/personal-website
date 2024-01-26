@@ -2,12 +2,12 @@
 title: "Add Meetup.com Events to RSS"
 slug: add-meetup-events-to-rss
 #description: 
-keywords: ["add meetup events to rss", "meetup to rss"]
-tags: []
+#keywords: []
+tags: ["RSS", "Community", "Personal Information Management (PIM)"]
 authors: qmchugh
 #image: 
 hide_table_of_contents: true
-draft: true
+draft: false
 ---
 
 Have you ever wanted to keep track of your [Meetup.com](https://meetup.com/) events using [RSS](https://rss.com/blog/how-do-rss-feeds-work/)? 
