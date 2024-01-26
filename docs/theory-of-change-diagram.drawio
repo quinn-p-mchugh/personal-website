@@ -1,0 +1,36 @@
+<mxfile host="65bd71144e">
+    <diagram id="vV2EcANJtFXgZEdK2iIj" name="Page-1">
+        <mxGraphModel dx="2029" dy="1529" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="63" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontFamily=Tahoma;fontColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;strokeColor=#666666;startArrow=block;startFill=1;endArrow=none;endFill=0;strokeWidth=6;curved=1;" parent="1" source="48" target="60" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="48" value="&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;background-color: initial; font-size: 16px;&quot;&gt;&lt;font face=&quot;Montserrat&quot; color=&quot;#ffffff&quot;&gt;&lt;span&gt;Build bridges between people and information to foster a more equitable, coordinated, and cooperative society&lt;/span&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#007FFF;strokeColor=#CCCCCC;strokeWidth=2;align=center;spacing=15;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="30" y="400" width="250" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="58" value="&lt;div style=&quot;&quot;&gt;&lt;font face=&quot;Montserrat&quot; color=&quot;#ffffff&quot;&gt;&lt;span style=&quot;font-size: 16px;&quot;&gt;&lt;b&gt;Develop and share tools and methodologies that make it easier for people to access, exploit, and disseminate information&lt;/b&gt;&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#007FFF;strokeColor=#CCCCCC;strokeWidth=2;align=center;spacing=15;" parent="1" vertex="1">
+                    <mxGeometry x="455" y="240" width="255" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="64" style="edgeStyle=orthogonalEdgeStyle;curved=1;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#666666;strokeWidth=6;fontFamily=Tahoma;fontColor=#FFFFFF;startArrow=block;startFill=1;endArrow=none;endFill=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="48" target="59" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="360" y="530" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="59" value="&lt;div style=&quot;&quot;&gt;&lt;font face=&quot;Montserrat&quot; color=&quot;#ffffff&quot;&gt;&lt;span style=&quot;font-size: 16px;&quot;&gt;&lt;b&gt;Leverage my skills and experience to directly amplify the impact of&amp;nbsp;&lt;/b&gt;&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;font face=&quot;Montserrat&quot; color=&quot;#ffffff&quot;&gt;&lt;span style=&quot;font-size: 16px;&quot;&gt;&lt;b&gt;projects and people&lt;/b&gt;&lt;/span&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#007FFF;strokeColor=#CCCCCC;strokeWidth=2;align=center;spacing=15;" parent="1" vertex="1">
+                    <mxGeometry x="455" y="400" width="255" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="60" value="&lt;div style=&quot;&quot;&gt;&lt;font face=&quot;Montserrat&quot; color=&quot;#ffffff&quot;&gt;&lt;span style=&quot;font-size: 16px;&quot;&gt;&lt;b&gt;Engage in stewardship of the communities and networks, especially in the area of social impact.&lt;/b&gt;&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#007FFF;strokeColor=#CCCCCC;strokeWidth=2;align=center;spacing=15;" parent="1" vertex="1">
+                    <mxGeometry x="455" y="560" width="255" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="65" style="edgeStyle=orthogonalEdgeStyle;curved=1;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#666666;strokeWidth=6;fontFamily=Tahoma;fontColor=#FFFFFF;startArrow=block;startFill=1;endArrow=none;endFill=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="48" target="58" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="290" y="475" as="sourcePoint"/>
+                        <mxPoint x="450" y="475" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
