@@ -3,27 +3,27 @@
 
 //import remarkRehype from 'remark-rehype';
 //import remarkRetext from 'remark-retext';
-import remarkLint from 'remark-lint';
-import remarkGfm from 'remark-gfm';
-import remarkMdx from 'remark-mdx';
+import remarkLint from "remark-lint";
+import remarkGfm from "remark-gfm";
+import remarkMdx from "remark-mdx";
 //import remarkGithub from 'remark-github';
-import remarkMath from 'remark-math';
+import remarkMath from "remark-math";
 //import remarkFrontmatter from 'remark-frontmatter';
-import remarkA11yEmoji from '@fec/remark-a11y-emoji';
+import remarkA11yEmoji from "@fec/remark-a11y-emoji";
 //import remarkCodeTitle from 'remark-code-title';
-import remarkCodeSandbox from 'remark-codesandbox';
-import remarkCopyLinkedFiles from 'remark-copy-linked-files';
-import remarkDefinitionList from 'remark-definition-list';
-import remarkFlexibleCodeTitles from 'remark-flexible-code-titles';
-import remarkWikiLinkPlus from 'remark-wiki-link-plus';
+import remarkCodeSandbox from "remark-codesandbox";
+import remarkCopyLinkedFiles from "remark-copy-linked-files";
+import remarkDefinitionList from "remark-definition-list";
+import remarkFlexibleCodeTitles from "remark-flexible-code-titles";
+import remarkWikiLinkPlus from "remark-wiki-link-plus";
 //import remarkPresetLintRetextEnglish from 'remark-preset-lint-retext-english';
-import remarkValidateLinks from 'remark-validate-links';
-import remarkPrism from 'remark-prism';
+import remarkValidateLinks from "remark-validate-links";
+import remarkPrism from "remark-prism";
 
 //import rehypeRemark from 'rehype-remark'
 //import rehypeRetext from 'rehype-retext';
 
-const {themes} = require('prism-react-renderer');
+const { themes } = require("prism-react-renderer");
 const lightCodeTheme = themes.github;
 const darkCodeTheme = themes.dracula;
 
@@ -31,26 +31,29 @@ const plugins = {
   remarkPlugins: [
     //[remarkRehype, {}],             // https://github.com/remarkjs/remark-rehype?tab=readme-ov-file#options
     //[remarkRetext, {}],             // https://github.com/remarkjs/remark-retext?tab=readme-ov-file#options
-    [remarkLint, {}],               // https://github.com/remarkjs/remark-lint
+    [remarkLint, {}], // https://github.com/remarkjs/remark-lint
     //[remarkToc, {}],                // https://github.com/remarkjs/remark-toc?tab=readme-ov-file#fields
-    [remarkGfm, {}],                // https://github.com/remarkjs/remark-gfm?tab=readme-ov-file#options
-    [remarkMdx, {}],                // https://github.com/mdx-js/mdx/tree/main/packages/remark-mdx#options
+    [remarkGfm, {}], // https://github.com/remarkjs/remark-gfm?tab=readme-ov-file#options
+    [remarkMdx, {}], // https://github.com/mdx-js/mdx/tree/main/packages/remark-mdx#options
     //[remarkGithub, {}],           // https://github.com/remarkjs/remark-github?tab=readme-ov-file#options
-    [remarkMath, {}],               // https://github.com/remarkjs/remark-math
+    [remarkMath, {}], // https://github.com/remarkjs/remark-math
     //[remarkFrontmatter, {}],        // https://github.com/remarkjs/remark-frontmatter?tab=readme-ov-file#options
-    [remarkA11yEmoji, {}],          // https://github.com/remarkjs/remark-frontmatter?tab=readme-ov-file#options
+    [remarkA11yEmoji, {}], // https://github.com/remarkjs/remark-frontmatter?tab=readme-ov-file#options
     //[remarkCodeTitle, {}],        // https://github.com/remarkjs/remark-frontmatter?tab=readme-ov-file#options
-    [remarkCodeSandbox, {}],        // https://github.com/kevin940726/remark-codesandbox?tab=readme-ov-file#options
-    [remarkCopyLinkedFiles, {}],    // https://github.com/sergioramos/remark-copy-linked-files
-    [remarkDefinitionList, {}],     // https://github.com/wataru-chocola/remark-definition-list
+    [remarkCodeSandbox, {}], // https://github.com/kevin940726/remark-codesandbox?tab=readme-ov-file#options
+    [remarkCopyLinkedFiles, {}], // https://github.com/sergioramos/remark-copy-linked-files
+    [remarkDefinitionList, {}], // https://github.com/wataru-chocola/remark-definition-list
     [remarkFlexibleCodeTitles, {}], // https://github.com/ipikuka/remark-flexible-code-titles?tab=readme-ov-file#options
-    [remarkWikiLinkPlus, {}],       // https://github.com/datopian/remark-wiki-link-plus?tab=readme-ov-file#configuration-options
+    [remarkWikiLinkPlus, {}], // https://github.com/datopian/remark-wiki-link-plus?tab=readme-ov-file#configuration-options
     //[remarkPresetLintRetextEnglish, {}],  // https://github.com/keplersj/remark-preset-lint-retext-english
-    [remarkValidateLinks, {repository: "https://github.com/quinn-p-mchugh/personal-website"}],      // https://github.com/remarkjs/remark-validate-links?tab=readme-ov-file#options
-    [remarkPrism, {}],              // https://github.com/sergioramos/remark-prism?tab=readme-ov-file
+    [
+      remarkValidateLinks,
+      { repository: "https://github.com/quinn-p-mchugh/personal-website" },
+    ], // https://github.com/remarkjs/remark-validate-links?tab=readme-ov-file#options
+    [remarkPrism, {}], // https://github.com/sergioramos/remark-prism?tab=readme-ov-file
   ],
   rehypePlugins: [],
-}
+};
 
 // https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog
 const blogConfig = {
@@ -203,22 +206,38 @@ const config = {
             to: "/resume",
           },
           {
-            label: "Docs",
-            to: "/docs/welcome",
-            position: "left",
-          },
-          {
             label: "Projects",
             to: `/projects/${docsConfig.projects.linkId}`,
             position: "left",
           },
           {
-            label: "My Library",
-            to: "/library",
+            type: "dropdown",
+            label: "Notes & Resources",
             position: "left",
+            items: [
+              {
+                label: "Docs",
+                to: "/docs/welcome",
+              },
+              {
+                label: "Digital Garden",
+                href: "https://notes.quinnmchugh.net/",
+              },
+              {
+                label: "Resource Library",
+                to: "/library",
+              },
+            ],
           },
-          { to: "/blog", label: "Blog", position: "left" },
-          { to: "/blog-micro", label: "Microblog", position: "left" },
+          {
+            type: "dropdown",
+            label: "Blogs",
+            position: "left",
+            items: [
+              { to: "/blog", label: "Blog" },
+              { to: "/blog-micro", label: "Microblog" },
+            ],
+          },
           {
             type: "dropdown",
             label: "About",
@@ -328,7 +347,28 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
-        additionalLanguages: ["markup", "bash", "css", "css-extras", "javascript", "jsx", "js-extras", "js-templates", "diff", "git", "graphql", "markup-templating", "json", "makefile", "markdown", "python", "sql", "tsx", "typescript", "yaml"]
+        additionalLanguages: [
+          "markup",
+          "bash",
+          "css",
+          "css-extras",
+          "javascript",
+          "jsx",
+          "js-extras",
+          "js-templates",
+          "diff",
+          "git",
+          "graphql",
+          "markup-templating",
+          "json",
+          "makefile",
+          "markdown",
+          "python",
+          "sql",
+          "tsx",
+          "typescript",
+          "yaml",
+        ],
       },
       colorMode: {
         defaultMode: "light",
@@ -364,15 +404,15 @@ const config = {
         //... other Algolia params
       },
       zoom: {
-        selector: '.markdown > img',
+        selector: ".markdown > img",
         background: {
-          light: 'rgb(255, 255, 255)',
-          dark: 'rgb(50, 50, 50)'
+          light: "rgb(255, 255, 255)",
+          dark: "rgb(50, 50, 50)",
         },
         config: {
           // options you can specify via https://github.com/francoischalifour/medium-zoom?tab=readme-ov-file#options
-        }
-      }
+        },
+      },
     }),
 };
 
