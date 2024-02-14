@@ -11,4 +11,5 @@ draft: false
 ---
 
 #TIL Goodreads has a 'New Releases' page where you can discover the latest books by authors you follow on your Goodreads shelves. You can also opt to receive email notifications when new books are published.
+
 https://www.goodreads.com/new_releases/
