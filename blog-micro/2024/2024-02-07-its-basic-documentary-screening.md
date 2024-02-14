@@ -10,7 +10,7 @@ hide_table_of_contents: true
 draft: false
 ---
 
-Tonight, I thoroughly enjoyed a live screening of "It's Basic", a documentary exploring the promise of unconditional cash transfers (UCTs) to help alleviate poverty, hosted by the Center for Guaranteed Income Research (CGIR) at the School of Social Policy & Practice at the University of Pennsylvania, followed by an expert panel.
+Tonight, I thoroughly enjoyed a live screening of "It's Basic", a documentary exploring the promise of unconditional cash transfers (UCTs) to help alleviate poverty, hosted by the [Center for Guaranteed Income Research (CGIR)](https://www.penncgir.org/) at the [Penn School of Social Policy & Practice](https://sp2.upenn.edu/), followed by an expert panel.
 
 **Some key nuggest of insight:**
 - There are two primary aspects of a successful 'pilot to policy' transition: (1) consensus on the evidence ("is this intervention effective?") and (2) consensus in society ("does this intervention have public support?")
