@@ -4,7 +4,7 @@ title: 'Takeaways from the 80,000 Hours Career Guide (2023 Version)'
 tags: ["Career", "Impact", "Decision-Making", "Effective Altruism"]
 authors: qmchugh
 hide_table_of_contents: true
-draft: false
+draft: true
 ---
 
 I've been listening to the 80,000 Hours Career Guide (updated Sept 2023), a guide I first engaged with as a bright-eyed undergraduate student in 2018. It's been a great resource for brushing up on what makes a fulfilling career, common misconceptions about career decisions, and options to consider as I take the next step in my professional journey.
