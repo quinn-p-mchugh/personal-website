@@ -10,7 +10,7 @@ tags: [Podcasts, Self-Education, Information Management, Content Curation]
 
 **Have you ever been felt overwhelmed by your podcast feed?** Here's a screenshot of what mine looks like right now:
 
-| <img src={require('./assets/podcast-feed-1.jpg').default} width="25%" /> | <img src={require('./assets/podcast-feed-2.jpg').default} width="25%" /> | <img src={require('./assets/podcast-feed-3.jpg').default} width="25%" /> |
+| <img src={require('../assets/podcast-feed-1.jpg').default} width="25%" /> | <img src={require('../assets/podcast-feed-2.jpg').default} width="25%" /> | <img src={require('../assets/podcast-feed-3.jpg').default} width="25%" /> |
 
 A little "all over the place", right?
 
