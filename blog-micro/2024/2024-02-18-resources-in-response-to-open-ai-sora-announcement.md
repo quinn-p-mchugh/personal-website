@@ -3,7 +3,7 @@ title: "Resources in Response to OpenAI's Sora Announcement"
 #slug:
 #description:
 #keywords: []
-tags: ["Mental Health", "Existential Risks"]
+tags: ["Mental Health", "Existential Risks", "Life", "Purpose", "Meaning"]
 authors: qmchugh
 #image:
 hide_table_of_contents: true
