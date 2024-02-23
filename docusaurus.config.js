@@ -19,6 +19,7 @@ import remarkWikiLinkPlus from "remark-wiki-link-plus";
 //import remarkPresetLintRetextEnglish from 'remark-preset-lint-retext-english';
 import remarkValidateLinks from "remark-validate-links";
 import remarkPrism from "remark-prism";
+import tailwindPlugin from "./plugins/tailwind.config.cjs";
 
 //import rehypeRemark from 'rehype-remark'
 //import rehypeRetext from 'rehype-retext';
