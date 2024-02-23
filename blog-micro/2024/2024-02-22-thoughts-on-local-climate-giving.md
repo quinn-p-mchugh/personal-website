@@ -18,7 +18,7 @@ While I don't claim to be an expert in climate giving, I wanted to share my thou
 
 2️⃣ My default answer to "where should I give locally?" is to turn it around and ask: "is there a particular reason you want to give locally?" 
 
-The most cost-effective interventions in a given area (e.g. climate, global health, education, etc) are often orders of magnitude more cost-effective than the average. Thus, by limiting your scope, you may ultimately be limiting your impact. It's valuable to consider the underlying reason you want to donate to a local organization, given the amount of good your money could do elsewhere. This is not to say that you're wrong for deciding to give locally (there are perfectly valid reasons for doing so!). What matters most is that your decision is made thoughtfully and intentionally.
+The most cost-effective interventions within a given cause (e.g. climate, global health, education, etc) are often orders of magnitude more cost-effective than the average. Thus, by limiting your scope, you may ultimately be limiting your impact. It's valuable to consider the underlying reason you want to donate to a local organization, given the amount of good your money could do elsewhere. This is not to say that you're wrong for deciding to give locally (there are perfectly valid reasons for doing so!). What matters most is that your decision is made thoughtfully and intentionally.
 
 3️⃣ If you're interested in giving beyond your immediate area, there are two charities I would recommend checking out:
 
