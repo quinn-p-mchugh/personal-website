@@ -200,7 +200,6 @@ const config = {
           alt: "My Site Logo",
           src: "img/logo.svg",
         },
-        hideOnScroll: true,
         items: [
           {
             label: "Resume",
@@ -413,14 +412,6 @@ const config = {
         config: {
           // options you can specify via https://github.com/francoischalifour/medium-zoom?tab=readme-ov-file#options
         },
-      },
-      announcementBar: {
-        id: 'announcement-bar',
-        content:
-          '<b>Hiring?</b> 👀 I\'d love to help your organization thrive. Check my <a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/feed/update/urn:li:activity:7160737757093392384/">LinkedIn post</a> for details.',
-        backgroundColor: '#6247D3',
-        textColor: '#ffffff',
-        isCloseable: false,
       },
     }),
 };
