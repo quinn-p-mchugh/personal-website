@@ -1,8 +1,8 @@
 ---
 dg-publish: false
 title: "EA Explorer"
-#sidebar_label: "" 
-slug: ea-explorer 
+#sidebar_label: ""
+slug: ea-explorer
 #description: ""
 #keywords: []
 tags: []
@@ -11,7 +11,7 @@ sidebar_position: 2
 draft: false
 publish: true
 publish-path: docs-projects
-publish-filename: 
+publish-filename:
 created: 2023-07-01T11:53:11-04:00
 modified: 2023-07-06T21:54:53-04:00
 ---
@@ -26,4 +26,4 @@ In the graph below, each node represents either a tag (from [here](https://forum
 
 **GitHub Repository: https://github.com/quinn-p-mchugh/ea-explorer**
 
-![EA Explorer screenshot](../docs/2022-12-11-ea-explorer-screenshot.png)
+![EA Explorer screenshot](../docs/assets/2022-12-11-ea-explorer-screenshot.png)
