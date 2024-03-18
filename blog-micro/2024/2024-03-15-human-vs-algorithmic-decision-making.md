@@ -1,5 +1,5 @@
 ---
-created: 2024-03-75T08:02:24-0400
+created: 2024-03-15T08:02:24-0400
 title: 'Human v.s. Algorithmic Decision-Making: Two sides of the same coin'
 tags: ["Democratic Decision-Making", "Societal Progress", "Algorithmic Bias", "Human Bias", "Decision-Making", "Governance"]
 authors: qmchugh

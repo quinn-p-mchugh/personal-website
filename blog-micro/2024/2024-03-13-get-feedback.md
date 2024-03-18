@@ -1,5 +1,5 @@
 ---
-created: 2024-03-73T14:17:08-0400
+created: 2024-03-13T14:17:08-0400
 title: 'Get Feedback: A goal everyone should have'
 tags: ["Goals", "Feedback", "Systems"]
 authors: qmchugh

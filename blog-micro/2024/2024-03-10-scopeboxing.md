@@ -1,5 +1,5 @@
 ---
-created: 2024-03-70T10:47:06-0400
+created: 2024-03-10T10:47:06-0400
 title: 'Scopeboxing'
 tags: ["Creativity", "Innovation"]
 authors: qmchugh
