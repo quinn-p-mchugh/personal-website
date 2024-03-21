@@ -14,7 +14,7 @@
   --ifm-color-primary-lighter: #4ac7ef;
   --ifm-color-primary-lightest: #a7e4f7;
   --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1); 
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 
   --ifm-font-color-base-inverse: #a7e4f7;
   --ifm-footer-background-color: #008080 !important;
@@ -24,7 +24,7 @@
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
-[data-theme='dark'] {
+[data-theme="dark"] {
   --ifm-color-primary: #25c2a0;
   --ifm-color-primary-dark: #21af90;
   --ifm-color-primary-darker: #1fa588;
@@ -35,126 +35,7 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
-.navbar-icon {
-  border-radius: 50%;
-  display: flex;
-  height: 24px;
-  width: 24px;
-  margin-right:20px;
-  padding: 0;
-}
-
-.navbar-icon:hover {
-  fill: #50C9F0;
-  transition: fill var(--ifm-transition-fast);
-}
-
-.navbar__items:hover {
-  transition: color var(--ifm-transition-slow);
-}
-
-.hero {
-    background-image: url("/static/img/hero-section-bg.png");
-    height: calc((8600/5000) * 100vw);
-    background-size: 100%;
-    background-position: center bottom;
-    background-size: 100%;
-    background-repeat: no-repeat;
-}
-
-.hero__title {
-  font-size: 57px;
-  font-weight: 300;
-}
-
-.hero__bio {
-  color: var(--ifm-font-color-base-inverse);
-}
-
-.hero__container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  margin:auto;
-  margin-top:10vh;
-  text-align: left;
-  width: 1000px;
-}
-
 .container {
   top: 20em;
   margin: 100px;
-  
-}
-
-.footer {
-  background-color: #082958;
-  padding: 0px;
-}
-
-.footer__links {
-  margin-bottom: 50px;
-}
-
-.testimonials ul {
-  padding-left: 10px;
-  list-style-type: none;
-}
-
-
-.testimonials li:before {
-    content: "- ";
-    margin: 0 0 0 -10px;
-}
-
-button {
-  appearance: none;
-  background-color: #2ea44f;
-  border: 1px solid rgba(27, 31, 35, .15);
-  border-radius: 6px;
-  box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
-  box-sizing: border-box;
-  color: #fff;
-  cursor: pointer;
-  display: inline-block;
-  font-family: -apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 20px;
-  padding: 6px 16px;
-  position: relative;
-  text-align: center;
-  text-decoration: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  vertical-align: middle;
-  white-space: nowrap;
-}
-
-button:focus:not(:focus-visible):not(.focus-visible) {
-  box-shadow: none;
-  outline: none;
-}
-
-button:hover {
-  background-color: #2c974b;
-}
-
-button:focus {
-  box-shadow: rgba(46, 164, 79, .4) 0 0 0 3px;
-  outline: none;
-}
-
-button:disabled {
-  background-color: #94d3a2;
-  border-color: rgba(27, 31, 35, .1);
-  color: rgba(255, 255, 255, .8);
-  cursor: default;
-}
-
-button:active {
-  background-color: #298e46;
-  box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
 }
