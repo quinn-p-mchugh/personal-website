@@ -1,0 +1,9 @@
+.testimonials ul {
+  padding-left: 10px;
+  list-style-type: none;
+}
+
+.testimonials li:before {
+  content: "- ";
+  margin: 0 0 0 -10px;
+}
