@@ -141,6 +141,7 @@ const config = {
         path: "blog-ideas",
         blogTitle: blogConfig.ideasBlog.title,
         blogDescription: blogConfig.ideasBlog.description,
+        blogSidebarTitle: "Half-baked, outlandish, and occasionally good ideas for someone else to execute",
         blogSidebarCount: blogConfig.sidebarCount,
         showReadingTime: false,
         feedOptions: {
@@ -172,6 +173,7 @@ const config = {
         path: "blog-micro",
         blogTitle: blogConfig.microBlog.title,
         blogDescription: blogConfig.microBlog.description,
+        blogSidebarTitle: "My Microblog: Miscellaneous musings, fleeting thoughts, & unsolicited advice",
         blogSidebarCount: blogConfig.sidebarCount,
         showReadingTime: false,
         feedOptions: {
@@ -201,8 +203,12 @@ const config = {
           rehypePlugins: plugins.rehypePlugins,
         },
         blog: {
+          id: "blog",
+          path: "blog",
+          routeBasePath: "blog",
           blogTitle: blogConfig.blog.title,
           blogDescription: blogConfig.blog.description,
+          blogSidebarTitle: "New posts, hot off the press:",
           blogSidebarCount: blogConfig.sidebarCount,
           showReadingTime: true,
           feedOptions: {
