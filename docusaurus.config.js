@@ -59,12 +59,17 @@ const plugins = {
 const blogConfig = {
   blog: {
     title: "Quinn McHugh's Blog",
-    description: "Quinn McHugh's blog. For longer-form posts.",
+    description: "The blog of Quinn McHugh",
   },
   microBlog: {
     title: "Quinn McHugh's Micro Blog",
     description:
-      "Quinn McHugh's micro blog. For short notes, ideas, thoughts, and other morsels.",
+      "A microblog of miscellaneous musings, tips, and thoughts from Quinn McHugh",
+  },
+  ideasBlog: {
+    title: "Quinn McHugh's Idea Feed",
+    description:
+      "Half-baked, outlandish, and occasionally good ideas from Quinn McHugh",
   },
   sidebarCount: "ALL",
   feedType: "all",
@@ -116,6 +121,37 @@ const config = {
         path: "docs-projects",
         routeBasePath: "projects",
         //sidebarPath: require.resolve("./sidebarsProjects.js"),
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-blog',
+      {
+        /**
+         * Required for any multi-instance plugin
+         */
+        id: "blog-ideas",
+        /**
+         * URL route for the blog section of your site.
+         * *DO NOT* include a trailing slash.
+         */
+        routeBasePath: "ideas",
+        /**
+         * Path to data on filesystem relative to site dir.
+         */
+        path: "blog-ideas",
+        blogTitle: blogConfig.ideasBlog.title,
+        blogDescription: blogConfig.ideasBlog.description,
+        blogSidebarCount: blogConfig.sidebarCount,
+        showReadingTime: false,
+        feedOptions: {
+          title: blogConfig.ideasBlog.title,
+          description: blogConfig.ideasBlog.description,
+          type: blogConfig.feedType,
+          copyright: blogConfig.copyright,
+          limit: blogConfig.feedLimit,
+        },
+        remarkPlugins: plugins.remarkPlugins,
+        rehypePlugins: plugins.rehypePlugins,
       },
     ],
     [
@@ -236,6 +272,7 @@ const config = {
             items: [
               { to: "/blog", label: "Blog" },
               { to: "/blog-micro", label: "Microblog" },
+              { to: "/ideas", label: "Ideas" },
             ],
           },
           {
