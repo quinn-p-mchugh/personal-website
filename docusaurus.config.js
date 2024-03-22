@@ -66,7 +66,7 @@ const blogConfig = {
     description:
       "Quinn McHugh's micro blog. For short notes, ideas, thoughts, and other morsels.",
   },
-  sidebarCount: 10,
+  sidebarCount: "ALL",
   feedType: "all",
   feedLimit: 100,
   copyright: `Copyright © 2017-${new Date().getFullYear()} Quinn McHugh`,
