@@ -109,6 +109,7 @@ const config = {
   },
 
   plugins: [
+    tailwindPlugin,
     ["drawio", {}],
     [
       "@docusaurus/plugin-content-docs",
