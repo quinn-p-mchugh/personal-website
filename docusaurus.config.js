@@ -263,7 +263,7 @@ const config = {
               },
               {
                 label: "Highlights",
-                to: "https://readwise.io/@quinnmchugh",
+                href: "https://readwise.io/@quinnmchugh",
               },
               {
                 label: "Digital Garden",
@@ -302,7 +302,7 @@ const config = {
           },
           {
             label: "Feedback",
-            to: "https://forms.gle/A1DB5tpmA8PtywZaA",
+            href: "https://forms.gle/A1DB5tpmA8PtywZaA",
           },
           {
             label: "Contact",
