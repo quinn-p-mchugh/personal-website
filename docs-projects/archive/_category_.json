@@ -1,7 +1,7 @@
 {
   "label": "Archive",
   "collapsible": true,
-  "collapsed": false,
+  "collapsed": true,
   "link": {
     "type": "generated-index",
     "title": "Archived Projects"
