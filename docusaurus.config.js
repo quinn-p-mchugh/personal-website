@@ -262,6 +262,10 @@ const config = {
                 to: "/docs/welcome",
               },
               {
+                label: "Highlights",
+                to: "https://readwise.io/@quinnmchugh",
+              },
+              {
                 label: "Digital Garden",
                 href: "https://notes.quinnmchugh.net/",
               },
