@@ -301,6 +301,10 @@ const config = {
             ],
           },
           {
+            label: "Feedback",
+            to: "https://forms.gle/A1DB5tpmA8PtywZaA",
+          },
+          {
             label: "Contact",
             to: "/contact",
           },
