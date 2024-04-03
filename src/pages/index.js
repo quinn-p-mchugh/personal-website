@@ -36,9 +36,9 @@ function HeroSection() {
       <div className="absolute bottom-0 mb-72 ml-40 w-[40vw] flex flex-col space-y-10 px-12 py-12 bg-sky-950">
         <img
           loading="lazy"
-          src="https://cdn.builder.io/api/v1/image/assets/TEMP/8b4daac15003790d7ae76eaf0e9d4bbd8b38a01bbde5468dd607e5b69515abf1?apiKey=c2ecd5d95d864711b123d95e39ca9f25&"
+          src={require("@site/static/img/quinn-headshot-square.png").default}
           alt="Headshot of Quinn"
-          className="w-36 max-w-full aspect-square"
+          className="w-36 max-w-full rounded-full"
         />
         <div className="">
           <h1 className="font-extralight">
