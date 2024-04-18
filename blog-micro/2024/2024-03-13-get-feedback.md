@@ -29,7 +29,7 @@ All of this boils down to 5 steps:
 
 Feedback is an essential component of every well-performing complex system (you). It provides the information needed to adjust your behavior to produces the desired outcomes.
 
-Stop ruminating about what *might be* true and get feedback to better understand what *is* true.
+Stop ruminating about what *might* be true and get feedback to better understand what *actually is*.
 
 
 
