@@ -253,6 +253,11 @@ const config = {
             position: "left",
           },
           {
+            label: "Now",
+            to: `/now`,
+            position: "left",
+          },
+          {
             type: "dropdown",
             label: "Notes & Resources",
             position: "left",
