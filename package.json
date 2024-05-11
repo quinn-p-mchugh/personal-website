@@ -15,11 +15,11 @@
   },
   "dependencies": {
     "@calcom/embed-react": "^1.0.12",
-    "@docusaurus/core": "^3.1.1",
-    "@docusaurus/plugin-content-pages": "^3.1.1",
-    "@docusaurus/plugin-google-gtag": "^3.1.1",
-    "@docusaurus/preset-classic": "^3.1.1",
-    "@docusaurus/theme-mermaid": "^3.1.1",
+    "@docusaurus/core": "^3.3.2",
+    "@docusaurus/plugin-content-pages": "^3.3.2",
+    "@docusaurus/plugin-google-gtag": "^3.3.2",
+    "@docusaurus/preset-classic": "^3.3.2",
+    "@docusaurus/theme-mermaid": "^3.3.2",
     "@giscus/react": "^2.2.8",
     "@mdx-js/react": "^1.6.22",
     "ajv": "^8.12.0",
@@ -47,7 +47,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "^3.1.1",
+    "@docusaurus/module-type-aliases": "^3.3.2",
     "@fec/remark-a11y-emoji": "^4.0.2",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
