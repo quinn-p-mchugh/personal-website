@@ -194,7 +194,7 @@ function Testimonials() {
         <h1>Testimonials</h1>
         <br></br>
         <div className="testimonials">
-          <div class="flex flex-col space-y-4 p-4">
+          <div class="flex flex-row space-y-4 p-4 overflow-x-scroll">
             {TestimonialList.map((props, idx) => (
               <Testimonial key={idx} {...props} />
             ))}
