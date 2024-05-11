@@ -255,6 +255,11 @@ const config = {
             position: "left",
           },
           {
+            label: "Now",
+            to: `/now`,
+            position: "left",
+          },
+          {
             type: "dropdown",
             label: "Notes & Resources",
             position: "left",
@@ -262,6 +267,10 @@ const config = {
               {
                 label: "Docs",
                 to: "/docs/welcome",
+              },
+              {
+                label: "Highlights",
+                href: "https://readwise.io/@quinnmchugh",
               },
               {
                 label: "Digital Garden",
@@ -297,6 +306,10 @@ const config = {
                 to: "/travels",
               },
             ],
+          },
+          {
+            label: "Feedback",
+            href: "https://forms.gle/A1DB5tpmA8PtywZaA",
           },
           {
             label: "Contact",

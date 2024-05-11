@@ -24,12 +24,12 @@ All of this boils down to 5 steps:
 1. Identify your goal
 2. Identify one or more actions you might take to achieve your goal
 3. Do those actions
-4. Reflect
+4. Get feedback on your performance in carrying out those actions
 5. Go back to step 2
 
 Feedback is an essential component of every well-performing complex system (you). It provides the information needed to adjust your behavior to produces the desired outcomes.
 
-Stop ruminating about what might be true and get feedback.
+Stop ruminating about what *might* be true and get feedback to better understand what *actually is*.
 
 
 
