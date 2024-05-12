@@ -10,10 +10,10 @@ import heroSectionBackground from "@site/static/img/hero-section-bg.png";
 function HeroSection() {
   return (
     <div
-      className="text-[#F5F3EE] relative bg-no-repeat bg-cover bg-center w-screen h-[5000px]"
+      className="text-[#F5F3EE] relative bg-no-repeat bg-cover bg-center w-screen h-[5000px] absolute top-0 -mt-1000"
       style={{ backgroundImage: `url(${heroSectionBackground})` }}
     >
-      <div className="flex flex-col space-y-80">
+      {/*<div className="flex flex-col space-y-80">
         <div className="relative top-0 left-0 w-screen h-[calc(100vh-100px)]">
           <div className="flex flex-col items-center justify-center h-full">
             <h1 className="font-thin text-3xl lg:text-5xl">
@@ -32,7 +32,7 @@ function HeroSection() {
             className="w-full aspect-[2.17] max-w-[1579px] max-md:max-w-full"
           />
         </div>
-      </div>
+  </div>*/}
       <div className="absolute bottom-0 mb-72 ml-40 w-[40vw] flex flex-col space-y-10 px-12 py-12 bg-sky-950">
         <img
           loading="lazy"
