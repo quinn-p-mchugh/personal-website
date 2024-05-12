@@ -7,7 +7,7 @@ hide_table_of_contents: true
 draft: false
 ---
 
-It would be nice if there was an open, file-based standard (similar [StackShare's Tech Stack File](https://stackshare.io/)) for sharing "tool stacks" (i.e. a list of tools used by an individual as part of their workflows and a list of relations indicating how that individual uses those tools together). 
+It would be nice if there was an open, file-based standard (similar [StackShare's Tech Stack File](https://stackshare.io/tech-stack-file)) for sharing "tool stacks" (i.e. a list of tools used by an individual as part of their workflows and a list of relations indicating how that individual uses those tools together). 
 
 There are so many tools out there, from email clients to task managers to note-taking tools to habit trackers to code IDEs to break-time reminders. Having a standard like this would allow individuals to freely share their "tool stacks" with one another and version control them as their tools and workflows evolve. Architecture diagrams could be generated from these files (e.g. YAML -> [Mermaid](https://mermaid.js.org/)), allowing others to easily understand and take inspiration from others "tool stacks".
 
