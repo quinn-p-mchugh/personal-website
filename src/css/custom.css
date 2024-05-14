@@ -5,6 +5,13 @@
  */
 
 /* You can override the default Infima variables here. */
+
+@import url('button.css');
+@import url('footer.css');
+@import url('navbar.css');
+@import url('hero.css');
+@import url('testimonials.css');
+
 :root {
   --ifm-color-primary: #12a0ce;
   --ifm-color-primary-dark: #0e80a5;

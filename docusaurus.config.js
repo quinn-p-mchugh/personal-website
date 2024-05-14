@@ -59,14 +59,19 @@ const plugins = {
 const blogConfig = {
   blog: {
     title: "Quinn McHugh's Blog",
-    description: "Quinn McHugh's blog. For longer-form posts.",
+    description: "The blog of Quinn McHugh",
   },
   microBlog: {
     title: "Quinn McHugh's Micro Blog",
     description:
-      "Quinn McHugh's micro blog. For short notes, ideas, thoughts, and other morsels.",
+      "A microblog of miscellaneous musings, tips, and thoughts from Quinn McHugh",
   },
-  sidebarCount: 10,
+  ideasBlog: {
+    title: "Quinn McHugh's Idea Feed",
+    description:
+      "Half-baked, outlandish, and occasionally good ideas from Quinn McHugh",
+  },
+  sidebarCount: "ALL",
   feedType: "all",
   feedLimit: 100,
   copyright: `Copyright © 2017-${new Date().getFullYear()} Quinn McHugh`,
@@ -119,6 +124,38 @@ const config = {
       },
     ],
     [
+      '@docusaurus/plugin-content-blog',
+      {
+        /**
+         * Required for any multi-instance plugin
+         */
+        id: "blog-ideas",
+        /**
+         * URL route for the blog section of your site.
+         * *DO NOT* include a trailing slash.
+         */
+        routeBasePath: "ideas",
+        /**
+         * Path to data on filesystem relative to site dir.
+         */
+        path: "blog-ideas",
+        blogTitle: blogConfig.ideasBlog.title,
+        blogDescription: blogConfig.ideasBlog.description,
+        blogSidebarTitle: "Half-baked, outlandish, and occasionally good ideas for someone else to execute",
+        blogSidebarCount: blogConfig.sidebarCount,
+        showReadingTime: false,
+        feedOptions: {
+          title: blogConfig.ideasBlog.title,
+          description: blogConfig.ideasBlog.description,
+          type: blogConfig.feedType,
+          copyright: blogConfig.copyright,
+          limit: blogConfig.feedLimit,
+        },
+        remarkPlugins: plugins.remarkPlugins,
+        rehypePlugins: plugins.rehypePlugins,
+      },
+    ],
+    [
       "@docusaurus/plugin-content-blog",
       {
         /**
@@ -136,6 +173,7 @@ const config = {
         path: "blog-micro",
         blogTitle: blogConfig.microBlog.title,
         blogDescription: blogConfig.microBlog.description,
+        blogSidebarTitle: "My Microblog: Miscellaneous musings, fleeting thoughts, & unsolicited advice",
         blogSidebarCount: blogConfig.sidebarCount,
         showReadingTime: false,
         feedOptions: {
@@ -165,8 +203,12 @@ const config = {
           rehypePlugins: plugins.rehypePlugins,
         },
         blog: {
+          id: "blog",
+          path: "blog",
+          routeBasePath: "blog",
           blogTitle: blogConfig.blog.title,
           blogDescription: blogConfig.blog.description,
+          blogSidebarTitle: "New posts, hot off the press:",
           blogSidebarCount: blogConfig.sidebarCount,
           showReadingTime: true,
           feedOptions: {
@@ -211,6 +253,11 @@ const config = {
             position: "left",
           },
           {
+            label: "Now",
+            to: `/now`,
+            position: "left",
+          },
+          {
             type: "dropdown",
             label: "Notes & Resources",
             position: "left",
@@ -218,6 +265,10 @@ const config = {
               {
                 label: "Docs",
                 to: "/docs/welcome",
+              },
+              {
+                label: "Highlights",
+                href: "https://readwise.io/@quinnmchugh",
               },
               {
                 label: "Digital Garden",
@@ -236,6 +287,7 @@ const config = {
             items: [
               { to: "/blog", label: "Blog" },
               { to: "/blog-micro", label: "Microblog" },
+              { to: "/ideas", label: "Ideas" },
             ],
           },
           {
@@ -252,6 +304,10 @@ const config = {
                 to: "/travels",
               },
             ],
+          },
+          {
+            label: "Feedback",
+            href: "https://forms.gle/A1DB5tpmA8PtywZaA",
           },
           {
             label: "Contact",
