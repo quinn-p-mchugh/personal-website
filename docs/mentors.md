@@ -3,7 +3,7 @@ dg-publish: false
 title: "People that Inspire Me"
 sidebar_label: "People that Inspired Me"
 slug: mentors
-description: "The kind of people you look up to often shapes the person you end up becoming. This list of "
+description: "The kind of people you look up to often shapes the person you end up becoming. These are the people that inspired me."
 #keywords: []
 tags: []
 #image: ""
