@@ -9,7 +9,7 @@ import heroSectionBackground from "@site/static/img/hero-section-bg.png";
 
 function HeroSection() {
   return (
-    <div class="hero flex flex-col items-center">
+    <div class="hero flex flex-col items-center space-y-10">
       <div class="flex flex-col items-center w-screen space-y-10 text-center">
         <img
           loading="lazy"
@@ -112,13 +112,28 @@ function HeroSection() {
         </p>
       </div>
       <div
-        class="relative overflow-hidden w-full"
-        style={{ maxHeight: "50rem" }}
+        class="relative overflow-hidden"
+        style={{ height: "63vh", maxHeight: "45vh", minHeight: "72vh" }}
       >
         <img
           src={require("@site/static/img/quinn-road.png").default}
           alt="Quinn Road"
-          className="w-full"
+          className="min-w-screen object-contain"
+          style={{ minWidth: "100vw" }}
+        />
+      </div>
+      <div class="flex flex-row">
+        <img
+          src={require("@site/static/img/quinn-teaching.png").default}
+          alt="Quinn Road"
+          className="relative overflow-hidden object-contain"
+          style={{ height: "50vw" }}
+        />
+        <img
+          src={require("@site/static/img/quinn-ireland.png").default}
+          alt="Quinn Road"
+          className="relative overflow-hidden object-contain"
+          style={{ height: "50vw" }}
         />
       </div>
     </div>
