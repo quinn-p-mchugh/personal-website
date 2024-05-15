@@ -28,7 +28,7 @@
   --ifm-color-primary-lightest: #a7e4f7;
 
   --ifm-code-font-size: 95%;
-  --ifm-font-family-base: 'Poppins';
+  --ifm-font-family-base: 'Poppins', sans-serif;
 
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 

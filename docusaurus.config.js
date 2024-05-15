@@ -255,13 +255,8 @@ const config = {
             position: "left",
           },
           {
-            label: "Now",
-            to: `/now`,
-            position: "left",
-          },
-          {
             type: "dropdown",
-            label: "Notes & Resources",
+            label: "Library",
             position: "left",
             items: [
               {
@@ -297,6 +292,10 @@ const config = {
             label: "About",
             position: "left",
             items: [
+              {
+                label: "Now",
+                to: `/now`,
+              },
               {
                 label: "Books",
                 to: "/books",

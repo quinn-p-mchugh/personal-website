@@ -1,28 +1,5 @@
 .hero {
-  background-image: url("/static/img/hero-section-bg.png");
-  height: calc((8600 / 5000) * 100vw);
-  background-size: 100%;
-  background-position: center bottom;
-  background-size: 100%;
-  background-repeat: no-repeat;
-}
-
-.hero__title {
-  font-size: 57px;
-  font-weight: 300;
-}
-
-.hero__bio {
-  color: var(--ifm-font-color-base-inverse);
-}
-
-.hero__container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  margin: auto;
-  margin-top: 10vh;
-  text-align: left;
-  width: 1000px;
+  background-color: #072957;
+  color: #d9f6ff;
+  padding: 0 0 0 0;
 }

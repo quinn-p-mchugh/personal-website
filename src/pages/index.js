@@ -9,97 +9,117 @@ import heroSectionBackground from "@site/static/img/hero-section-bg.png";
 
 function HeroSection() {
   return (
-    <div
-      className="text-[#F5F3EE] relative bg-no-repeat bg-cover bg-center w-screen h-[5000px] absolute top-0 -mt-1000"
-      style={{ backgroundImage: `url(${heroSectionBackground})` }}
-    >
-      {/*<div className="flex flex-col space-y-80">
-        <div className="relative top-0 left-0 w-screen h-[calc(100vh-100px)]">
-          <div className="flex flex-col items-center justify-center h-full">
-            <h1 className="font-thin text-3xl lg:text-5xl">
-              Every system is perfectly designed to get the results it gets.
-            </h1>
-            <p className="font-normal text-xl lg:text-3xl mt-4">
-              How well are your systems working for you?
-            </p>
-          </div>
-        </div>
-        <div className="flex justify-center items-center max-md:pr-5">
-          <img
-            loading="lazy"
-            src={require("@site/static/img/quinn-teaching.png").default}
-            alt="Quinn Teaching"
-            className="w-full aspect-[2.17] max-w-[1579px] max-md:max-w-full"
-          />
-        </div>
-  </div>*/}
-      <div className="absolute bottom-0 mb-72 ml-40 w-[40vw] flex flex-col space-y-10 px-12 py-12 bg-sky-950">
+    <div class="hero flex flex-col items-center">
+      <div class="flex flex-col items-center w-screen space-y-10 text-center">
         <img
           loading="lazy"
           src={require("@site/static/img/quinn-headshot-square.png").default}
           alt="Headshot of Quinn"
-          className="w-36 max-w-full rounded-full"
+          className="h-36 rounded-full"
         />
-        <div className="">
-          <h1 className="font-extralight">
-            <div className="mb-6">Hi, I'm Quinn.</div>
-            <div className="mb-6">
-              I build systems, processes, and tools to help people and
-              organizations thrive.
-            </div>
-          </h1>
-          <p>
-            As a CAPM-certified project manager, software developer, and process
-            improvement engineer, I blend information technology, human-centered
-            design, systems thinking, and compassionate leadership to build and
-            refine systems, processes, and tools that
-          </p>
-          <p>
-            Outside of my work, I serve as a community organizer of{" "}
-            <a href="https://www.eaphiladelphia.org/">
-              Effective Altruism Philadelphia
-            </a>
-            .
-          </p>
-          <p>
-            I care deeply about the impact of processes, infrastructure, norms,
-            and incentives on organizational effectiveness, team synergy, and
-            individual empowerment. By collaborating with internal and external
-            stakeholders, I aim to collaboratively develop robust frameworks,
-            structures, and workflows that foster organizational alignment,
-            promote collaborative excellence, and drive collective progress.
-          </p>
-          <p>
-            Most notably, I completed a 4,230 mile bicycle tour across the
-            United States to challenge myself, push my comfort zone, and expand
-            my worldview. Learn more here about the journey here —{" "}
-            <a href="https://web.archive.org/web/20201128223402/https://tourde10percent.com/">
-              tourde10percent.com
-            </a>
-            .
-          </p>
-          <p>
-            This site serves as a great aggregator for all of my technical
-            projects, design work, and other things I do. You can also view my{" "}
-            <a href="https://quinnmchugh.net/resume">resume</a>, my{" "}
-            <a href="https://quinnmchugh.net/impossible-list">
-              Impossible List
-            </a>
-            ,{" "}
-            <a href="https://quinnmchugh.net/books-ive-read">books I've read</a>
-            , and the different{" "}
-            <a href="https://quinnmchugh.net/places-ive-been">
-              places I've been
-            </a>
-            .
-          </p>
-          <p>
-            In my leisure time, I enjoy listening to though-provoking podcasts,
-            jamming to <a href="https://youtu.be/yhtcG79kPNw">jazz fusion</a>,
-            attending to my digital garden, and indugling in BBC Nature
-            documentaries.
-          </p>
-        </div>
+        <p style={{ fontSize: "4rem", fontWeight: 250 }}>Hi, I'm Quinn.</p>
+
+        <p style={{ fontSize: "2.5rem", fontWeight: 250 }}>
+          I help people and organizations build systems that help them thrive.
+        </p>
+
+        <p>
+          As a CAPM-certified project manager, software developer, and process
+          improvement engineer, I blend information technology, human-centered
+          design, systems thinking, and compassionate leadership to build and
+          refine systems, processes, and tools that
+        </p>
+        <p>
+          Outside of my work, I serve as a community organizer of{" "}
+          <a
+            href="https://www.eaphiladelphia.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Effective Altruism Philadelphia
+          </a>
+          .
+        </p>
+        <p>
+          I care deeply about the impact of processes, infrastructure, norms,
+          and incentives on organizational effectiveness, team synergy, and
+          individual empowerment. By collaborating with internal and external
+          stakeholders, I aim to collaboratively develop robust frameworks,
+          structures, and workflows that foster organizational alignment,
+          promote collaborative excellence, and drive collective progress.
+        </p>
+        <p>
+          Most notably, I completed a 4,230 mile bicycle tour across the United
+          States to challenge myself, push my comfort zone, and expand my
+          worldview. Learn more here about the journey here —{" "}
+          <a
+            href="https://web.archive.org/web/20201128223402/https://tourde10percent.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            tourde10percent.com
+          </a>
+          .
+        </p>
+        <p>
+          This site serves as a great aggregator for all of my technical
+          projects, design work, and other things I do. You can also view my{" "}
+          <a
+            href="https://quinnmchugh.net/resume"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            resume
+          </a>
+          , my{" "}
+          <a
+            href="https://quinnmchugh.net/impossible-list"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Impossible List
+          </a>
+          ,{" "}
+          <a
+            href="https://quinnmchugh.net/books-ive-read"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            books I've read
+          </a>
+          , and the different{" "}
+          <a
+            href="https://quinnmchugh.net/places-ive-been"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            places I've been
+          </a>
+          .
+        </p>
+        <p>
+          In my leisure time, I enjoy listening to though-provoking podcasts,
+          jamming to{" "}
+          <a
+            href="https://youtu.be/yhtcG79kPNw"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            jazz fusion
+          </a>
+          , attending to my digital garden, and indugling in BBC Nature
+          documentaries.
+        </p>
+      </div>
+      <div
+        class="relative overflow-hidden w-full"
+        style={{ maxHeight: "50rem" }}
+      >
+        <img
+          src={require("@site/static/img/quinn-road.png").default}
+          alt="Quinn Road"
+          className="w-full"
+        />
       </div>
     </div>
   );
