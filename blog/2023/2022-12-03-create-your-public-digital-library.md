@@ -17,7 +17,7 @@ modified: 2023-07-06T16:26:57-04:00
 
 ## Objective
 
-This post provides some basic instructions for creating a [public Zotero library](./library) for sharing resources with friends, colleagues, and groups you're apart of.
+This post provides some basic instructions for creating a [public Zotero library](/library) for sharing resources with friends, colleagues, and groups you're apart of.
 
 ## Motivation
 
