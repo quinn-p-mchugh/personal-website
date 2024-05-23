@@ -19,6 +19,7 @@ import remarkWikiLinkPlus from "remark-wiki-link-plus";
 //import remarkPresetLintRetextEnglish from 'remark-preset-lint-retext-english';
 import remarkValidateLinks from "remark-validate-links";
 import remarkPrism from "remark-prism";
+import tailwindPlugin from "./plugins/tailwind.config.cjs";
 
 //import rehypeRemark from 'rehype-remark'
 //import rehypeRetext from 'rehype-retext';
@@ -113,6 +114,7 @@ const config = {
   },
 
   plugins: [
+    tailwindPlugin,
     ["drawio", {}],
     [
       "@docusaurus/plugin-content-docs",
@@ -253,13 +255,8 @@ const config = {
             position: "left",
           },
           {
-            label: "Now",
-            to: `/now`,
-            position: "left",
-          },
-          {
             type: "dropdown",
-            label: "Notes & Resources",
+            label: "Library",
             position: "left",
             items: [
               {
@@ -295,6 +292,10 @@ const config = {
             label: "About",
             position: "left",
             items: [
+              {
+                label: "Now",
+                to: `/now`,
+              },
               {
                 label: "Books",
                 to: "/books",
