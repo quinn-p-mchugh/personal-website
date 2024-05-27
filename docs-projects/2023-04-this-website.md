@@ -3,9 +3,9 @@ dg-publish: false
 title: "This Website"
 #sidebar_label: ""
 slug: this-website
-description: "An ongoing project to share my life and thoughts with the rest of the world."
+description: "Quinn McHugh's personal website - an ongoing project to share my life and thoughts with the rest of the world.
 #keywords: []
-tags: ["Web Development", "Branding & Marketing", "Design", "Information Architecture"]
+tags: ["Web Development", "Branding & Marketing", "Design", "Informationhitee
 #image: ""
 sidebar_position: 2
 draft: false
@@ -29,4 +29,4 @@ graph TD;
     C-->D;
 ```
 
-### late 2022
+### Late 2022
