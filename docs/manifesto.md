@@ -30,6 +30,7 @@ Here's my personal manifesto, divided into a number of themes:
 - Everything operates within a system, whether it's a person, an institution, or celestial body. While we cannot change systems directly, we can [influence the conditions](https://donellameadows.org/archives/leverage-points-places-to-intervene-in-a-system/) under which they function.
 - To achieve lasting solutions, "[design with, not for](https://www.howtomakesenseofanymess.com/chapter4/92/design-with-not-for/#:~:text=It's%20important%20to%20discuss%20and,about%20it%20with%20other%20people.)" - your stakeholders/constituents/customers/users ultimately determine your success.
 - There is no special reason you possess the privileges you do - some of your resources should be dedicated to repaying that debt.
+- Othering is the root
 
 ## Living / Behavior
 - Life is a positive-sum game - treat others accordingly.

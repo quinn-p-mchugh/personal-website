@@ -4,13 +4,19 @@
  * work well for content-centric websites.
  */
 
-/* You can override the default Infima variables here. */
+ @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
-@import url('button.css');
-@import url('footer.css');
-@import url('navbar.css');
-@import url('hero.css');
-@import url('testimonials.css');
+ @import url('button.css');
+ @import url('footer.css');
+ @import url('navbar.css');
+ @import url('hero.css');
+ @import url('testimonials.css');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* You can override the default Infima variables here. */
 
 :root {
   --ifm-color-primary: #12a0ce;
@@ -20,7 +26,10 @@
   --ifm-color-primary-light: #74d4f3;
   --ifm-color-primary-lighter: #4ac7ef;
   --ifm-color-primary-lightest: #a7e4f7;
+
   --ifm-code-font-size: 95%;
+  --ifm-font-family-base: 'Poppins', sans-serif;
+
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 
   --ifm-font-color-base-inverse: #a7e4f7;
