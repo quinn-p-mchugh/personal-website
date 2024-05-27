@@ -5,7 +5,7 @@ title: "This Website"
 slug: this-website
 description: "Quinn McHugh's personal website - an ongoing project to share my life and thoughts with the rest of the world."
 #keywords: []
-tags: ["Web Development", "Branding & Marketing", "Design", "Informationhitee
+tags: ["Web Development", "Branding & Marketing", "Design", "Information Architecture"]
 #image: ""
 sidebar_position: 2
 draft: false
