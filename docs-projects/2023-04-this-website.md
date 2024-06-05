@@ -30,3 +30,6 @@ graph TD;
 ```
 
 ### Late 2022
+Shortly after learning of [Docusaurus](https://docusaurus.io/) from a friend, I decided to migrate my website from a [Wordpress](https://wordpress.com/) site hosted on [HostGator](https://www.hostgator.com/) to a Docusaurus site hosted (for free!) on [Vercel](https://vercel.app/). 
+
+Why? While Wordpress + [Themify Builder](https://themify.me/builder) allowed me to create a half decent looking site, it cost $15 per month to host the site and there was a lot to be desired in terms of customization.
