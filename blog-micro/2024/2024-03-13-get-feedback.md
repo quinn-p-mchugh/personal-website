@@ -4,7 +4,7 @@ title: 'Get Feedback: A goal everyone should have'
 tags: ["Goals", "Feedback", "Systems"]
 authors: qmchugh
 hide_table_of_contents: true
-draft: true
+draft: false
 ---
 
 Of all the unique and diverse goals you could have in your life, one of them should be this: 
