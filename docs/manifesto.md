@@ -25,12 +25,12 @@ modified: 2023-07-06T16:34:00-04:00
 Here's my personal manifesto, divided into a number of themes:
 
 ## Social Change / Impact
-- Success is measured by the positive change we create, not the reputation we build.
+- Success is measured by the positive change we create, not the money we accumulate or the reputation we build.
 - Your impact as an individual is your [counterfactual (not absolute) impact](https://probablygood.org/core-concepts/counterfactual-impact/). Although doing good things deserves recognition, what ultimately counts is that you do the good things that *nobody else* would have otherwise done.
 - Everything operates within a system, whether it's a person, an institution, or celestial body. While we cannot change systems directly, we can [influence the conditions](https://donellameadows.org/archives/leverage-points-places-to-intervene-in-a-system/) under which they function.
 - To achieve lasting solutions, "[design with, not for](https://www.howtomakesenseofanymess.com/chapter4/92/design-with-not-for/#:~:text=It's%20important%20to%20discuss%20and,about%20it%20with%20other%20people.)" - your stakeholders/constituents/customers/users ultimately determine your success.
 - There is no special reason you possess the privileges you do - some of your resources should be dedicated to repaying that debt.
-- Othering is the root
+- [Othering](https://www.otheringandbelonging.org/the-problem-of-othering/) is the root of almost every global, national, and regional issue facing human and non-human animals today. 
 
 ## Living / Behavior
 - Life is a positive-sum game - treat others accordingly.

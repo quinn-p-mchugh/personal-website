@@ -20,39 +20,45 @@ function HeroSection() {
         <p style={{ fontSize: "4rem", fontWeight: 250 }}>Hi, I'm Quinn.</p>
 
         <p style={{ fontSize: "2.5rem", fontWeight: 250 }}>
-          I help people and organizations build systems that help them thrive.
+          I help people 🧑‍🤝‍🧑 and organizations 🌐 build systems ⚙️ that help them
+          thrive. 🌱
         </p>
         <div
           class="bg-black bg-opacity-20 p-10"
           style={{ fontSize: "1.5rem", fontWeight: 250 }}
         >
           <p class>
-            As a CAPM-certified project manager, software developer, & process
-            improvement engineer, I love blending information technology,
-            human-centered design, systems thinking, and compassionate
-            leadership to help people do and create amazing things together.
+            As a <span class="font-light">CAPM-certified project manager</span>,{" "}
+            <span class="font-light">software developer</span>, and{" "}
+            <span class="font-light">process improvement engineer</span>, I love
+            blending information technology, human-centered design, systems
+            thinking, and compassionate leadership to{" "}
+            <span class="font-light">co-create systems</span>,{" "}
+            <span class="font-light">processes</span>, and{" "}
+            <span class="font-light">tools</span> that help people do and create
+            amazing things together.
           </p>
           <p>
             I care deeply about the impact of processes, infrastructure, norms,
             and incentives on organizational effectiveness, team synergy, and
-            individual empowerment. By collaborating with internal and external
-            stakeholders, I aim to collaboratively develop robust frameworks,
-            structures, and workflows that foster organizational alignment,
-            promote collaborative excellence, and drive collective progress.
+            individual empowerment and love collaboratively developing robust
+            frameworks, structures, and workflows that foster organizational
+            alignment, promote collaborative excellence, and drive collective
+            progress.
           </p>
           <p>
-            Outside of my work, I serve as a community organizer of{" "}
+            Outside of my professional work, I've been a proud member of{" "}
             <a
-              href="https://www.eaphiladelphia.org/"
+              href="https://www.givingwhatwecan.org/"
               target="_blank"
               rel="noopener noreferrer"
             >
-              Effective Altruism Philadelphia
-            </a>
-            .
+              Giving What We Can
+            </a>{" "}
+            since 2018 and dedicate 10% of my income to high-impact charities.
           </p>
           <p>
-            Most notably, I completed a 4,230 mile bicycle tour across the
+            In September 2019, I completed a 4,230 mile bicycle tour across the
             United States to challenge myself, push my comfort zone, and expand
             my worldview. Learn more here about the journey here —{" "}
             <a
@@ -76,7 +82,7 @@ function HeroSection() {
             </a>
             , my{" "}
             <a
-              href="https://quinnmchugh.net/impossible-list"
+              href="https://www.quinnmchugh.net/docs/impossible-list"
               target="_blank"
               rel="noopener noreferrer"
             >
