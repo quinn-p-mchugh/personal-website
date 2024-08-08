@@ -152,6 +152,28 @@ function HeroSection() {
 
 const TestimonialList = [
   {
+    name: "Stephanie",
+    title: "Director of People Operations, FORT Robotics",
+    quote: (
+      <>
+        I had the pleasure of working closely with Quinn McHugh at FORT where we
+        partnered on tacking some of the companies toughest communication
+        challenges. Quinn's leadership was nothing short of transformative. Our
+        project, spearheaded by him, resulted in a remarkable 30% increase in
+        company-wide communication satisfaction, a testament to his ability to
+        drive impactful change. Quinn was a major catalyst for organizational
+        change and improvement. His amazing ability to stay on target and get
+        things done was instrumental in the project's success. Quinn's
+        dedication, focus, and relentless pursuit of excellence set him apart as
+        a leader who always exceeds expectations. Without a doubt, I would hire
+        Quinn in a second. His exceptional leadership, innovative thinking, and
+        unwavering commitment to excellence make him an invaluable asset to any
+        team. It was an absolute pleasure working with Quinn, and I look forward
+        to seeing the incredible impact he will continue to make in his career.
+      </>
+    ),
+  },
+  {
     name: "Darren Weinhold",
     title: "Engineering Manager, The Fredericks Company",
     quote: (
@@ -174,7 +196,7 @@ const TestimonialList = [
       </>
     ),
   },
-  {
+  /**{
     name: "Dr. Smitesh Bakrania",
     title: "Associate Professor of Mechanical Engineering, Rowan University",
     quote: (
@@ -196,7 +218,7 @@ const TestimonialList = [
         like Quinn and proud to have him represent Rowan Engineering.
       </>
     ),
-  },
+  },**/
   {
     name: "Doug Wilson",
     title: "Director of Engineering, Inrad Optics",
