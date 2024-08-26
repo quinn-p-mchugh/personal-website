@@ -34,8 +34,7 @@ Here's my personal manifesto, divided into a number of themes:
 
 ## Living / Behavior
 - Life is a positive-sum game - treat others accordingly.
-- Focus on the things you can control, not the things you can't.
-- What matters is not what happens to you, but how you react to it.
+- No matter the situation, [you have the power to choose how you think about and respond to your reality](https://youtu.be/eC7xzavzEKY?si=v-d-05L9GEy7z4q6) (sometimes, this isn't easy to do). Concentrate on what you can control, not what you can't.
 - Your emotions are a feature, not a bug. Even the unpleasant ones have a purpose.
 - You are not your mind - you're not obligated to believe everything you think.
 - Reject the Golden Rule, embrace the Platinum Rule: Treat people as *they* want to be treated, not as you would want to be treated.
