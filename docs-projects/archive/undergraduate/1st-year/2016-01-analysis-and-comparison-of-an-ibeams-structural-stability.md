@@ -16,3 +16,73 @@ I-beam was then compared to the structural stability of several other shapes, in
 triangular rod, and a slab, in order to determine whether or not the I-beam truly is as efficient at resisting bending as it’s renowned to be.
 
 **[View the project final report](http/drive.google.cfid/1iTyiUChS-5i9fYyIBhQ2EWPjgYLgm5view?usp=sharing)**
+
+## Gallery
+
+### Billet
+
+**Cross Section:**
+![Billet Cross Section](billet-cross-section.png)
+
+**Forces Applied:**
+![Billet Forces](billet-forces-applied.png)
+
+**Static Displacement:**
+![Billet Static Displacement Study](billet-static-displacement-study.jpg)
+
+**Stress:**
+![Billet Stress Study](billet-static-nodal-stress-study.jpg)
+
+**Strain:**
+![Billet Strain Study](billet-static-strain-study.jpg)
+
+### Circular Rod
+
+**Cross Section:**
+![Circular Rod Cross Section](circular-rod-cross-section.png)
+
+**Forces Applied:**
+![Circular Rod Forces Applied](circular-rod-forces-applied.png)
+
+**Static Displacement:**
+![Circular Rod Static Displacement Study](circular-rod-static-displacement-study.jpg)
+
+**Stress:**
+![Circular Rod Stress Study](circular-rod-static-nodal-stress-study.jpg)
+
+**Strain:**
+![Circular Rod Strain Study](circular-rod-static-strain-study.jpg)
+
+### Slab
+
+**Cross Section**:
+![Slab Cross Section](slab-cross-section.png)
+
+**Forces Applied:**
+![Slab Forces Applied](slab-forces-applied.png)
+
+**Static Displacement:**
+![Slab Static Displacement Study](slab-static-displacement-study.jpg)
+
+**Stress:**
+![Slab Stress Study](slab-static-nodal-stress-study.jpg)
+
+**Strain:**
+![Slab Strain Study](slab-static-strain-study.jpg)
+
+### I-Beam
+
+**Cross Section**:
+![I-Beam Cross Section](i-beam-cross-section.png)
+
+**Forces Applied**:
+![I-Beam Forces Applied](i-beam-forces-applied.png)
+
+**Static Displacement**:
+![I-Beam Displacement Study](i-beam-static-displacement-study.jpg)
+
+**Stress**:
+![I-Beam Stress Study](i-beam-static-nodal-stress-study.jpg)
+
+**Strain**:
+![I-Beam Strain Study](i-beam-static-strain-study.jpg)
