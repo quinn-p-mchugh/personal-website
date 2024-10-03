@@ -27,5 +27,5 @@ small hole. The spring inside the syringe would then actuate, causing the syring
 sample moments after the “oil well” was capped.
 
 **My Contribution:** Considering I was the only mechanical engineering major on our team, I did a vast majority of the
-work related to 3D modeling, performing fluid simulations, and optimizing the U.R.O.V.’s stability . As a result, I
+work related to 3D modeling, performing fluid simulations, and optimizing the U.R.O.V.'s stability . As a result, I
 learned _a ton_ about SolidWorks modeling, assembly configurations, and flow simulations.

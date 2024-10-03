@@ -16,7 +16,7 @@ created: 2024-05-23T11:53:11-04:00
 modified: 2024-05-23T16:34:00-04:00
 ---
 
-You've probably had to make a lot of decisions in your life. From choosing the right career path to deciding on a major purchase, making choices is part of everyday life. Some decisions are generally straightforward, like picking a movie to watch, while others, like deciding where to live or what your next career move should be, can be much more complex. That’s where this spreadsheet comes in handy.
+You've probably had to make a lot of decisions in your life. From choosing the right career path to deciding on a major purchase, making choices is part of everyday life. Some decisions are generally straightforward, like picking a movie to watch, while others, like deciding where to live or what your next career move should be, can be much more complex. That's where this spreadsheet comes in handy.
 
 This "Decision Matrix" spreadsheet is a tool for doing [multi-criteria decision analysis (MCDA)](https://www.1000minds.com/decision-making/what-is-mcdm-mcda), a technique for comparing different options (e.g. career paths or houses) based on several important criteria (e.g. cost, location, and features).
 

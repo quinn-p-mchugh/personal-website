@@ -32,14 +32,14 @@ The following document outlines my general recommendations for improving documen
 
 - In my experience, using a modified version of the [Johnny Decimal system](https://johnnydecimal.com/) with folders helps keep disorganization at bay
   - For example, if you want to have a folder containing key documents that new volunteers should read, you can put “000” in front of the folder name (e.g. “000 Start Here”) to make the folder the first thing in the Google Drive
-- Based on what’s already in the [Google Drive](https://drive.google.com/drive/u/0/folders/1r_74bvlPCgn_eHrUQ1mDwO2rsXDgSDle), here’s a folder structure to consider:
+- Based on what's already in the [Google Drive](https://drive.google.com/drive/u/0/folders/1r_74bvlPCgn_eHrUQ1mDwO2rsXDgSDle), here's a folder structure to consider:
   - **Wiki**- Internal documents that are generally useful to newcomers and seasoned team members alike.
-  - **Meeting Notes**- _All_ meeting notes go here, regardless of team. These can be separated out into individual folders if there’s a good reason for it.
+  - **Meeting Notes**- _All_ meeting notes go here, regardless of team. These can be separated out into individual folders if there's a good reason for it.
 - For organizing technical documentation, the \*_[Diataxis framework](https://diataxis.fr/)_- is a great starting point
 
 ### Documents
 
-- When in doubt, use a section instead of a bullet - that way, it’s easier to for future users to browse the document via its table of contents
+- When in doubt, use a section instead of a bullet - that way, it's easier to for future users to browse the document via its table of contents
 
 #### Date-Specific (e.g. meeting notes, design reviews, research plans, etc)
 
