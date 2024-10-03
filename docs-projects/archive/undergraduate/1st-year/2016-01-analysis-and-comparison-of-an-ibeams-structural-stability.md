@@ -20,67 +20,67 @@ triangular rod, and a slab, in order to determine whether or not the I-beam trul
 ### Billet
 
 **Cross Section:**
-![Billet Cross Section](billet-cross-section.png)
+![Billet Cross Section](analysis-and-comparison-of-an-ibeams-structural-stability-billet-cross-section.png)
 
 **Forces Applied:**
-![Billet Forces](billet-forces-applied.png)
+![Billet Forces](analysis-and-comparison-of-an-ibeams-structural-stability-billet-forces-applied.png)
 
 **Static Displacement:**
-![Billet Static Displacement Study](billet-static-displacement-study.jpg)
+![Billet Static Displacement Study](analysis-and-comparison-of-an-ibeams-structural-stability-billet-static-displacement-study.jpg)
 
 **Stress:**
-![Billet Stress Study](billet-static-nodal-stress-study.jpg)
+![Billet Stress Study](analysis-and-comparison-of-an-ibeams-structural-stability-billet-static-nodal-stress-study.jpg)
 
 **Strain:**
-![Billet Strain Study](billet-static-strain-study.jpg)
+![Billet Strain Study](analysis-and-comparison-of-an-ibeams-structural-stability-billet-static-strain-study.jpg)
 
 ### Circular Rod
 
 **Cross Section:**
-![Circular Rod Cross Section](circular-rod-cross-section.png)
+![Circular Rod Cross Section](analysis-and-comparison-of-an-ibeams-structural-stability-circular-rod-cross-section.png)
 
 **Forces Applied:**
-![Circular Rod Forces Applied](circular-rod-forces-applied.png)
+![Circular Rod Forces Applied](analysis-and-comparison-of-an-ibeams-structural-stability-circular-rod-forces-applied.png)
 
 **Static Displacement:**
-![Circular Rod Static Displacement Study](circular-rod-static-displacement-study.jpg)
+![Circular Rod Static Displacement Study](analysis-and-comparison-of-an-ibeams-structural-stability-circular-rod-static-displacement-study.jpg)
 
 **Stress:**
-![Circular Rod Stress Study](circular-rod-static-nodal-stress-study.jpg)
+![Circular Rod Stress Study](analysis-and-comparison-of-an-ibeams-structural-stability-circular-rod-static-nodal-stress-study.jpg)
 
 **Strain:**
-![Circular Rod Strain Study](circular-rod-static-strain-study.jpg)
+![Circular Rod Strain Study](analysis-and-comparison-of-an-ibeams-structural-stability-circular-rod-static-strain-study.jpg)
 
 ### Slab
 
 **Cross Section**:
-![Slab Cross Section](slab-cross-section.png)
+![Slab Cross Section](analysis-and-comparison-of-an-ibeams-structural-stability-slab-cross-section.png)
 
 **Forces Applied:**
-![Slab Forces Applied](slab-forces-applied.png)
+![Slab Forces Applied](analysis-and-comparison-of-an-ibeams-structural-stability-slab-forces-applied.png)
 
 **Static Displacement:**
-![Slab Static Displacement Study](slab-static-displacement-study.jpg)
+![Slab Static Displacement Study](analysis-and-comparison-of-an-ibeams-structural-stability-slab-static-displacement-study.jpg)
 
 **Stress:**
-![Slab Stress Study](slab-static-nodal-stress-study.jpg)
+![Slab Stress Study](analysis-and-comparison-of-an-ibeams-structural-stability-slab-static-nodal-stress-study.jpg)
 
 **Strain:**
-![Slab Strain Study](slab-static-strain-study.jpg)
+![Slab Strain Study](analysis-and-comparison-of-an-ibeams-structural-stability-slab-static-strain-study.jpg)
 
 ### I-Beam
 
 **Cross Section**:
-![I-Beam Cross Section](i-beam-cross-section.png)
+![I-Beam Cross Section](analysis-and-comparison-of-an-ibeams-structural-stability-i-beam-cross-section.png)
 
 **Forces Applied**:
-![I-Beam Forces Applied](i-beam-forces-applied.png)
+![I-Beam Forces Applied](analysis-and-comparison-of-an-ibeams-structural-stability-i-beam-forces-applied.png)
 
 **Static Displacement**:
-![I-Beam Displacement Study](i-beam-static-displacement-study.jpg)
+![I-Beam Displacement Study](analysis-and-comparison-of-an-ibeams-structural-stability-i-beam-static-displacement-study.jpg)
 
 **Stress**:
-![I-Beam Stress Study](i-beam-static-nodal-stress-study.jpg)
+![I-Beam Stress Study](analysis-and-comparison-of-an-ibeams-structural-stability-i-beam-static-nodal-stress-study.jpg)
 
 **Strain**:
-![I-Beam Strain Study](i-beam-static-strain-study.jpg)
+![I-Beam Strain Study](analysis-and-comparison-of-an-ibeams-structural-stability-i-beam-static-strain-study.jpg)
