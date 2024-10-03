@@ -3,6 +3,7 @@ title: Analysis and Comparison of an I-Beams Structural Stability
 tags: []
 ---
 
+## Introduction
 The shape of an I-beam has long been considered to be the most structurally stable for the amount of material it uses.
 
 Because of this, I-beams are frequently used in projects that relate to civil engineering, such as buildings and
@@ -13,3 +14,5 @@ through a three point bending test simulation performed using SolidWorks Simulat
 
 I-beam was then compared to the structural stability of several other shapes, including a billet, a circular rod, a
 triangular rod, and a slab, in order to determine whether or not the I-beam truly is as efficient at resisting bending as it’s renowned to be.
+
+**[View the project final report](http/drive.google.cfid/1iTyiUChS-5i9fYyIBhQ2EWPjgYLgm5view?usp=sharing)**

@@ -1,9 +1,9 @@
 {
-  "label": "Undergraduate",
+  "label": "Undergraduate (Mechanical Engineering",
   "collapsible": true,
   "collapsed": true,
   "link": {
     "type": "generated-index",
-    "title": "Undergraduate Projects"
+    "title": "undergraduate-projects-mechanical-engineering"
   }
 }
