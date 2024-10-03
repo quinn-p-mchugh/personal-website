@@ -29,7 +29,7 @@ hit the spring-elevated shaft collar and apply just enough force to move the raz
 cleave it. For safety purposes, the stage utilized shoulder screws to prevent the razor blade from moving more than
 1/16″ vertically.
 
-Future Developments: In hindsight, the use of shaft collars to prevent the device’s aluminum stage from dropping was a
+Future Developments: In hindsight, the use of shaft collars to prevent the device's aluminum stage from dropping was a
 poor design choice. Instead, the use of a leadscrew would have been a significantly better option for moving the
 aluminum stage up and down. That way, the operator would be able to position the stage simply by rotating a handle
 attached to the leadscrew without having to manually hold the stage and risk dropping it on the crystal below.

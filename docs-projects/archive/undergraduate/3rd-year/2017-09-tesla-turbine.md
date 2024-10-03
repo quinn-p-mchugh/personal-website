@@ -3,7 +3,7 @@ title: Tesla Turbine
 tags: []
 ---
 
-During my fall 2017 semester, Rowan University’s American Society of Mechanical Engineers (ASME) student chapter decided to hold a Tesla turbine design competition. Excited by the prospect of pitting my design skills against my fellow engineering students, I jumped at the opportunity to design my own Tesla turbine…
+During my fall 2017 semester, Rowan University's American Society of Mechanical Engineers (ASME) student chapter decided to hold a Tesla turbine design competition. Excited by the prospect of pitting my design skills against my fellow engineering students, I jumped at the opportunity to design my own Tesla turbine…
 
 ...but alas, I ended up being the only participant.
 

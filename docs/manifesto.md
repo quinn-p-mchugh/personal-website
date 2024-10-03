@@ -16,7 +16,7 @@ created: 2024-05-10T11:53:11-04:00
 modified: 2023-07-06T16:34:00-04:00
 ---
 
-> *"A personal manifesto is a set of statements that make up rules for your life. It’s a touchstone that helps you reconnect with what’s important, and it becomes a methodology for staying true to your values, goals, and intentions."*
+> *"A personal manifesto is a set of statements that make up rules for your life. It's a touchstone that helps you reconnect with what's important, and it becomes a methodology for staying true to your values, goals, and intentions."*
 >
 > \- Stephanie Vozza, *[Why you need a personal manifesto and how to write one](https://www.fastcompany.com/90793500/why-you-need-a-personal-manifesto-and-how-to-write-one)*
 

@@ -22,7 +22,7 @@ The flaps of our moving box were used as makeshift mirrors to direct additional 
 
 ## Results
 Overall, our solar air heater performed exceptionally well, achieving the second highest max temperature in
-the class. The solar air heater’s quantitative performance is shown in the table below:
+the class. The solar air heater's quantitative performance is shown in the table below:
 
 <table>
     <tbody>
