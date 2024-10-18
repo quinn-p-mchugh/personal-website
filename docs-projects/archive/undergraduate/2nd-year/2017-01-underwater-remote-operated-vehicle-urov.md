@@ -31,3 +31,51 @@ sample moments after the “oil well” was capped.
 Considering I was the only mechanical engineering major on our team, I did a vast majority of the
 work related to 3D modeling, performing fluid simulations, and optimizing the U.R.O.V.'s stability . As a result, I
 learned _a ton_ about SolidWorks modeling, assembly configurations, and flow simulations.
+
+## Gallery
+
+### CAD
+![UROV CAD - Side View](urov-cad-side-view.png)
+
+![UROV CAD - Side View, Center of Buoyancy](urov-cad-center-of-buoyancy-side-view.png)
+
+![UROV Render - Isometric View](urov-render-isometric-view.jpg)
+
+#### Render
+
+
+### Flow Simulation
+Flow simulations were performed using [SolidWorks Flow Simulation](https://www.solidworks.com/product/solidworks-flow-simulation).
+
+![UROV Flow Simulation - Side View](urov-flow-simulation-side-view.png)
+
+![UROV Flow Simulation - Front View](urov-flow-simulation-front-view.png)
+
+![UROV Flow Simulation - Top View](urov-flow-simulation-top-view.png)
+
+### Build
+![UROV Build - Isometric View, Front](urov-build-isometric-view-front.jpg)
+
+![UROV Build - Side View](urov-build-side-view.jpg)
+
+![UROV Build - Isometric View, Back](urov-build-isometric-view-back.jpg)
+
+![UROV Build - Top/Back View](urov-build-top-back-view.jpg)
+
+![UROV Build - Top View](urov-build-top-view.jpg)
+
+**Debris Collection Cage:**
+![UROV Build - Debris Collection Cage](urov-debris-collection-cage.jpg)
+
+**Tether Mount:**
+![UROV Build - Tether Mount](urov-tether-mount.jpg)
+
+**Water Collection Mechanism:**
+![UROV Build - Water Collection Mechanism, Side View](urov-water-sample-collection-mechanism-side-view.jpg)
+
+![UROV Build - Water Collection Mechanism Schematic](urov-water-sample-collection-mechanism-sketch.png)
+
+![UROV Build - Water Collection Mechanism, Isometric View](urov-water-sample-collection-mechanism-isometric-view.jpg)
+
+### Obstacle Course
+![UROV Obstacle Course Schematic](urov-obstacle-course-schematic.jpg)
