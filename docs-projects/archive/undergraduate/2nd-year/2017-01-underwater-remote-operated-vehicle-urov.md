@@ -14,7 +14,8 @@ optimized using SolidWorks and SolidWorks Flow Simulation. The objectives of the
 4. Cap an “oil well” by successfully placing a PVC cap on top of a pipe on the bottom of the pool.
 5. Collect a water sample near the area where the “oil well” is located.
 
-**Results & Discussion:** During our final test, the U.R.O.V. performed exceptionally well and, even though it was able
+## Results & Discussion
+During our final test, the U.R.O.V. performed exceptionally well and, even though it was able
 to collect only one piece of debris from the bottom of the pool, it performed every other task without fail. Since we
 allocated a considerable amount of time towards maximizing the stability of our UROV using a 2k factorial design
 process, the device ended up being one of the most maneuverable UROVs developed during the semester, despite being
@@ -26,6 +27,7 @@ off of our PVC cap holder and cause a small cotter pin holding back a spring-act
 small hole. The spring inside the syringe would then actuate, causing the syringe to automatically collect a water
 sample moments after the “oil well” was capped.
 
-**My Contribution:** Considering I was the only mechanical engineering major on our team, I did a vast majority of the
+## My Contribution
+Considering I was the only mechanical engineering major on our team, I did a vast majority of the
 work related to 3D modeling, performing fluid simulations, and optimizing the U.R.O.V.'s stability . As a result, I
 learned _a ton_ about SolidWorks modeling, assembly configurations, and flow simulations.
