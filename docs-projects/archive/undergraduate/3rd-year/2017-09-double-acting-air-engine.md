@@ -29,3 +29,55 @@ improved regarding its design:
 - At higher RPMs, the seal between the piston head and body of our power cylinder was less than ideal, causing our engine to lose a significant amount of torque during operation. To resolve this additional or larger diameter o-rings could have been added to our power cylinder piston in order to improve this seal.
 - As shown in the SolidWorks renders below, our engine was originally designed to maximize airflow efficiency by putting the power and valve cylinder valves and tubing on the same plane. Due to the geometry of our power and valve cylinder, however, the original engine design required a small offset between the valve holes, which required the tubing to be bent slightly. Due to the tubing's limited flexibility, however, we were unable to bend the tubing between the valves in such a way that did not introduce additional air leakage. Thus, we decided to orient the power and valve cylinder valves vertically and route the tubing in a traditional method. For future design iterations, the distance between the air valves of the power cylinder and the air valves of the valve cylinder should be equal, which would alleviate the air leakage issue mentioned above.
 - Since our team strived to maximize the rpm-weight ratio of our engine, we wanted to minimize the amount of material used in our design without making the engine structurally unstable. Although our engine faired well when run at reasonable speeds, considerable vibration would occur at high speeds. To reduce these vibrations and increase efficiency, additional material could be added between the engine's supports.
+
+## Gallery
+
+### Design
+**Air Engine Timing Diagram (for determining ideal component dimensions)**
+![SolidWorks Timing Diagram](double-acting-air-engine-solidworks-timing-diagram.jpg) 
+
+#### CAD Drawings
+![CAD Drawing - Valve Cylinder](double-acting-air-engine-drawing-valve-cylinder.jpg)
+
+![CAD Drawing - Valve Cylinder Piston](double-acting-air-engine-drawing-valve-cylinder-piston.jpg) 
+
+![CAD Drawing - Power Cylinder Rod Clevis](double-acting-air-engine-drawing-power-cylinder-rod-clevis.jpg) 
+
+![CAD Drawing - Power Cylinder Connecting Rod Pin](double-acting-air-engine-drawing-power-cylinder-connecting-rod-pin.jpg) 
+
+![CAD Drawing - Power Cylinder Piston Rod](double-acting-air-engine-drawing-power-cylinder-piston-rod.jpg) 
+
+![CAD Drawing - Crank Pin](double-acting-air-engine-drawing-crank-pin.jpg) 
+
+#### CAD Renders
+![CAD Render - Isometric View](double-acting-air-engine-render-isometric-view.jpg) 
+
+![CAD Render - Side View](double-acting-air-engine-render-side-view.jpg)
+
+![CAD Render - Front View](double-acting-air-engine-render-front-view.jpg) 
+
+![CAD Render - Top View](double-acting-air-engine-render-top-view.jpg) 
+
+### Build
+![Air Engine Fabricated - Isometric View](double-acting-air-engine-fabricated-isometric-view.jpg)
+
+![Air Engine Fabricated - Side View](double-acting-air-engine-fabricated-side-view.jpg)
+
+![Air Engine Fabricated - Front View](double-acting-air-engine-fabricated-front-view.jpg) 
+
+![Air Engine Fabricated - Top View](double-acting-air-engine-fabricated-top-view.jpg) 
+
+![Air Engine Fabricated - Crank Close-Up](double-acting-air-engine-fabricated-crank-close-up.jpg) 
+
+![Air Engine Fabricated - Flywheel, Front View](double-acting-air-engine-fabricated-flywheel.jpg)
+
+![Air Engine Fabricated - Flywheel, Side View](double-acting-air-engine-fabricated-flywheel-side-view.jpg) 
+
+### Analysis
+![Air Engine Force Analysis Code](double-acting-air-engine-force-analysis-code.jpg) 
+
+![Air Engine Force Analysis - Trajectory of Power Cylinder Linkage for One Rotation of Crank](double-acting-air-engine-analysis-trajectory-of-power-cylinder-linkage-for-one-rotation-of-crank.jpg) 
+
+![Air Engine Force Analysis - X-Acceleration of Piston Head for One Rotation of Crank](double-acting-air-engine-analysis-x-acceleration-of-piston-head-for-one-rotation-of-crank.jpg) 
+
+![Air Engine Force Analysis Code - X & Y Forces on Point B for One Rotation of Crank](double-acting-air-engine-analysis-x-and-y-forces-on-point-b-for-one-rotation-of-crank.jpg)
