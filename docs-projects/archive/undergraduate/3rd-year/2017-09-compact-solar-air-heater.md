@@ -52,18 +52,16 @@ black paint to construct our design, sourcing materials, such as black foam, acr
 ## Gallery
 
 ### Preliminary Sketches
-![Preliminary Sketch 1](compact-solar-air-heater-build-sketch-preliminary-1.JPG)
+![Preliminary Sketch 1](compact-solar-air-heater-sketch-preliminary-1.JPG)
 
-![Preliminary Sketch 2](compact-solar-air-heater-build-sketch-preliminary-2.JPG)
+![Preliminary Sketch 2](compact-solar-air-heater-sketch-preliminary-2.JPG)
 
-![Preliminary Sketch 3](compact-solar-air-heater-build-sketch-preliminary-3.JPG)
-
-![Preliminary Sketch 4](compact-solar-air-heater-build-preliminary-sketch-4.JPG)
+![Preliminary Sketch 3](compact-solar-air-heater-sketch-preliminary-3.jpg)
 
 ### Final Sketches
-![Final Sketch - Top View](compact-solar-air-heater-build-sketch-final-top-view.jpg)
+![Final Sketch - Top View](compact-solar-air-heater-sketch-final-top-view.jpg)
 
-![Final Sketch - Front View](compact-solar-air-heater-build-sketch-final-front-view.jpg)
+![Final Sketch - Front View](compact-solar-air-heater-sketch-final-front-view.jpg)
 
 ### Materials
 ![Cardboard Box](compact-solar-air-heater-materials-cardboard-box.jpg)
@@ -72,6 +70,8 @@ black paint to construct our design, sourcing materials, such as black foam, acr
 
 ### Build
 **Partially Deployed:**
+![Solar Air Heater - Partially Deployed](compact-solar-air-heater-build-partially-deployed.jpg)
+
 ![Solar Air Heater - Partially Deployed 1](compact-solar-air-heater-build-partially-deployed-1.jpg)
 
 ![Solar Air Heater - Partially Deployed 2](compact-solar-air-heater-build-partially-deployed-3.jpg)
@@ -80,6 +80,8 @@ black paint to construct our design, sourcing materials, such as black foam, acr
 
 **Fully Deployed:**
 ![Solar Air Heater - Fully Deployed, Back View](compact-solar-air-heater-build-fully-deployed-front-view.jpg)
+
+![Solar Air Heater - Tube Close-Up](compact-solar-air-heater-build-close-up.jpg)
 
 ![Solar Air Heater - Fully Deployed, Back View](compact-solar-air-heater-build-fully-deployed-back-view.jpg)
 

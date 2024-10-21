@@ -1,6 +1,7 @@
 ---
 title: Crystal Cleaving Device
 tags: []
+draft: true
 ---
 
 While working as a manufacturing engineering intern at Inrad Optics during the summer of 2018, I designed a crystal
