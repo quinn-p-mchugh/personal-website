@@ -1,5 +1,5 @@
 ---
-title: Compact Solar Air Heater
+title: Compact Solar Solar Air Heater
 tags: []
 ---
 
@@ -48,3 +48,40 @@ the class. The solar air heater's quantitative performance is shown in the table
 ## Challenges
 Since we were only given a small fan, a 24″ x 18″ x 18″ moving box, and a single spray can of matte
 black paint to construct our design, sourcing materials, such as black foam, acrylic, aluminum foil, and duct tape, was likely the most challenging aspect of the project. Upon finding these materials, however, constructing the device was relatively straightforward and aesthetics aside, I was very pleased with our final design.
+
+## Gallery
+
+### Preliminary Sketches
+![Preliminary Sketch 1](compact-solar-air-heater-build-sketch-preliminary-1.JPG)
+
+![Preliminary Sketch 2](compact-solar-air-heater-build-sketch-preliminary-2.JPG)
+
+![Preliminary Sketch 3](compact-solar-air-heater-build-sketch-preliminary-3.JPG)
+
+![Preliminary Sketch 4](compact-solar-air-heater-build-preliminary-sketch-4.JPG)
+
+### Final Sketches
+![Final Sketch - Top View](compact-solar-air-heater-build-sketch-final-top-view.jpg)
+
+![Final Sketch - Front View](compact-solar-air-heater-build-sketch-final-front-view.jpg)
+
+### Materials
+![Cardboard Box](compact-solar-air-heater-materials-cardboard-box.jpg)
+
+![Aluminum Cans](compact-solar-air-heater-materials-aluminum-can.jpg)
+
+### Build
+**Partially Deployed:**
+![Solar Air Heater - Partially Deployed 1](compact-solar-air-heater-build-partially-deployed-1.jpg)
+
+![Solar Air Heater - Partially Deployed 2](compact-solar-air-heater-build-partially-deployed-3.jpg)
+
+![Solar Air Heater - Partially Deployed 3](compact-solar-air-heater-build-partially-deployed-4.jpg)
+
+**Fully Deployed:**
+![Solar Air Heater - Fully Deployed, Back View](compact-solar-air-heater-build-fully-deployed-front-view.jpg)
+
+![Solar Air Heater - Fully Deployed, Back View](compact-solar-air-heater-build-fully-deployed-back-view.jpg)
+
+
+
