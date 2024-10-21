@@ -18,3 +18,16 @@ When high pressure air is fed into the small pneumatic fitting on the top of the
 After fabricating the device in my spare time, I realized that I did not provide a large enough tolerance between the outer edge of the HDD platters and the interior of the 3D printed body. As a result, the slightest amount of friction between these two components prevented the shaft of the turbine from rotating.
 
 Unfortunately, I never got around to resolving this issue, as other projects and extracurricular activities became higher in priority.
+
+## Gallery
+![CAD Render - Isometric View](tesla-turbine-render-isometric-view.jpg)
+
+![CAD Render - Front View](tesla-turbine-render-front-view.jpg) 
+
+![CAD Render - Front View, Transparent Body](tesla-turbine-cad-front-view-hidden-lines.jpg) 
+
+![CAD Render - Top View](tesla-turbine-render-top-view.jpg)
+
+![CAD Render - Cross-Sectional Side View](tesla-turbine-render-cross-sectional-side-view.jpg) 
+
+![CAD Render - Back View](tesla-turbine-render-back-view.jpg) 
