@@ -58,6 +58,8 @@ const plugins = {
 
 // https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog
 const contentConfig = {
+  tags: "../content-tags.yml",
+  onInlineTags: "warn",
   blogConfig: {
     sidebarCount: "ALL",
     feedType: "all",
@@ -124,6 +126,8 @@ const config = {
         id: "projects",
         path: "docs-projects",
         routeBasePath: "projects",
+        onInlineTags: contentConfig.onInlineTags,
+        tags: contentConfig.tags,
         //sidebarPath: require.resolve("./sidebarsProjects.js"),
       },
     ],
@@ -149,6 +153,7 @@ const config = {
           "Half-baked, outlandish, and occasionally good ideas for someone else to execute",
         blogSidebarCount: contentConfig.blogConfig.sidebarCount,
         showReadingTime: false,
+        onInlineTags: contentConfig.onInlineTags,
         feedOptions: {
           title: contentConfig.blogConfig.ideasBlog.title,
           description: contentConfig.blogConfig.ideasBlog.description,
@@ -158,6 +163,7 @@ const config = {
         },
         remarkPlugins: plugins.remarkPlugins,
         rehypePlugins: plugins.rehypePlugins,
+        tags: contentConfig.tags,
         authorsMapPath: contentConfig.blogConfig.authorsMapPath,
       },
     ],
@@ -183,6 +189,7 @@ const config = {
           "My Microblog: Miscellaneous musings, fleeting thoughts, & unsolicited advice",
         blogSidebarCount: contentConfig.blogConfig.sidebarCount,
         showReadingTime: false,
+        onInlineTags: contentConfig.onInlineTags,
         feedOptions: {
           title: contentConfig.blogConfig.microBlog.title,
           description: contentConfig.blogConfig.microBlog.description,
@@ -192,6 +199,7 @@ const config = {
         },
         remarkPlugins: plugins.remarkPlugins,
         rehypePlugins: plugins.rehypePlugins,
+        tags: contentConfig.tags,
         authorsMapPath: contentConfig.blogConfig.authorsMapPath,
       },
     ],
@@ -207,8 +215,10 @@ const config = {
           path: "docs",
           routeBasePath: "docs",
           showLastUpdateTime: true,
+          onInlineTags: contentConfig.onInlineTags,
           remarkPlugins: plugins.remarkPlugins,
           rehypePlugins: plugins.rehypePlugins,
+          tags: contentConfig.tags,
         },
         blog: {
           id: "blog",
@@ -219,6 +229,7 @@ const config = {
           blogSidebarTitle: contentConfig.blogConfig.blog.description,
           blogSidebarCount: contentConfig.blogConfig.sidebarCount,
           showReadingTime: true,
+          onInlineTags: contentConfig.onInlineTags,
           feedOptions: {
             title: contentConfig.blogConfig.blog.title,
             description: contentConfig.blogConfig.blog.description,
@@ -226,6 +237,7 @@ const config = {
             copyright: contentConfig.blogConfig.copyright,
             limit: contentConfig.blogConfig.feedLimit,
           },
+          tags: contentConfig.tags,
           authorsMapPath: contentConfig.blogConfig.authorsMapPath,
         },
         theme: {
