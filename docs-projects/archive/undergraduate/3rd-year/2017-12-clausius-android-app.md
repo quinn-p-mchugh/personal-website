@@ -12,3 +12,20 @@ button or the swipe of a finger. To make use of the app, the user simply touches
 
 ## Motivation
 This app was created to eliminate the need to reference steam tables or physical copies of T-s, P-v, or P-h diagrams, which often slow the problem-solving process considerably. With such an app, users can efficiently work through complex problems and learn thermodynamic concepts without having to tediously calculate the thermodynamic property values needed to solve such problems. The following promo video briefly shows the functionality of the app and its usefulness as a problem-solving tool.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/U34Dn5NZacA?si=i_yLNwsw8BdlTKO-" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+## Gallery
+![Clausius Cover Photo](clausius-android-app-cover-photo.jpg)
+
+**Pressure-Enthalpy (P-h) Diagram:**
+![P-h Diagram with Menu](clausius-android-app-p-h-diagram-with-menu.jpg) 
+
+**Pressure-Volume (P-v) Diagram:**
+![P-v Diagram with Menu](clausius-android-app-p-v-diagram-with-menu.jpg) 
+
+**Temperature-Entropy (T-s) Diagram:**
+![T-s Diagram with Menu](clausius-android-app-t-s-diagram-with-menu.jpg)
+
+**Menu Closed:**
+![T-s Diagram Without Menu](clausius-android-app-t-s-diagram-without-menu.jpg)

@@ -20,3 +20,113 @@ Since our team was comprised of just two individuals, there was never a time whe
 
 ## Challenges
 Since my partner and I were just a two person team, finding the time to develop the mechanical tester proved to be a constant challenge. In addition, the lack of documentation provided by previous clinic teams hindered our ability to make significant progress early on. These challenges, however, were what made the project a very rewarding experience.
+
+## Gallery
+
+### CAD Renders
+![CAD Render - Isometric View](portable-mechanical-tester-render-isometric-view.JPG)
+
+![CAD Render - Side View](portable-mechanical-tester-render-side-view.jpg)
+
+![CAD Render - Front View](portable-mechanical-tester-render-front-view.jpg)
+
+### Components
+
+**Raspberry Pi 3 Model B:**
+![Raspberry Pi 3 Model B](portable-mechanical-tester-components-raspberry-pi-3-model-b.png)
+
+**Nema 23 Stepper Motor:**
+![Nema 23 Stepper Motor](portable-mechanical-tester-components-nema-23-stepper-motor.png)
+
+**M542T Microstep Driver:**
+![M542T Microstep Driver](portable-mechanical-tester-components-m542t-microstep-driver.png) 
+
+**AMT102 Rotary Encoder:**
+![AMT102 Rotary Encoder](portable-mechanical-tester-components-amt102-rotary-encoder.png) 
+
+**DC-DC Voltage Converter:**
+![DC-DC Voltage Converter](portable-mechanical-tester-components-dc-dc-voltage-converter.png) 
+
+**Limit Switch:**
+![Limit Switch](portable-mechanical-tester-components-limit-switch.png) 
+
+**Push Button:**
+![Push Button](portable-mechanical-tester-components-push-button.png)
+
+**SparkFun Logic Level Converter (Bidirectional):**
+![SparkFun Logic Level Converter (Bidirectional)](portable-mechanical-tester-components-sparkfun-logic-level-converter-bi-directional.png)
+
+**SparkFun Load Cell Amplifier (HX711):**
+![SparkFun Load Cell Amplifier (HX711)](portable-mechanical-tester-components-sparkfun-load-cell-amplifier-hx711.png)
+
+**Pushton Load Cell (PSD-S1)**
+![Pushton Load Cell (PSD-S1)](portable-mechanical-tester-components-pushton-load-cell-psd-s1.jpg)
+
+**AC to DC Power Supply:**
+![AC to DC Power Supply](portable-mechanical-tester-components-ac-dc-power-supply.png)
+
+### CAD Drawings
+
+**Angle Bracket:**
+![CAD Drawing - Angle Bracket](portable-mechanical-tester-drawing-angle-bracket.JPG)
+
+**Base Plate:**
+![CAD Drawing - Base Plate](portable-mechanical-tester-drawing-base-plate.JPG)
+
+**Rotary Encoder Cover:**
+![CAD Drawing - Rotary Encoder Cover](portable-mechanical-tester-drawing-rotary-encoder-cover.JPG)
+
+**Side Panel:**
+![CAD Drawing - Side Panel](portable-mechanical-tester-drawing-side-panel.JPG)
+
+**Linear Actuator Mounting Plate:**
+![CAD Drawing - Linear Actuator Mounting Plate](portable-mechanical-tester-drawing-linear-actuator-mounting-plate.JPG)
+
+**Limit Switch Housing:**
+![CAD Drawing - Limit Switch Housing](portable-mechanical-tester-drawing-limit-switch-housing.JPG)
+
+**Testing Platform:**
+![CAD Drawing - Testing Platform](portable-mechanical-tester-drawing-testing-platform.JPG)
+
+### Build
+![Fabricated Device - Isometric View](portable-mechanical-tester-fabricated-isometric-view.jpg)
+
+![Fabricated Device - Side View](portable-mechanical-tester-fabricated-side-view.jpg)
+
+![Fabricated Device - Front View](portable-mechanical-tester-fabricated-front-view.jpg)
+
+**USB Input (for data collection) & HDMI Output (for displaying control interface on a school monitor):**
+![Fabricated Device - USB/HDMI Interfaces](portable-mechanical-tester-fabricated-usb-hdmi-interfaces.jpg)
+
+**Electronics Mounting Plate:**
+![Fabricated Device - Electronics Mounting Plate](portable-mechanical-tester-fabricated-electronics-mounting-plate.jpg)
+
+**Buttons for Manual Control:**
+![Fabricated Device - Manual Control Buttons](portable-mechanical-tester-fabricated-manual-control-buttons.jpg)
+
+### Code & Graphical User Interface (GUI)
+
+**Prototype GUI:**
+![Prototype GUI](portable-mechanical-tester-code-prototype-gui.png)
+
+**Example Python Class:**
+![Example Python Class](portable-mechanical-tester-code-python-class-linear-actuator-example.png)
+
+### Electronics
+
+**Wiring Diagram:**
+![Electronics Wiring Diagram](portable-mechanical-tester-electronics-wiring-diagram.png) 
+
+**Electrical Schematic:**
+![Electrical Schematic](portable-mechanical-tester-electronics-electrical-schematic.jpg)
+
+**Custom PCB Shield for Raspberry Pi:**
+![Custom PCB Shield for Raspberry Pi](portable-mechanical-tester-electronics-custom-pcb-shield-for-raspberry-pi.JPG)
+
+### Original Tester v.s. New Tester
+
+#### Original Tester:
+![Original Tester](portable-mechanical-tester-fabricated-original-tester-opened.jpg)
+
+#### New Tester:
+![New Tester](portable-mechanical-tester-fabricated-isometric-view.jpg)

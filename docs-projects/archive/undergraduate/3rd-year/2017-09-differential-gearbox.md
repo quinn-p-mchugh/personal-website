@@ -12,3 +12,21 @@ fabricated a differential gearbox satisfying the following constraints:
 - Total cost of the machine should be below $60
 
 The following video explains the design of our differential gearbox and shows the device in action:
+
+## Gallery
+
+### CAD Renders
+![Differential Gearbox Render - Isometric View](differential-gearbox-render-isometric-view.jpg) 
+
+![Differential Gearbox Render - Side View](differential-gearbox-render-side-view.jpg) 
+
+![Differential Gearbox Render - Front View](differential-gearbox-render-front-view.jpg) 
+
+### Build 
+![Differential Gearbox Fabricated - Isometric View](differential-gearbox-fabricated-isometric-view.jpg) 
+
+![Differential Gearbox Fabricated - Side View](differential-gearbox-fabricated-side-view.jpg) 
+
+![Differential Gearbox Fabricated - Front View](differential-gearbox-fabricated-front-view.jpg) 
+
+![Differential Gearbox Fabricated - Top View](differential-gearbox-fabricated-top-view.jpg) 

@@ -19,3 +19,54 @@ For me, the primary challenges I faced in completing my tasks were getting Solid
 In hindsight, [ANSYS](https://www.ansys.com/), [ABAQUS](https://www.3ds.com/products-services/simulia/products/abaqus/), or [Patran](https://hexagon.com/products/patran) should have been used instead of [SolidWorks Simulation](https://www.solidworks.com/product/solidworks-simulation) due to their superior capabilities. Unfortunately, our team did not have access or the budget to purchase such programs.
 
 Below, you can view a gallery of some of the things that were worked on during the fall 2017 and spring 2018 semesters:
+
+## Gallery
+
+![CAD - Isometric View](3-in-1-laser-cutter-cnc-mill-3d-printer-cad-isometric-view.JPG)
+
+### CoreXY Positioning System
+![CoreXY Positioning System CAD - Isometric View](3-in-1-laser-cutter-cnc-mill-3d-printer-cad-core-xy-positioning-system-isometric-view.JPG)
+
+### Vertical Motion System
+![Vertical Motion System Render](3-in-1-laser-cutter-cnc-mill-3d-printer-render-vertical-motion-system.png)
+
+
+### Interchangeable Head
+![Head Assembly CAD - Isometric View](3-in-1-laser-cutter-cnc-mill-3d-printer-cad-head-assembly-isometric-view.jpg)
+
+![Head Assembly - Fabricated](3-in-1-laser-cutter-cnc-mill-3d-printer-head-assembly-fabricated.png)
+
+### CoreXY Positioning System
+![CoreXY Positioning System Schematic](3-in-1-laser-cutter-cnc-mill-3d-printer-schematic-corexy-positioning-system.png)
+
+### Finite Element Analysis (FEA)
+**Frame (Stress):**
+![Finite Element Analysis - Frame, Stress](3-in-1-laser-cutter-cnc-mill-3d-printer-fea-frame-stress.png)
+
+**Frame (Strain):**
+![Finite Element Analysis - Frame, Strain](3-in-1-laser-cutter-cnc-mill-3d-printer-fea-frame-strain.png)
+
+**Build Plate:**
+![Finite Element Analysis - Build Plate](3-in-1-laser-cutter-cnc-mill-3d-printer-fea-build-plate.png)
+
+**Build Plate Bracket:**
+![Finite Element Analysis - Build Plate Bracket](3-in-1-laser-cutter-cnc-mill-3d-printer-fea-build-plate-bracket.png)
+
+**Vertical Motion Bracket:**
+![Finite Element Analyis - Vertical Motion Bracket](3-in-1-laser-cutter-cnc-mill-3d-printer-fea-vertical-motion-bracket.png)
+
+### Electronics
+**First day of electronics testing:**
+![First Day of Electronics Testing](3-in-1-laser-cutter-cnc-mill-3d-printer-first-day-of-electronics-testing.jpg)
+
+**Electrical Schematic for 3D Printer:**
+![3D Printer Electrical Schematic](3-in-1-laser-cutter-cnc-mill-3d-printer-3d-printer-electrical-schematic.JPG)
+
+### Build
+![Building the Frame](3-in-1-laser-cutter-cnc-mill-3d-printer-frame-assembly.jpg)
+
+![Fabricated Frame - Isometric View](3-in-1-laser-cutter-cnc-mill-3d-printer-frame-fabricated-isometric-view.jpg)
+
+![Fabricated Frame - Side View](3-in-1-laser-cutter-cnc-mill-3d-printer-frame-fabricated-side-view.jpeg)
+
+![Fabricated Frame with Build Plate](3-in-1-laser-cutter-cnc-mill-3d-printer-frame-fabricated-with-build-plate.png)
