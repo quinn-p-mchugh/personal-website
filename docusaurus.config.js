@@ -129,6 +129,8 @@ const config = {
         showLastUpdateAuthor: true,
         showLastUpdateTime: true,
         onInlineTags: contentConfig.onInlineTags,
+        remarkPlugins: plugins.remarkPlugins,
+        rehypePlugins: plugins.rehypePlugins,
         tags: contentConfig.tags,
         //sidebarPath: require.resolve("./sidebarsProjects.js"),
       },
@@ -246,6 +248,8 @@ const config = {
             copyright: contentConfig.blogConfig.copyright,
             limit: contentConfig.blogConfig.feedLimit,
           },
+          remarkPlugins: plugins.remarkPlugins,
+          rehypePlugins: plugins.rehypePlugins,
           tags: contentConfig.tags,
           authorsMapPath: contentConfig.blogConfig.authorsMapPath,
         },
@@ -255,6 +259,8 @@ const config = {
         pages: {
           showLastUpdateAuthor: true,
           showLastUpdateTime: true,
+          remarkPlugins: plugins.remarkPlugins,
+          rehypePlugins: plugins.rehypePlugins,
         },
         gtag: {
           trackingID: ["G-WSVD3SVT4R", "UA-121689368-1"],
