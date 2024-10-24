@@ -24,7 +24,7 @@ Since my partner and I were just a two person team, finding the time to develop 
 ## Gallery
 
 ### CAD Renders
-![CAD Render - Isometric View](portable-mechanical-tester-render-isometric-view.JPG)
+![CAD Render - Isometric View](portable-mechanical-tester-render-isometric-view.jpg)
 
 ![CAD Render - Side View](portable-mechanical-tester-render-side-view.jpg)
 
@@ -68,25 +68,25 @@ Since my partner and I were just a two person team, finding the time to develop 
 ### CAD Drawings
 
 **Angle Bracket:**
-![CAD Drawing - Angle Bracket](portable-mechanical-tester-drawing-angle-bracket.JPG)
+![CAD Drawing - Angle Bracket](portable-mechanical-tester-drawing-angle-bracket.jpg)
 
 **Base Plate:**
-![CAD Drawing - Base Plate](portable-mechanical-tester-drawing-base-plate.JPG)
+![CAD Drawing - Base Plate](portable-mechanical-tester-drawing-base-plate.jpg)
 
 **Rotary Encoder Cover:**
-![CAD Drawing - Rotary Encoder Cover](portable-mechanical-tester-drawing-rotary-encoder-cover.JPG)
+![CAD Drawing - Rotary Encoder Cover](portable-mechanical-tester-drawing-rotary-encoder-cover.jpg)
 
 **Side Panel:**
-![CAD Drawing - Side Panel](portable-mechanical-tester-drawing-side-panel.JPG)
+![CAD Drawing - Side Panel](portable-mechanical-tester-drawing-side-panel.jpg)
 
 **Linear Actuator Mounting Plate:**
-![CAD Drawing - Linear Actuator Mounting Plate](portable-mechanical-tester-drawing-linear-actuator-mounting-plate.JPG)
+![CAD Drawing - Linear Actuator Mounting Plate](portable-mechanical-tester-drawing-linear-actuator-mounting-plate.jpg)
 
 **Limit Switch Housing:**
-![CAD Drawing - Limit Switch Housing](portable-mechanical-tester-drawing-limit-switch-housing.JPG)
+![CAD Drawing - Limit Switch Housing](portable-mechanical-tester-drawing-limit-switch-housing.jpg)
 
 **Testing Platform:**
-![CAD Drawing - Testing Platform](portable-mechanical-tester-drawing-testing-platform.JPG)
+![CAD Drawing - Testing Platform](portable-mechanical-tester-drawing-testing-platform.jpg)
 
 ### Build
 ![Fabricated Device - Isometric View](portable-mechanical-tester-fabricated-isometric-view.jpg)
@@ -121,7 +121,7 @@ Since my partner and I were just a two person team, finding the time to develop 
 ![Electrical Schematic](portable-mechanical-tester-electronics-electrical-schematic.jpg)
 
 **Custom PCB Shield for Raspberry Pi:**
-![Custom PCB Shield for Raspberry Pi](portable-mechanical-tester-electronics-custom-pcb-shield-for-raspberry-pi.JPG)
+![Custom PCB Shield for Raspberry Pi](portable-mechanical-tester-electronics-custom-pcb-shield-for-raspberry-pi.jpg)
 
 ### Original Tester v.s. New Tester
 

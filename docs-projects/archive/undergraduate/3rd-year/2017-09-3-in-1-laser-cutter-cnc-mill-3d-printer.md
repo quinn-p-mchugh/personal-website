@@ -22,10 +22,10 @@ Below, you can view a gallery of some of the things that were worked on during t
 
 ## Gallery
 
-![CAD - Isometric View](3-in-1-laser-cutter-cnc-mill-3d-printer-cad-isometric-view.JPG)
+![CAD - Isometric View](3-in-1-laser-cutter-cnc-mill-3d-printer-cad-isometric-view.jpg)
 
 ### CoreXY Positioning System
-![CoreXY Positioning System CAD - Isometric View](3-in-1-laser-cutter-cnc-mill-3d-printer-cad-core-xy-positioning-system-isometric-view.JPG)
+![CoreXY Positioning System CAD - Isometric View](3-in-1-laser-cutter-cnc-mill-3d-printer-cad-core-xy-positioning-system-isometric-view.jpg)
 
 ### Vertical Motion System
 ![Vertical Motion System Render](3-in-1-laser-cutter-cnc-mill-3d-printer-render-vertical-motion-system.png)
@@ -60,7 +60,7 @@ Below, you can view a gallery of some of the things that were worked on during t
 ![First Day of Electronics Testing](3-in-1-laser-cutter-cnc-mill-3d-printer-first-day-of-electronics-testing.jpg)
 
 **Electrical Schematic for 3D Printer:**
-![3D Printer Electrical Schematic](3-in-1-laser-cutter-cnc-mill-3d-printer-3d-printer-electrical-schematic.JPG)
+![3D Printer Electrical Schematic](3-in-1-laser-cutter-cnc-mill-3d-printer-3d-printer-electrical-schematic.jpg)
 
 ### Build
 ![Building the Frame](3-in-1-laser-cutter-cnc-mill-3d-printer-frame-assembly.jpg)

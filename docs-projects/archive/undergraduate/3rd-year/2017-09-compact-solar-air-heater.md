@@ -52,9 +52,9 @@ black paint to construct our design, sourcing materials, such as black foam, acr
 ## Gallery
 
 ### Preliminary Sketches
-![Preliminary Sketch 1](compact-solar-air-heater-sketch-preliminary-1.JPG)
+![Preliminary Sketch 1](compact-solar-air-heater-sketch-preliminary-1.jpg)
 
-![Preliminary Sketch 2](compact-solar-air-heater-sketch-preliminary-2.JPG)
+![Preliminary Sketch 2](compact-solar-air-heater-sketch-preliminary-2.jpg)
 
 ![Preliminary Sketch 3](compact-solar-air-heater-sketch-preliminary-3.jpg)
 
