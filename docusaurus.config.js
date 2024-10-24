@@ -57,7 +57,12 @@ const plugins = {
 };
 
 // https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog
-const blogConfig = {
+const contentConfig = {
+  blogConfig: {
+    sidebarCount: "ALL",
+    feedType: "all",
+    feedLimit: 100,
+    copyright: `Copyright © 2017-${new Date().getFullYear()} Quinn McHugh`,
   blog: {
     title: "Quinn McHugh's Blog",
     description: "The blog of Quinn McHugh",
@@ -72,15 +77,11 @@ const blogConfig = {
     description:
       "Half-baked, outlandish, and occasionally good ideas from Quinn McHugh",
   },
-  sidebarCount: "ALL",
-  feedType: "all",
-  feedLimit: 100,
-  copyright: `Copyright © 2017-${new Date().getFullYear()} Quinn McHugh`,
-};
-
-const docsConfig = {
+  },
+  docsConfig: {
   projects: {
     linkId: "ea-explorer",
+    },
   },
 };
 
@@ -141,17 +142,18 @@ const config = {
          * Path to data on filesystem relative to site dir.
          */
         path: "blog-ideas",
-        blogTitle: blogConfig.ideasBlog.title,
-        blogDescription: blogConfig.ideasBlog.description,
-        blogSidebarTitle: "Half-baked, outlandish, and occasionally good ideas for someone else to execute",
-        blogSidebarCount: blogConfig.sidebarCount,
+        blogTitle: contentConfig.blogConfig.ideasBlog.title,
+        blogDescription: contentConfig.blogConfig.ideasBlog.description,
+        blogSidebarTitle:
+          "Half-baked, outlandish, and occasionally good ideas for someone else to execute",
+        blogSidebarCount: contentConfig.blogConfig.sidebarCount,
         showReadingTime: false,
         feedOptions: {
-          title: blogConfig.ideasBlog.title,
-          description: blogConfig.ideasBlog.description,
-          type: blogConfig.feedType,
-          copyright: blogConfig.copyright,
-          limit: blogConfig.feedLimit,
+          title: contentConfig.blogConfig.ideasBlog.title,
+          description: contentConfig.blogConfig.ideasBlog.description,
+          type: contentConfig.blogConfig.feedType,
+          copyright: contentConfig.blogConfig.copyright,
+          limit: contentConfig.blogConfig.feedLimit,
         },
         remarkPlugins: plugins.remarkPlugins,
         rehypePlugins: plugins.rehypePlugins,
@@ -173,17 +175,18 @@ const config = {
          * Path to data on filesystem relative to site dir.
          */
         path: "blog-micro",
-        blogTitle: blogConfig.microBlog.title,
-        blogDescription: blogConfig.microBlog.description,
-        blogSidebarTitle: "My Microblog: Miscellaneous musings, fleeting thoughts, & unsolicited advice",
-        blogSidebarCount: blogConfig.sidebarCount,
+        blogTitle: contentConfig.blogConfig.microBlog.title,
+        blogDescription: contentConfig.blogConfig.microBlog.description,
+        blogSidebarTitle:
+          "My Microblog: Miscellaneous musings, fleeting thoughts, & unsolicited advice",
+        blogSidebarCount: contentConfig.blogConfig.sidebarCount,
         showReadingTime: false,
         feedOptions: {
-          title: blogConfig.microBlog.title,
-          description: blogConfig.microBlog.description,
-          type: blogConfig.feedType,
-          copyright: blogConfig.copyright,
-          limit: blogConfig.feedLimit,
+          title: contentConfig.blogConfig.microBlog.title,
+          description: contentConfig.blogConfig.microBlog.description,
+          type: contentConfig.blogConfig.feedType,
+          copyright: contentConfig.blogConfig.copyright,
+          limit: contentConfig.blogConfig.feedLimit,
         },
         remarkPlugins: plugins.remarkPlugins,
         rehypePlugins: plugins.rehypePlugins,
@@ -208,17 +211,17 @@ const config = {
           id: "blog",
           path: "blog",
           routeBasePath: "blog",
-          blogTitle: blogConfig.blog.title,
-          blogDescription: blogConfig.blog.description,
-          blogSidebarTitle: "New posts, hot off the press:",
-          blogSidebarCount: blogConfig.sidebarCount,
+          blogTitle: contentConfig.blogConfig.blog.title,
+          blogDescription: contentConfig.blogConfig.blog.description,
+          blogSidebarTitle: contentConfig.blogConfig.blog.description,
+          blogSidebarCount: contentConfig.blogConfig.sidebarCount,
           showReadingTime: true,
           feedOptions: {
-            title: blogConfig.blog.title,
-            description: blogConfig.blog.description,
-            type: blogConfig.feedType,
-            copyright: blogConfig.copyright,
-            limit: blogConfig.feedLimit,
+            title: contentConfig.blogConfig.blog.title,
+            description: contentConfig.blogConfig.blog.description,
+            type: contentConfig.blogConfig.feedType,
+            copyright: contentConfig.blogConfig.copyright,
+            limit: contentConfig.blogConfig.feedLimit,
           },
         },
         theme: {
@@ -251,7 +254,7 @@ const config = {
           },
           {
             label: "Projects",
-            to: `/projects/${docsConfig.projects.linkId}`,
+            to: `/projects/${contentConfig.docsConfig.projects.linkId}`,
             position: "left",
           },
           {
@@ -356,7 +359,7 @@ const config = {
               },
               {
                 label: "Projects",
-                to: `/projects/${docsConfig.projects.linkId}`,
+                to: `/projects/${contentConfig.docsConfig.projects.linkId}`,
               },
               {
                 label: "My Library",
