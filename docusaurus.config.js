@@ -282,6 +282,12 @@ const config = {
         minHeadingLevel: 2,
         maxHeadingLevel: 6,
       },
+      docs: {
+        sidebar: {
+          hideable: false,
+          autoCollapseCategories: false,
+        },
+      },
       navbar: {
         title: "",
         logo: {
