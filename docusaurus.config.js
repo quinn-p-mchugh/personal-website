@@ -126,6 +126,8 @@ const config = {
         id: "projects",
         path: "docs-projects",
         routeBasePath: "projects",
+        showLastUpdateAuthor: true,
+        showLastUpdateTime: true,
         onInlineTags: contentConfig.onInlineTags,
         tags: contentConfig.tags,
         //sidebarPath: require.resolve("./sidebarsProjects.js"),
@@ -153,6 +155,8 @@ const config = {
           "Half-baked, outlandish, and occasionally good ideas for someone else to execute",
         blogSidebarCount: contentConfig.blogConfig.sidebarCount,
         showReadingTime: false,
+        showLastUpdateAuthor: true,
+        showLastUpdateTime: true,
         onInlineTags: contentConfig.onInlineTags,
         feedOptions: {
           title: contentConfig.blogConfig.ideasBlog.title,
@@ -189,6 +193,8 @@ const config = {
           "My Microblog: Miscellaneous musings, fleeting thoughts, & unsolicited advice",
         blogSidebarCount: contentConfig.blogConfig.sidebarCount,
         showReadingTime: false,
+        showLastUpdateAuthor: true,
+        showLastUpdateTime: true,
         onInlineTags: contentConfig.onInlineTags,
         feedOptions: {
           title: contentConfig.blogConfig.microBlog.title,
@@ -214,6 +220,7 @@ const config = {
           id: "docs",
           path: "docs",
           routeBasePath: "docs",
+          showLastUpdateAuthor: true,
           showLastUpdateTime: true,
           onInlineTags: contentConfig.onInlineTags,
           remarkPlugins: plugins.remarkPlugins,
@@ -229,6 +236,8 @@ const config = {
           blogSidebarTitle: contentConfig.blogConfig.blog.description,
           blogSidebarCount: contentConfig.blogConfig.sidebarCount,
           showReadingTime: true,
+          showLastUpdateAuthor: true,
+          showLastUpdateTime: true,
           onInlineTags: contentConfig.onInlineTags,
           feedOptions: {
             title: contentConfig.blogConfig.blog.title,
@@ -243,7 +252,10 @@ const config = {
         theme: {
           customCss: [require.resolve("./src/css/custom.css")],
         },
-        pages: {},
+        pages: {
+          showLastUpdateAuthor: true,
+          showLastUpdateTime: true,
+        },
         gtag: {
           trackingID: ["G-WSVD3SVT4R", "UA-121689368-1"],
           anonymizeIP: true,
