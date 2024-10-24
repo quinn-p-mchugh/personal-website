@@ -1,7 +1,7 @@
 {
   "label": "Undergraduate (Mechanical Engineering",
   "collapsible": true,
-  "collapsed": true,
+  "collapsed": false,
   "link": {
     "type": "generated-index",
     "title": "Undergraduate Projects: Mechanical Engineering Major, Computer Science Minor"
