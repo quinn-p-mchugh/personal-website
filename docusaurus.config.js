@@ -119,7 +119,7 @@ const config = {
 
   plugins: [
     tailwindPlugin,
-    "docusaurus-plugin-image-zoom",
+    "docusaurus-plugin-zooming",
     ["drawio", {}],
     [
       "@docusaurus/plugin-content-docs",
@@ -517,14 +517,15 @@ const config = {
 
         //... other Algolia params
       },
-      zoom: {
-        selector: ".markdown > img",
+      zooming: {
+        selector: ".markdown img",
+        delay: 500,
         background: {
-          light: "rgb(255, 255, 255)",
-          dark: "rgb(50, 50, 50)",
+          light: "rgba(101,108,133,0.8)",
+          dark: "rgba(9,10,17,0.8)",
         },
-        config: {
-          // options you can specify via https://github.com/francoischalifour/medium-zoom?tab=readme-ov-file#options
+        options: {
+          // See the docs of zooming for all available options: https://github.com/francoischalifour/medium-zoom#usage
         },
       },
     }),
