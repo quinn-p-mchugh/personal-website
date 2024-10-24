@@ -119,6 +119,7 @@ const config = {
 
   plugins: [
     tailwindPlugin,
+    "docusaurus-plugin-image-zoom",
     ["drawio", {}],
     [
       "@docusaurus/plugin-content-docs",
