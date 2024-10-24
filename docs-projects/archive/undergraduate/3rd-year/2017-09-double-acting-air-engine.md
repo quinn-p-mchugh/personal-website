@@ -1,6 +1,19 @@
 ---
+dg-publish: false
 title: Double-Acting Air Engine
+#sidebar_label: ""
+slug: /double-acting-air-engine
+#description: ""
+#keywords: []
 tags: []
+#image: ""
+sidebar_position: 2
+draft: false
+publish: true
+publish-path: docs
+publish-filename:
+created: 2023-07-01T11:53:11-04:00
+modified: 2023-07-06T16:34:00-04:00
 ---
 
 Near the end of my fall 2017 semester at Rowan University, three mechanical engineering students and I designed, fabricated, and optimized a double-acting pneumatic engine as part of our Thermal-Fluid Sciences I course. The criteria and constraints of the project were as follows:

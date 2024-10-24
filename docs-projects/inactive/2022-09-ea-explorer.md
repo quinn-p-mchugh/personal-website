@@ -2,7 +2,7 @@
 dg-publish: false
 title: "EA Explorer"
 #sidebar_label: ""
-slug: ea-explorer
+slug: /ea-explorer
 #description: ""
 #keywords: []
 tags: []

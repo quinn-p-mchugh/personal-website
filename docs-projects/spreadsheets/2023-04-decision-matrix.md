@@ -2,7 +2,7 @@
 dg-publish: false
 title: "Decision Matrix"
 #sidebar_label: ""
-slug: decision-matrix-spreadsheet
+slug: /decision-matrix-spreadsheet
 description: "A spreadsheet to easily compare options based on multiple criteria."
 #keywords: []
 tags: ["Decision-Making"]

@@ -2,7 +2,7 @@
 dg-publish: false
 title: "This Website"
 #sidebar_label: ""
-slug: this-website
+slug: /this-website
 description: "Quinn McHugh's personal website - an ongoing project to share my life and thoughts with the rest of the world."
 #keywords: []
 tags: ["Web Development", "Branding & Marketing", "Design", "Information Architecture"]

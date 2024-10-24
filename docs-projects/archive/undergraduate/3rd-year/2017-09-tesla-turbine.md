@@ -1,6 +1,19 @@
 ---
+dg-publish: false
 title: Tesla Turbine
+#sidebar_label: ""
+slug: /tesla-turbine
+#description: ""
+#keywords: []
 tags: []
+#image: ""
+sidebar_position: 2
+draft: false
+publish: true
+publish-path: docs
+publish-filename:
+created: 2023-07-01T11:53:11-04:00
+modified: 2023-07-06T16:34:00-04:00
 ---
 
 During my fall 2017 semester, Rowan University's American Society of Mechanical Engineers (ASME) student chapter decided to hold a Tesla turbine design competition. Excited by the prospect of pitting my design skills against my fellow engineering students, I jumped at the opportunity to design my own Tesla turbine…

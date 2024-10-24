@@ -1,6 +1,19 @@
 ---
+dg-publish: false
 title: Aerodynamic Efficiency of a Semi-Trailer Truck
+#sidebar_label: ""
+slug: /aerodynamic-efficiency-of-a-semi-trailer-truck
+#description: ""
+#keywords: []
 tags: []
+#image: ""
+sidebar_position: 2
+draft: false
+publish: true
+publish-path: docs
+publish-filename:
+created: 2023-07-01T11:53:11-04:00
+modified: 2023-07-06T16:34:00-04:00
 ---
 
 During my spring 2018 semester at Rowan University, a fellow mechanical engineering student and I were tasked with creating a project of our choice involving some kind of fluid flow analysis for Thermal-Fluid Sciences II. As such, we decided to do a theoretical investigation of the aerodynamic efficiency of a typical semi-trailer truck as compared to one retrofitted with more aerodynamic features.

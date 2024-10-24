@@ -1,7 +1,21 @@
 ---
+dg-publish: false
 title: Crystal Cleaving Device
+#sidebar_label: ""
+slug: /crystal-cleaving-device
+#description: ""
+#keywords: []
 tags: []
+#image: ""
+sidebar_position: 2
 draft: true
+publish: true
+publish-path: docs
+publish-filename:
+created: 2023-07-01T11:53:11-04:00
+modified: 2023-07-06T16:34:00-04:00
+---
+draft: false
 ---
 
 While working as a manufacturing engineering intern at Inrad Optics during the summer of 2018, I designed a crystal

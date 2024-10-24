@@ -1,6 +1,19 @@
 ---
+dg-publish: false
 title: Compact Solar Solar Air Heater
+#sidebar_label: ""
+slug: /compact-solar-air-heater
+#description: ""
+#keywords: []
 tags: []
+#image: ""
+sidebar_position: 2
+draft: false
+publish: true
+publish-path: docs
+publish-filename:
+created: 2023-07-01T11:53:11-04:00
+modified: 2023-07-06T16:34:00-04:00
 ---
 
 During my fall 2017 semester at Rowan University, a fellow engineering student and I were tasked with designing, constructing, and optimizing a solar air heater capable of fitting inside a 24″ x 18″ x 18″ rectangular prism as part of our Thermal-Fluid Sciences I course. The overall goal of the project was to maximize two of the following three parameters: temperature rise from ambient (inlet) conditions to outlet temperature (△T), average total heat flow generated (dQ/dt), and average overall efficiency of conversion of solar energy flow to sensible heat flow (η). For our solar air heater, we chose to focus on achieving the highest temperature change from ambient conditions (△T) and average total heat flow generated (dQ/dt).

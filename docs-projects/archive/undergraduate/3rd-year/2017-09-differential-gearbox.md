@@ -1,6 +1,19 @@
 ---
+dg-publish: false
 title: Differential Gearbox
+#sidebar_label: ""
+slug: /differential-gearbox
+#description: ""
+#keywords: []
 tags: []
+#image: ""
+sidebar_position: 2
+draft: false
+publish: true
+publish-path: docs
+publish-filename:
+created: 2023-07-01T11:53:11-04:00
+modified: 2023-07-06T16:34:00-04:00
 ---
 
 During my fall 2017 semester at Rowan University, a team of 3 other mechanical engineering students and I designed and

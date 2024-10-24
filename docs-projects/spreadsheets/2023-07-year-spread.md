@@ -2,7 +2,7 @@
 dg-publish: false
 title: "YearSpread: Visualize your year in a spreadsheet"
 sidebar_label: "YearSpread: Visualize your year"
-slug: year-spread-spreadsheet
+slug: /year-spread-spreadsheet
 description: "A handy calendar spreadsheet to visualize and sync annual events, trips, and more to a specified Google Calendar."
 keywords:
   [

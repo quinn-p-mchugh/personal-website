@@ -1,6 +1,19 @@
 ---
+dg-publish: false
 title: Low-Cost, Semi-Autonomous, Portable Mechanical Tester
+#sidebar_label: ""
+slug: /portable-mechanical-tester
+#description: ""
+#keywords: []
 tags: []
+#image: ""
+sidebar_position: 2
+draft: false
+publish: true
+publish-path: docs
+publish-filename:
+created: 2023-07-01T11:53:11-04:00
+modified: 2023-07-06T16:34:00-04:00
 ---
 
 During my fall 2018 and spring 2019 semesters at Rowan University, a fellow mechanical engineering student and I designed and fabricated a semi-autonomous, portable mechanical tester costing under $1000 with the ultimate goal marketing the device to academic institutions and small businesses. Over the course of the year, we managed to fully develop the electrical setup of the device and developed Python code to manually control the mechanical tester using a Raspberry Pi. In addition, we created a preliminary Python GUI for the device and created a custom PCB hat to use in conjunction with the Raspberry Pi. We also completely redesigned the mechanical tester in SolidWorks and fabricated the newly designed device using mills, lathes, drill presses, a laser cutter, an FDM 3D printer, and a water jet cutting machine.

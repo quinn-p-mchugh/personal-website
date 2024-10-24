@@ -1,6 +1,19 @@
 ---
+dg-publish: false
 title: Clausius Android App
+#sidebar_label: ""
+slug: /clausius-android-app
+#description: ""
+#keywords: []
 tags: []
+#image: ""
+sidebar_position: 2
+draft: false
+publish: true
+publish-path: docs
+publish-filename:
+created: 2023-07-01T11:53:11-04:00
+modified: 2023-07-06T16:34:00-04:00
 ---
 
 In December 2017, I volunteered to begin developing an Android version of _Clausius_, an iOS app developed by [Austin Carrig](https://web.archive.org/web/20220529200820/https://www.linkedin.com/in/austincarrig/) in collaboration with my thermal fluid-sciences professor, [Dr. Smitesh Bakrania](https://web.archive.org/web/20220529200820/https://www.linkedin.com/in/smitesh-bakrania-4681a166). _Clausius_ is a visual and intuitive app enabling the user to acquire the thermodynamic properties of water for a specified thermodynamic state with just the touch of a finger.

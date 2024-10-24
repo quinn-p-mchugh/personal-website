@@ -2,7 +2,7 @@
 dg-publish: false
 title: "\"Work Cycles\" Spreadsheet"
 #sidebar_label: ""
-slug: work-cycles-spreadsheet
+slug: /work-cycles-spreadsheet
 description: "\"Work Cycles\" is a method for achieving a highly focused and productive four hour work session. This spreadsheet is a compact version of the original \"Work Cycles\" spreadsheet developed by Ultraworking, allowing the whole process to be done on a single page."
 #keywords: []
 tags: ["Productivity", "Personal Effectiveness", "Focus"]

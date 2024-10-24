@@ -1,6 +1,19 @@
 ---
+dg-publish: false
 title: 3-in-1 Laser Cutter, CNC Mill, & 3D Printer
+#sidebar_label: ""
+slug: /3-in-1-laser-cutter-cnc-mill-3d-printer
+#description: ""
+#keywords: []
 tags: []
+#image: ""
+sidebar_position: 2
+draft: false
+publish: true
+publish-path: docs
+publish-filename:
+created: 2023-07-01T11:53:11-04:00
+modified: 2023-07-06T16:34:00-04:00
 ---
 
 During my fall 2017 and spring 2018 semesters at Rowan University, I helped develop a 3-in-1 laser cutter, CNC mill, and 3D printer, referred to as the “modular fabrication system,” as part of a multidisciplinary team of 12 engineering students.
