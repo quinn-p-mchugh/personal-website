@@ -136,7 +136,7 @@ const config = {
       },
     ],
     [
-      '@docusaurus/plugin-content-blog',
+      "@docusaurus/plugin-content-blog",
       {
         /**
          * Required for any multi-instance plugin
@@ -295,6 +295,7 @@ const config = {
       },
       navbar: {
         title: "",
+        hideOnScroll: true,
         logo: {
           alt: "My Site Logo",
           src: "img/logo.svg",
