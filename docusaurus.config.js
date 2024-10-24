@@ -63,6 +63,7 @@ const contentConfig = {
     feedType: "all",
     feedLimit: 100,
     copyright: `Copyright © 2017-${new Date().getFullYear()} Quinn McHugh`,
+    authorsMapPath: "../content-authors.yml",
   blog: {
     title: "Quinn McHugh's Blog",
     description: "The blog of Quinn McHugh",
@@ -157,6 +158,7 @@ const config = {
         },
         remarkPlugins: plugins.remarkPlugins,
         rehypePlugins: plugins.rehypePlugins,
+        authorsMapPath: contentConfig.blogConfig.authorsMapPath,
       },
     ],
     [
@@ -190,6 +192,7 @@ const config = {
         },
         remarkPlugins: plugins.remarkPlugins,
         rehypePlugins: plugins.rehypePlugins,
+        authorsMapPath: contentConfig.blogConfig.authorsMapPath,
       },
     ],
   ],
@@ -223,6 +226,7 @@ const config = {
             copyright: contentConfig.blogConfig.copyright,
             limit: contentConfig.blogConfig.feedLimit,
           },
+          authorsMapPath: contentConfig.blogConfig.authorsMapPath,
         },
         theme: {
           customCss: [require.resolve("./src/css/custom.css")],
