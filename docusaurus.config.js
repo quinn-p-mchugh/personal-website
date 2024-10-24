@@ -66,24 +66,24 @@ const contentConfig = {
     feedLimit: 100,
     copyright: `Copyright © 2017-${new Date().getFullYear()} Quinn McHugh`,
     authorsMapPath: "../content-authors.yml",
-  blog: {
-    title: "Quinn McHugh's Blog",
-    description: "The blog of Quinn McHugh",
-  },
-  microBlog: {
-    title: "Quinn McHugh's Micro Blog",
-    description:
-      "A microblog of miscellaneous musings, tips, and thoughts from Quinn McHugh",
-  },
-  ideasBlog: {
-    title: "Quinn McHugh's Idea Feed",
-    description:
-      "Half-baked, outlandish, and occasionally good ideas from Quinn McHugh",
-  },
+    blog: {
+      title: "Quinn McHugh's Blog",
+      description: "The blog of Quinn McHugh",
+    },
+    microBlog: {
+      title: "Quinn McHugh's Micro Blog",
+      description:
+        "A microblog of miscellaneous musings, tips, and thoughts from Quinn McHugh",
+    },
+    ideasBlog: {
+      title: "Quinn McHugh's Idea Feed",
+      description:
+        "Half-baked, outlandish, and occasionally good ideas from Quinn McHugh",
+    },
   },
   docsConfig: {
-  projects: {
-    linkId: "ea-explorer",
+    projects: {
+      linkId: "ea-explorer",
     },
   },
 };
@@ -166,6 +166,7 @@ const config = {
           type: contentConfig.blogConfig.feedType,
           copyright: contentConfig.blogConfig.copyright,
           limit: contentConfig.blogConfig.feedLimit,
+          xslt: true,
         },
         remarkPlugins: plugins.remarkPlugins,
         rehypePlugins: plugins.rehypePlugins,
@@ -204,6 +205,7 @@ const config = {
           type: contentConfig.blogConfig.feedType,
           copyright: contentConfig.blogConfig.copyright,
           limit: contentConfig.blogConfig.feedLimit,
+          xslt: true,
         },
         remarkPlugins: plugins.remarkPlugins,
         rehypePlugins: plugins.rehypePlugins,
@@ -247,6 +249,7 @@ const config = {
             type: contentConfig.blogConfig.feedType,
             copyright: contentConfig.blogConfig.copyright,
             limit: contentConfig.blogConfig.feedLimit,
+            xslt: true,
           },
           remarkPlugins: plugins.remarkPlugins,
           rehypePlugins: plugins.rehypePlugins,
