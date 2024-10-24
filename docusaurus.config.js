@@ -288,6 +288,11 @@ const config = {
           autoCollapseCategories: false,
         },
       },
+      blog: {
+        sidebar: {
+          groupByYear: true,
+        },
+      },
       navbar: {
         title: "",
         logo: {
