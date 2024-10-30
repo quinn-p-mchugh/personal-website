@@ -3,9 +3,9 @@ dg-publish: false
 title: "Working With Me"
 #sidebar_label: ""
 slug: working-with-me
-#description: ""
+description: "An brief primer on my typical working style, preferences, and expectations, crafted to kickstart discussions on we can work the best together."
 #keywords: []
-tags: []
+tags: ["Collaboration", "Leadership", "Management"]
 #image: ""
 sidebar_position: 3
 draft: false
@@ -15,27 +15,33 @@ publish-filename:
 created: 2023-05-02T11:30:38-04:00
 modified: 2023-07-06T22:06:23-04:00
 ---
+:::note[Motivation]
 
-*This document was inspired by a Medium post called [Why you should write a "how to work with me" user manual](https://medium.com/swlh/user-manual-to-me-92c8ce68f960) by Mark Saric. The inspiration for **that** piece is [here](https://growth.eladgil.com/book/the-role-of-the-ceo/insights-working-with-claire/).*
+This page was inspired by a Medium post titled "[Why you should write a 'how to work with me' user manual](https://medium.com/swlh/user-manual-to-me-92c8ce68f960)" by Mark Saric. In the post, Mark discusses [Claire Hughes Johnson's 'Working with Claire' user manual](https://growth.eladgil.com/book/the-role-of-the-ceo/insights-working-with-claire/) showcased in the book *High Growth Handbook*.
 
-**This document is a work in progress.**
+:::
 
-## When you're my manager
+***This document is a work in progress.***
+
+## When You're My Supervisor
 
 ### Communication
+- As my supervisor, I understand you may have many more communication channels and projects to keep track of and I'd like to do what I can to lighten that load. To better assist you, feel free to let me know your preferences for receiving regular updates from me:
+  - **Frequency:** How often would you like to receive updates from me (e.g. daily, weekly, biweekly)? This may vary from project to project, but a general guideline is helpful.
+  - **Timing:** Is there a particular day or time you'd like to receive updates by? I prefer hard deadlines as opposed to soft ones - it helps with planning my days.
+  - **Channel:** What is your preferred method for receiving updates from me (e.g., Slack DM, Slack channel, email, Google/Word doc, spreadsheet)?
+  - **Format:** Is there a particular way you'd like me to structure my updates? I'll do my best to make sure the information is easily digestible, but let's chat about what this ideally look like. We might consider using a variation of [SBAR](https://www.ahrq.gov/teamstepps-program/curriculum/communication/tools/sbar.html) for communicating issues that arise, for example.
 
 - I strive to demonstrate good [reasoning transparency](https://forum.effectivealtruism.org/topics/reasoning-transparency), which means sometimes I can be a bit more verbose than necessary. If you find that my answers are a bit too long than what you're looking for, please let me know and I'll happily use your feedback to improve in the future.
 - I prefer Slack as my primary asynchronous communication tool.
 
 ### Feedback
-
 - In large group (\<5 person) settings, I am sometimes hesitant to share my perspective. This largely depends on the group I am with and the level of [psychological safety](https://en.wikipedia.org/wiki/Psychological_safety) I feel in the environment.
 - If you notice I'm note participating in a discussion as much as you'd like, feel free to ask for my feedback directly. It may be the case that I'm working on something else or am hesitant to share for the reasons indicated above.
 
-## When I'm your manager
+## When I'm Your Supervisor
 
 ### Management Style - Collaborative
-
 - I value transparent collaboration. As a manager, I believe its by job to actively solicit perspectives from everyone on my team. I expect your to share your thoughts freely and honestly.
 - I am a fan of [reasoning transparency](https://forum.effectivealtruism.org/topics/reasoning-transparency). I want to know what you think and _why_ (i.e. how you arrived to those conclusions).
 - I very much appreciate when people flag things (e.g. "this is something we might be undervaluing" or "have we considered this approach instead?" or "we have 15min left in this meeting - we might want to move to the next item in our agenda").
