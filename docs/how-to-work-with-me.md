@@ -3,7 +3,7 @@ dg-publish: false
 title: "Working With Me"
 #sidebar_label: ""
 slug: working-with-me
-description: "An brief primer on my typical working style, preferences, and expectations, crafted to kickstart discussions on we can work the best together."
+description: "An overview of my typical working style, preferences, and general expectations to help kickstart conversation around how we can best work together."
 #keywords: []
 tags: ["Collaboration", "Leadership", "Management"]
 #image: ""
@@ -21,16 +21,33 @@ This page was inspired by a Medium post titled "[Why you should write a 'how to 
 
 :::
 
+:::info[What is this?]
+
+This page provides an overview of my typical working style, preferences, and general expectations to help kickstart conversation around how we can best work together.
+
+**Why?** In my experience, it's much easier (and quicker!) to work effectively with someone when they share their preferred working style upfront, rather than trying to infer it based on casual conversations (which can lead to assumptions and potential issues later on). This document is my way of providing insight into how I typically operate to help us align quickly and get off to a productive start.
+
+As you read, please remember that none of the points below are set in stone - they’re simply starting points for discussion. If anything here doesn’t quite resonate with you, let's chat about it! Your feedback is essential and I want to find solutions that work well for the both of us.
+
+:::
+
 ***This document is a work in progress.***
 
 ## When You're My Supervisor
 
 ### Communication
-- As my supervisor, I understand you may have many more communication channels and projects to keep track of and I'd like to do what I can to lighten that load. To better assist you, feel free to let me know your preferences for receiving regular updates from me:
+
+#### Asynchronous Updates
+- As my supervisor, you probably have numerous communication channels, people, and projects to keep track of and I'd like to do what I can to lighten that load. To better assist you, feel free to let me know your preferences for receiving regular, asychronous updates from me (i.e. regarding project progress, issues that arise, etc):
   - **Frequency:** How often would you like to receive updates from me (e.g. daily, weekly, biweekly)? This may vary from project to project, but a general guideline is helpful.
   - **Timing:** Is there a particular day or time you'd like to receive updates by? I prefer hard deadlines as opposed to soft ones - it helps with planning my days.
-  - **Channel:** What is your preferred method for receiving updates from me (e.g., Slack DM, Slack channel, email, Google/Word doc, spreadsheet)?
-  - **Format:** Is there a particular way you'd like me to structure my updates? I'll do my best to make sure the information is easily digestible, but let's chat about what this ideally look like. We might consider using a variation of [SBAR](https://www.ahrq.gov/teamstepps-program/curriculum/communication/tools/sbar.html) for communicating issues that arise, for example.
+  - **Channel:** What is your preferred method for receiving updates from me (e.g. A Slack DM, Slack channel, email, Google/Word doc, spreadsheet)? If you don't have a strong preference, let me know and I'm happy to suggest a solution.
+  - **Format:** Is there a particular way you'd like me to structure my updates? I'll do my best to make the information easily digestible, but let's chat about what this ideally look like. For example, we might consider using a variation of [SBAR](https://www.ahrq.gov/teamstepps-program/curriculum/communication/tools/sbar.html) for summarizing recently encountered issues.
+
+#### One-on-Ones
+- One-on-ones
+
+
 
 - I strive to demonstrate good [reasoning transparency](https://forum.effectivealtruism.org/topics/reasoning-transparency), which means sometimes I can be a bit more verbose than necessary. If you find that my answers are a bit too long than what you're looking for, please let me know and I'll happily use your feedback to improve in the future.
 - I prefer Slack as my primary asynchronous communication tool.
