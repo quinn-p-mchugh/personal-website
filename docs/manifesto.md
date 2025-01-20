@@ -48,6 +48,7 @@ Here's my personal manifesto, divided into a number of themes:
 
 ## Meaning / Purpose
 - Meaning, like happiness, is a verb, not a noun - people create meaning through their actions rather than achieving it as a state.
+- Everyone, whether they realize it or not, is playing one or more games. The default game is to be traditionally successful - to continually gain increasing money, power, and/or influence - but that's not the only game you can play. The question of your life, then, is - what game(s) do you *want* to play?
 
 ## Innovation / Progress
 - The creativity of anything is correlated with how many bad ideas it's willing to produce.
