@@ -9,6 +9,6 @@ draft: true
 
 What would a peer-to-peer data sharing platform for non-profits look like?
 
-There are various "data brokers" that amass large amounts of philanthropic data  to sell to non-profits who don't have the resource to collect and clean that data themselves.
+There are various "data brokers" that amass large amounts of philanthropic data to sell to non-profits who don't have the resource to collect and clean that data themselves.
 
 
