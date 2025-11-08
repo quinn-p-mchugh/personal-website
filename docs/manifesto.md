@@ -54,3 +54,4 @@ Here's my personal manifesto, divided into a number of themes:
 - The creativity of anything is correlated with how many bad ideas it's willing to produce.
 - (Almost) [everything is a remix](https://www.youtube.com/watch?v=X9RYuvPCQUA&list=PLDQ6BYd73QHxgeNJPX8yZRcp8wF_B_tph&index=2) of something that came before. See also: [Gal's Law](http://principles-wiki.net/principles:gall_s_law)
 - [All truth, beauty, and progress comes from the union of the unlike](https://fanlore.org/wiki/IDIC_(glossary_term)#:~:text=Infinite%20Diversity%20in%20Infinite%20Combinations%20represents%20a%20Vulcan%20belief%20that%20beauty%2C%20growth%2C%20progress%20%2D%2D%20all%20result%20from%20the%20union%20of%20the%20unlike.).
+- Our view of societal progress is, in general, naive. [To make true progress, we must focus on *betterment*](https://consilienceproject.org/development-in-progress/), not progress for progress's sake.
