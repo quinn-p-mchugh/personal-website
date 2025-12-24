@@ -8,7 +8,7 @@ authors: qmchugh
 #image:
 hide_table_of_contents: true
 draft: false
-date: 2025-12-24T09:17:21-05:00
+date: 2025-12-24T09:17:21
 crosspost: false
 ---
 
