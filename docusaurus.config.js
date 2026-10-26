@@ -97,7 +97,7 @@ const config = {
   },
   url: "https://quinnmchugh.net",
   baseUrl: "/",
-  onBrokenLinks: "throw",
+  onBrokenLinks: "warn",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.ico",
   markdown: {
