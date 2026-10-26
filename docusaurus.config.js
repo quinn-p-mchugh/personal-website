@@ -56,16 +56,17 @@ const plugins = {
   rehypePlugins: [],
 };
 
-// https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog
+
 const contentConfig = {
   tags: "../content-tags.yml",
   onInlineTags: "warn",
-  blogConfig: {
+  blogConfig: { // Blog Plugin Documentation: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog
     sidebarCount: "ALL",
     feedType: "all",
     feedLimit: 100,
     copyright: `Copyright © 2017-${new Date().getFullYear()} Quinn McHugh`,
     authorsMapPath: "../content-authors.yml",
+    onUntruncatedBlogPosts: 'warn',
     blog: {
       title: "Quinn McHugh's Blog",
       description: "The blog of Quinn McHugh",
@@ -81,7 +82,7 @@ const contentConfig = {
         "Half-baked, outlandish, and occasionally good ideas from Quinn McHugh",
     },
   },
-  docsConfig: {
+  docsConfig: { // Docs Plugin Documentation: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-docs
     projects: {
       linkId: "ea-explorer",
     },
@@ -97,7 +98,7 @@ const config = {
   },
   url: "https://quinnmchugh.net",
   baseUrl: "/",
-  onBrokenLinks: "warn",
+  onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.ico",
   markdown: {
@@ -161,6 +162,7 @@ const config = {
         showLastUpdateAuthor: true,
         showLastUpdateTime: true,
         onInlineTags: contentConfig.onInlineTags,
+        onUntruncatedBlogPosts: contentConfig.blogConfig.onUntruncatedBlogPosts,
         feedOptions: {
           title: contentConfig.blogConfig.ideasBlog.title,
           description: contentConfig.blogConfig.ideasBlog.description,
@@ -200,6 +202,7 @@ const config = {
         showLastUpdateAuthor: true,
         showLastUpdateTime: true,
         onInlineTags: contentConfig.onInlineTags,
+        onUntruncatedBlogPosts: contentConfig.blogConfig.onUntruncatedBlogPosts,
         feedOptions: {
           title: contentConfig.blogConfig.microBlog.title,
           description: contentConfig.blogConfig.microBlog.description,
@@ -224,7 +227,7 @@ const config = {
         docs: {
           id: "docs",
           path: "docs",
-          routeBasePath: "docs",
+          routeBasePath: "",
           showLastUpdateAuthor: true,
           showLastUpdateTime: true,
           onInlineTags: contentConfig.onInlineTags,
@@ -244,6 +247,7 @@ const config = {
           showLastUpdateAuthor: true,
           showLastUpdateTime: true,
           onInlineTags: contentConfig.onInlineTags,
+          onUntruncatedBlogPosts: contentConfig.blogConfig.onUntruncatedBlogPosts,
           feedOptions: {
             title: contentConfig.blogConfig.blog.title,
             description: contentConfig.blogConfig.blog.description,
@@ -318,7 +322,7 @@ const config = {
             items: [
               {
                 label: "Docs",
-                to: "/docs/welcome",
+                to: "/welcome",
               },
               {
                 label: "Highlights",
