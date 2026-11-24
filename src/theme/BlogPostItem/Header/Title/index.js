@@ -16,19 +16,7 @@ import React from "react";
 import clsx from "clsx";
 import Title from "@theme-original/BlogPostItem/Header/Title";
 import { useBlogPost } from "@docusaurus/plugin-content-blog/client";
-
-/**
- * Tells whether a post has a visible title.
- *
- * Args:
- *     title: The post's title from Docusaurus metadata; may be "".
- *
- * Returns:
- *     True if the title has any non-space characters.
- */
-function hasTitle(title) {
-  return typeof title === "string" && title.trim() !== "";
-}
+import { hasTitle } from "@site/src/utils/socialPosts.mjs";
 
 /**
  * The post title, marked as p-name on a titled post's own page.

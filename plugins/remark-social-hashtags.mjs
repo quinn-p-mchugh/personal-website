@@ -8,7 +8,8 @@
  *    default). A post with `tags: [Climate, Animal Welfare]` gets
  *    "#Climate #AnimalWelfare" added to its last line of hashtags, or to a
  *    new last line if it has none. Hashtags already in the post aren't
- *    repeated, ignoring letter case. The added hashtags are hidden on the
+ *    repeated, ignoring letter case. Tags in socialPosts.excludedTags are
+ *    left out. The added hashtags are hidden on the
  *    website, which already shows the tags, but Bridgy still includes them
  *    in the social post. Titled posts are posted as "Title: link" rather than
  *    their text, so their hashtags are added by
@@ -18,22 +19,30 @@
  *    for hashtags Bridgy finds listed this way.
  *    Microformats docs: https://microformats.org/wiki/h-entry#p-category
  *
- * Only files in blog folders (folders whose names start with "blog") are
- * changed. Docs pages and other pages are left alone.
+ * Only files inside a blog's content folder are changed. Docs pages and
+ * other pages are left alone. Which folders are blogs, and which tags file
+ * each blog uses, come from the blog plugins' own options ("path" and
+ * "tags"), so the blog config stays the only place they are set.
  *
  * Usage in docusaurus.config.js, inside remarkPlugins:
- *     [remarkSocialHashtags, socialPosts]
- * where socialPosts is { includeFrontMatterTags: true }.
+ *     [remarkSocialHashtags, socialHashtagOptions]
+ * where socialHashtagOptions is { ...socialPosts, blogs } and blogs lists the
+ * "path" and "tags" of every blog plugin (see blogPluginOptions there).
  * Remark plugin docs: https://docusaurus.io/docs/markdown-features/plugins
+ * Tests: tests/social-posts/remark-social-hashtags.test.mjs (run with npm test).
  */
 import path from "node:path";
-import { newHashtagNames, toHashtagName } from "../src/utils/hashtags.mjs";
+import { createRequire } from "node:module";
+import { HASHTAG_CHARACTER, hashtagNamesFromTags, newHashtagNames } from "../src/utils/hashtags.mjs";
 
-/** Matches a hashtag: "#" then letters, digits or "_", not inside a word or URL. */
-const HASHTAG = /(^|[^\p{L}\p{N}_&/#])#([\p{L}\p{N}_]+)/gu;
+/**
+ * Matches a hashtag: "#" then hashtag characters, not inside a word, a URL
+ * or an HTML character reference like "&#105;".
+ */
+const HASHTAG = new RegExp(`(^|[^\\p{L}\\p{M}\\p{N}_&/#])#(${HASHTAG_CHARACTER}+)`, "gu");
 
 /** Matches text made only of hashtags and spaces, like "#Quote #Resource". */
-const HASHTAG_LINE = /^\s*(#[\p{L}\p{N}_]+\s*)+$/u;
+const HASHTAG_LINE = new RegExp(`^\\s*(#${HASHTAG_CHARACTER}+\\s*)+$`, "u");
 
 /**
  * Node types whose text is never scanned for hashtags. "yaml" and "toml" are
@@ -81,27 +90,71 @@ function textOf(node) {
 function hashtagsIn(text) {
   return [...String(text).matchAll(HASHTAG)]
     .map((match) => match[2])
-    .filter((name) => !/^\d+$/.test(name)); // "#1" is a number, not a hashtag
+    .filter((name) => !/^\p{N}+$/u.test(name)); // "#1" is a number, not a hashtag
 }
 
 /**
- * Reads a post's tag labels from its front matter.
+ * Reads a blog's predefined tags, so a tag key can be shown by its label.
  *
- * Docusaurus accepts tags as plain strings or as objects with a "label".
+ * Docusaurus lets posts refer to tags defined in a YAML file by key, e.g.
+ * "pkm" for a tag labelled "Personal Knowledge Management". Using the label
+ * here matches what the website shows and what the Container component uses
+ * for titled posts.
+ *
+ * The file is found and read by Docusaurus's own getTagsFile (from
+ * @docusaurus/utils-validation, which ships with Docusaurus), the same
+ * function the blog plugin uses. So the "tags" option means exactly what it
+ * means to Docusaurus: a path relative to the blog folder, "tags.yml" when
+ * unset, none when false or null; and a tag without a "label" gets the same
+ * default label. Any problem gives an empty map, so keys are used as written;
+ * Docusaurus itself reports a broken tags file when it builds the blog.
+ * Read fresh for each post, not cached, so an edited tags file is picked up
+ * while "docusaurus start" is running. The file is small, so this is cheap.
+ * Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#tags-file
+ *
+ * Args:
+ *     blogFolder: Absolute path of the blog's content folder.
+ *     tags: The blog plugin's "tags" option; undefined when it isn't set.
+ *
+ * Returns:
+ *     A promise of a Map of tag keys to labels.
+ */
+async function readTagLabels(blogFolder, tags) {
+  try {
+    const { getTagsFile } = createRequire(import.meta.url)("@docusaurus/utils-validation");
+    const contentPaths = { contentPath: blogFolder, contentPathLocalized: blogFolder };
+    const definitions = (await getTagsFile({ tags, contentPaths })) || {};
+    return new Map(Object.entries(definitions).map(([key, tag]) => [key, tag.label]));
+  } catch (error) {
+    console.warn(`[remark-social-hashtags] Could not read the tags file for ${blogFolder}: ${error.message}`);
+    return new Map();
+  }
+}
+
+/**
+ * Reads a post's tags from its front matter.
+ *
+ * Docusaurus accepts tags as plain strings or as objects with a "label". A
+ * string that is a key in the tags file shows as that tag's label.
  * Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#markdown-front-matter
  *
  * Args:
  *     frontMatter: The post's parsed front matter, possibly undefined.
+ *     tagLabels: Map of tag keys to labels from readTagLabels.
  *
  * Returns:
- *     The tag labels as strings; empty if the post has no tags.
+ *     { key, label } for each tag with a label: key is the string written in
+ *     front matter (undefined for a tag written as an object); label is what
+ *     the site shows. Empty if the post has no tags.
  */
-function frontMatterTagLabels(frontMatter) {
+function frontMatterTags(frontMatter, tagLabels) {
   const tags = (frontMatter && frontMatter.tags) || [];
   if (!Array.isArray(tags)) return [];
   return tags
-    .map((tag) => (typeof tag === "string" ? tag : tag && tag.label))
-    .filter((label) => typeof label === "string" && label.trim() !== "");
+    .map((tag) =>
+      typeof tag === "string" ? { key: tag, label: tagLabels.get(tag) || tag } : { key: undefined, label: tag && tag.label }
+    )
+    .filter((tag) => typeof tag.label === "string" && tag.label.trim() !== "");
 }
 
 /**
@@ -219,20 +272,64 @@ function appendHashtags(tree, names) {
   }
 }
 
+/** Docusaurus's blog content folder when the blog's "path" option isn't set. */
+const DEFAULT_BLOG_PATH = "blog";
+
 /**
- * Tells whether a file is a post in one of the site's blog folders.
+ * Tells whether a file is inside a folder (at any depth).
+ *
+ * Args:
+ *     folder: Absolute path of a folder.
+ *     filePath: Absolute path of a file.
+ *
+ * Returns:
+ *     True if the file is somewhere under the folder. A sibling folder
+ *     whose name merely starts the same way ("blog" and "blog-micro") or
+ *     whose name starts with ".." doesn't count.
+ */
+function isInside(folder, filePath) {
+  const relative = path.relative(folder, filePath);
+  return relative !== "" && !path.isAbsolute(relative) && relative.split(path.sep)[0] !== "..";
+}
+
+/**
+ * Finds the blog a file belongs to.
+ *
+ * If blog folders are nested, the innermost one wins, as each Docusaurus
+ * blog only reads its own folder.
  *
  * Args:
  *     filePath: The file's absolute path, possibly undefined.
+ *     blogs: Each blog's { path, tags } options from docusaurus.config.js.
  *     siteDir: The website's root folder.
  *
  * Returns:
- *     True if the file's top folder, relative to the site, starts with "blog".
+ *     { folder, options }: the blog's absolute content folder and its
+ *     options, or null when the file isn't in any blog.
  */
-function isBlogPost(filePath, siteDir) {
-  if (!filePath) return false;
-  const topFolder = path.relative(siteDir, filePath).split(path.sep)[0];
-  return topFolder.startsWith("blog");
+function blogOf(filePath, blogs, siteDir) {
+  if (!filePath) return null;
+  return blogs
+    .map((options) => ({ folder: path.resolve(siteDir, options.path ?? DEFAULT_BLOG_PATH), options }))
+    .filter((blog) => isInside(blog.folder, filePath))
+    .sort((a, b) => b.folder.length - a.folder.length)[0] || null;
+}
+
+/**
+ * Works out the hashtags for a post's front matter tags.
+ *
+ * Args:
+ *     blog: { folder, options } from blogOf.
+ *     frontMatter: The post's parsed front matter, possibly undefined.
+ *     excludedTags: The socialPosts.excludedTags setting.
+ *
+ * Returns:
+ *     A promise of hashtag names without "#", excluded tags and repeats
+ *     left out.
+ */
+async function tagHashtags(blog, frontMatter, excludedTags) {
+  const tagLabels = await readTagLabels(blog.folder, blog.options.tags);
+  return hashtagNamesFromTags(frontMatterTags(frontMatter, tagLabels), excludedTags);
 }
 
 /**
@@ -242,6 +339,13 @@ function isBlogPost(filePath, siteDir) {
  *     options.includeFrontMatterTags: true (the default) to add front matter
  *         tags as hashtags; false to only list the post's own hashtags for
  *         Bluesky. Set once, in socialPosts in docusaurus.config.js.
+ *     options.excludedTags: Tags never turned into hashtags, matched by key
+ *         or label ignoring case, spaces and punctuation. Set once, in
+ *         socialPosts in docusaurus.config.js. Defaults to none.
+ *     options.blogs: The "path" and "tags" options of every blog plugin, as
+ *         { path, tags } objects. "path" says which folder is that blog;
+ *         "tags" says which tags file resolves tag keys, read the way
+ *         Docusaurus reads them. Without it, no files are changed.
  *     options.siteDir: The website's root folder. Defaults to the folder the
  *         build runs in, which for Docusaurus is the site folder.
  *
@@ -249,15 +353,21 @@ function isBlogPost(filePath, siteDir) {
  *     A transformer that updates each blog post's Markdown tree.
  */
 export default function remarkSocialHashtags(options = {}) {
-  const { includeFrontMatterTags = true, siteDir = process.cwd() } = options;
-
-  return (tree, file) => {
-    if (!isBlogPost(file.path, siteDir)) return;
+  const { includeFrontMatterTags = true, excludedTags = [], siteDir = process.cwd(), blogs = [] } = options;
+  if (!Array.isArray(excludedTags)) {
+    console.warn("[remark-social-hashtags] socialPosts.excludedTags should be a list like [\"Meta\"]; no tags are excluded.");
+  }
+  if (!blogs.length) {
+    console.warn("[remark-social-hashtags] No blogs given in the \"blogs\" option, so no hashtags are added.");
+  }
+  return async (tree, file) => {
+    const blog = blogOf(file.path, blogs, siteDir);
+    if (!blog) return;
 
     const frontMatter = file.data && file.data.frontMatter;
     const inPost = newHashtagNames(hashtagsIn(textOf(tree)));
     const fromTags = includeFrontMatterTags
-      ? newHashtagNames(frontMatterTagLabels(frontMatter).map(toHashtagName), inPost)
+      ? newHashtagNames(await tagHashtags(blog, frontMatter, excludedTags), inPost)
       : [];
 
     if (fromTags.length && isUntitled(frontMatter)) appendHashtags(tree, fromTags);

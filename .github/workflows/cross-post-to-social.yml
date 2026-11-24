@@ -6,6 +6,9 @@
 #      BLOG_FOLDERS_TO_FEEDS setting.
 #   2. This workflow waits for Vercel (or any host) to put it on the live site.
 #   3. It tells Bridgy about the post. Bridgy formats and publishes it.
+#   4. It saves the addresses of the new Mastodon and Bluesky posts into the
+#      post's front matter ("syndication") and commits that, so the website
+#      shows "Also on" links and Bridgy can send replies back (backfeed).
 # The script that does the work, with plain-English notes, is
 # .github/scripts/send_new_posts_to_bridgy.py
 #
@@ -27,7 +30,10 @@ on:
 
   # Daily safety net, in case a push run failed (for example, a slow deploy).
   # Re-sends posts added in the last 3 days of commits; Bridgy skips any
-  # already published, so nothing is posted twice.
+  # already published, so nothing is posted twice. GitHub pauses scheduled
+  # runs in a repository with no activity for 60 days; pushing a post, or
+  # re-enabling the workflow on the Actions tab, turns it back on.
+  # Docs: https://docs.github.com/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/disabling-and-enabling-a-workflow
   # Time is UTC (13:17 UTC is 8:17 or 9:17 in New York).
   # Docs: https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule
   schedule:
@@ -38,7 +44,7 @@ on:
   workflow_dispatch:
     inputs:
       post_url:
-        description: "One post's full address. Leave blank to send posts added in the last 3 days."
+        description: "One post's full address (its Mastodon and Bluesky addresses are saved too). Leave blank to send posts added in the last 3 days."
         required: false
         default: ""
       dry_run:
@@ -46,22 +52,26 @@ on:
         type: boolean
         default: true
 
-# Never run two of these at once, so a post can't be sent twice in parallel.
-# Docs: https://docs.github.com/actions/using-jobs/using-concurrency
-concurrency:
-  group: cross-post-to-social
-  cancel-in-progress: false
+# Runs are allowed to overlap on purpose. A concurrency group would let
+# GitHub cancel a queued run when a third push arrives, losing its posts, and
+# overlap is harmless: Bridgy never publishes the same page twice.
 
+# "write" lets step 4 commit the saved addresses. The token can only push
+# to this repository, and pushes made with it don't start new workflow runs.
+# Docs: https://docs.github.com/actions/security-for-github-actions/security-guides/automatic-token-authentication
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   cross-post:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
+      # Pinned to an exact commit, so a changed or compromised tag can't
+      # alter what runs with write access; the comment says which release.
+      # Docs: https://docs.github.com/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions#using-third-party-actions
       - name: Get the repository's files
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
 
       - name: Find post files that were added
         if: github.event_name != 'workflow_dispatch' || inputs.post_url == ''
@@ -74,17 +84,23 @@ jobs:
         run: |
           # Lists files whose status is "added". Edits to existing posts are
           # ignored on purpose. Uses GitHub's API, so no git history is needed.
+          # --paginate fetches every page, so large pushes aren't cut short.
           # Docs: https://docs.github.com/rest/commits/commits
-          added() { gh api "repos/$REPO/commits/$1" --jq '.files[] | select(.status=="added") | .filename'; }
+          set -euo pipefail
+          ADDED='.files[]? | select(.status=="added") | .filename'
+          added_in_commit() { gh api --paginate "repos/$REPO/commits/$1" --jq "$ADDED"; }
           if [ "$EVENT" = "push" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ]; then
-            gh api "repos/$REPO/compare/$BEFORE...$AFTER" --jq '.files[] | select(.status=="added") | .filename' > added.txt
+            # A force-push can make the previous commit unknown to GitHub;
+            # fall back to the files of the newest commit.
+            gh api --paginate "repos/$REPO/compare/$BEFORE...$AFTER" --jq "$ADDED" > added.txt \
+              || added_in_commit "$AFTER" > added.txt
           elif [ "$EVENT" = "push" ]; then
-            added "$AFTER" > added.txt
+            added_in_commit "$AFTER" > added.txt
           else
             since=$(date -u -d '3 days ago' +%Y-%m-%dT%H:%M:%SZ)
             : > added.txt
-            for sha in $(gh api "repos/$REPO/commits?sha=main&since=$since&per_page=100" --jq '.[].sha'); do
-              added "$sha" >> added.txt
+            for sha in $(gh api --paginate "repos/$REPO/commits?sha=main&since=$since&per_page=100" --jq '.[].sha'); do
+              added_in_commit "$sha" >> added.txt
             done
           fi
           sort -u -o added.txt added.txt
@@ -94,7 +110,7 @@ jobs:
         if: github.event_name != 'workflow_dispatch'
         run: |
           mapfile -t files < added.txt
-          python3 .github/scripts/send_new_posts_to_bridgy.py --new-files "${files[@]}"
+          python3 .github/scripts/send_new_posts_to_bridgy.py --record-syndication --new-files "${files[@]}"
 
       - name: Send posts to Bridgy (manual run)
         if: github.event_name == 'workflow_dispatch'
@@ -108,5 +124,35 @@ jobs:
             mapfile -t files < added.txt
             args=(--new-files "${files[@]}")
           fi
-          if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+          if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); else args+=(--record-syndication); fi
           python3 .github/scripts/send_new_posts_to_bridgy.py "${args[@]}"
+
+      - name: Commit the saved Mastodon and Bluesky addresses
+        # Runs even if some posts failed, so addresses already saved aren't
+        # lost, but only on main, so a manual run from another branch can't
+        # push that branch's commits to main.
+        if: always() && github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain -- ':(glob)blog*/**')" ]; then
+            echo "No addresses to save."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- ':(glob)blog*/**'
+          git commit -m "Save where new posts were cross-posted"
+          # Someone may have pushed meanwhile: replay on top and try again.
+          for attempt in 1 2 3; do
+            if git pull --rebase --quiet origin main && git push --quiet origin HEAD:main; then
+              echo "Saved and pushed."
+              exit 0
+            fi
+            # A failed rebase (say, the same post edited meanwhile) leaves git
+            # mid-rebase; undo it so the next attempt starts clean.
+            git rebase --abort 2>/dev/null || true
+            echo "Push attempt $attempt failed; retrying in 10s."
+            sleep 10
+          done
+          echo "::error::Could not push the saved addresses. They will be missing from the posts' front matter."
+          exit 1
