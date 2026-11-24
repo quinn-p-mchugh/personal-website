@@ -9,6 +9,10 @@
  *   Bridgy refuses to publish a page that lacks them: https://brid.gy/about
  * - "p-bridgy-omit-link" set to "maybe" means: add a link back to the site
  *   only when the post had to be shortened to fit, like Micro.blog does.
+ * - Titled posts with tags get their own social text, "Title: link", the
+ *   front matter description if any, and a line of hashtags. Without it,
+ *   Bridgy would post only "Title: link" and the tags would be lost.
+ *   Untitled posts get their hashtags from plugins/remark-social-hashtags.mjs.
  *
  * Applies to every blog on the site (blog, blog-micro, blog-ideas, and any
  * added later), because all Docusaurus blogs share this theme component. Adds
@@ -21,7 +25,9 @@
 import React from "react";
 import clsx from "clsx";
 import Container from "@theme-original/BlogPostItem/Container";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { useBlogPost } from "@docusaurus/plugin-content-blog/client";
+import { hashtagNamesFromLabels } from "@site/src/utils/hashtags.mjs";
 
 /**
  * Networks Bridgy may publish this site's posts to. Delete a line to stop
@@ -33,25 +39,100 @@ const BRIDGY_PUBLISH_TARGETS = [
 ];
 
 /**
+ * Bridgy's per-network text overrides. Content in elements with these classes
+ * replaces the post's own text on that network.
+ * Docs: https://brid.gy/about
+ */
+const BRIDGY_CONTENT_CLASSES = ["e-bridgy-mastodon-content", "e-bridgy-bluesky-content"];
+
+/**
+ * Tells whether a post has a visible title.
+ *
+ * Args:
+ *     title: The post's title from Docusaurus metadata; may be "".
+ *
+ * Returns:
+ *     True if the title has any non-space characters.
+ */
+function hasTitle(title) {
+  return typeof title === "string" && title.trim() !== "";
+}
+
+/**
+ * Works out the hashtags for a titled post's social text.
+ *
+ * Args:
+ *     metadata: The post's Docusaurus metadata.
+ *     includeFrontMatterTags: The socialPosts setting from docusaurus.config.js.
+ *
+ * Returns:
+ *     Hashtag names without "#", e.g. ["Climate", "AIEthics"]. Empty for
+ *     untitled posts, posts without tags, or when the setting is off.
+ */
+function titledPostHashtags(metadata, includeFrontMatterTags) {
+  if (!includeFrontMatterTags || !hasTitle(metadata.title)) return [];
+  return hashtagNamesFromLabels((metadata.tags || []).map((tag) => tag.label));
+}
+
+/**
+ * The social text for a titled post: "Title: link", description, hashtags.
+ *
+ * Matches how Micro.blog cross-posts titled posts, with the tags added.
+ *
+ * Args:
+ *     props.title: The post's title.
+ *     props.url: The post's full address.
+ *     props.description: The front matter description, possibly undefined.
+ *     props.hashtags: Hashtag names without "#"; at least one.
+ *
+ * Returns:
+ *     A <div> Bridgy uses as the post's text on every network.
+ */
+function TitledPostSocialText({ title, url, description, hashtags }) {
+  return (
+    <div className={clsx(BRIDGY_CONTENT_CLASSES)}>
+      <p>
+        {title}: <a href={url}>{url}</a>
+      </p>
+      {hasTitle(description) && <p>{description}</p>}
+      <p>{hashtags.map((name) => `#${name}`).join(" ")}</p>
+    </div>
+  );
+}
+
+/**
  * Hidden, machine-readable post details for Bridgy.
  *
  * Args:
- *     props.permalink: The post's address, relative to the site root.
- *     props.date: The post's date as an ISO 8601 string.
+ *     props.metadata: The post's Docusaurus metadata.
+ *     props.frontMatter: The post's front matter.
+ *     props.siteUrl: The site's address, e.g. "https://quinnmchugh.net".
+ *     props.includeFrontMatterTags: The socialPosts setting.
  *
  * Returns:
  *     A hidden <div> holding the post's address and date, the link-back rule,
- *     and one link per Bridgy publish target.
+ *     one link per Bridgy publish target, and, for a titled post with tags,
+ *     its social text.
  */
-function BridgyPostDetails({ permalink, date }) {
+function BridgyPostDetails({ metadata, frontMatter, siteUrl, includeFrontMatterTags }) {
+  const hashtags = titledPostHashtags(metadata, includeFrontMatterTags);
+  const url = new URL(metadata.permalink, siteUrl).href;
   return (
     <div hidden aria-hidden="true">
-      <a className="u-url" href={permalink} />
-      <time className="dt-published" dateTime={date} />
+      <a className="u-url" href={metadata.permalink} />
+      <time className="dt-published" dateTime={metadata.date} />
       <data className="p-bridgy-omit-link" value="maybe" />
       {BRIDGY_PUBLISH_TARGETS.map((target) => (
         <a key={target} href={target} />
       ))}
+      {hashtags.length > 0 && (
+        <TitledPostSocialText
+          title={metadata.title}
+          url={url}
+          description={frontMatter && frontMatter.description}
+          hashtags={hashtags}
+        />
+      )}
     </div>
   );
 }
@@ -69,7 +150,8 @@ function BridgyPostDetails({ permalink, date }) {
  *     "h-entry" class and the hidden Bridgy details on a post's own page.
  */
 export default function ContainerWrapper({ className, children, ...props }) {
-  const { metadata, isBlogPostPage } = useBlogPost();
+  const { metadata, frontMatter, isBlogPostPage } = useBlogPost();
+  const { siteConfig } = useDocusaurusContext();
 
   if (!isBlogPostPage) {
     return (
@@ -79,10 +161,16 @@ export default function ContainerWrapper({ className, children, ...props }) {
     );
   }
 
+  const socialPosts = (siteConfig.customFields && siteConfig.customFields.socialPosts) || {};
   return (
     <Container className={clsx(className, "h-entry")} {...props}>
       {children}
-      <BridgyPostDetails permalink={metadata.permalink} date={metadata.date} />
+      <BridgyPostDetails
+        metadata={metadata}
+        frontMatter={frontMatter}
+        siteUrl={siteConfig.url}
+        includeFrontMatterTags={socialPosts.includeFrontMatterTags !== false}
+      />
     </Container>
   );
 }
