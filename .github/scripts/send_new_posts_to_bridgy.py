@@ -23,6 +23,16 @@ How it finds new posts:
     (like Welcome.md) get their date from git history, which can look recent
     on a fresh deploy.
 
+Saving where each post went:
+    Bridgy answers each publish with the address of the new Mastodon or
+    Bluesky post. With --record-syndication, those addresses are added to
+    the post file's front matter as a "syndication" list. The website shows
+    them as "Also on Mastodon · Bluesky" links, and Bridgy needs them to match
+    replies, likes and reposts back to the post (backfeed), because untitled
+    posts are cross-posted without a link back.
+    Docs: https://brid.gy/about (backfeed) and
+    https://indieweb.org/rel-syndication
+
 Usage:
     send_new_posts_to_bridgy.py --new-files FILE [FILE ...] [--dry-run]
         Post files added in recent commits (used on push and by the daily
@@ -31,6 +41,8 @@ Usage:
         One specific post address (manual runs).
 
     --dry-run prints what would be sent without contacting Bridgy.
+    --record-syndication saves the new posts' addresses into the post files
+    (the workflow commits them).
 
 Needs only Python 3.9+ and its standard library. No packages to install.
 """
@@ -479,30 +491,32 @@ def find_live_posts(waiting: List[ExpectedPost]) -> Dict[ExpectedPost, str]:
     return found
 
 
-def wait_for_posts_to_go_live(posts: List[ExpectedPost]) -> Tuple[List[str], List[ExpectedPost]]:
+def wait_for_posts_to_go_live(
+    posts: List[ExpectedPost],
+) -> Tuple[List[Tuple[ExpectedPost, str]], List[ExpectedPost]]:
     """Wait until every post appears in its live feed, or time runs out.
 
     Args:
         posts: Posts to wait for.
 
     Returns:
-        A pair: the live addresses found, and the posts that never appeared
-        within WAIT_FOR_DEPLOY_MINUTES.
+        A pair: (post, live address) for each post found, and the posts that
+        never appeared within WAIT_FOR_DEPLOY_MINUTES.
     """
     waiting = list(posts)
-    found_urls = []
+    found = []
     deadline = time.monotonic() + WAIT_FOR_DEPLOY_MINUTES * 60
     while waiting:
         for post, url in find_live_posts(waiting).items():
             say(f"  live  {url}")
-            found_urls.append(url)
+            found.append((post, url))
             waiting.remove(post)
         if not waiting or time.monotonic() >= deadline:
             break
         names = ", ".join(post.slug for post in waiting)
         say(f"  wait  not on the live site yet: {names}. Checking again in {CHECK_EVERY_SECONDS}s.")
         time.sleep(CHECK_EVERY_SECONDS)
-    return found_urls, waiting
+    return found, waiting
 
 
 # ============================ SENDING TO BRIDGY ===========================
@@ -564,7 +578,7 @@ def describe_outcome(network: str, res: Response) -> Tuple[bool, str]:
     return False, f"  FAILED  {network} (HTTP {res.status}): {short(res.body)}"
 
 
-def send_to_bridgy(post_url: str, dry_run: bool) -> bool:
+def send_to_bridgy(post_url: str, dry_run: bool) -> Tuple[bool, List[str]]:
     """Ask Bridgy to publish one post to every network in BRIDGY_TARGETS.
 
     Args:
@@ -572,19 +586,115 @@ def send_to_bridgy(post_url: str, dry_run: bool) -> bool:
         dry_run: If True, only print what would be sent.
 
     Returns:
-        True if every network published it, had already, or was skipped by
-        the dry run.
+        A pair: True if every network published it, had already, or was
+        skipped by the dry run; and the addresses of the posts Bridgy just
+        created (from its Location header), in BRIDGY_TARGETS order.
     """
     all_fine = True
+    published = []
     for target in BRIDGY_TARGETS:
         network = target.rstrip("/").rsplit("/", 1)[-1]
         if dry_run:
             say(f"  dry run  would send {post_url} to {network}")
             continue
-        fine, line = describe_outcome(network, send_webmention(post_url, target))
+        res = send_webmention(post_url, target)
+        fine, line = describe_outcome(network, res)
         say(line)
         all_fine = all_fine and fine
-    return all_fine
+        if 200 <= res.status < 300 and res.location.startswith(("https://", "http://")):
+            published.append(res.location)
+    return all_fine, published
+
+
+# =========================== SAVING SYNDICATION ===========================
+
+
+def split_front_matter(text: str) -> Optional[Tuple[str, str, str]]:
+    """Split a Markdown file into its front matter and the rest.
+
+    Args:
+        text: The whole file, with any byte-order mark removed.
+
+    Returns:
+        (opening "---" line, front matter lines, closing "---" line onwards),
+        or None if the file has no front matter.
+    """
+    match = re.match(r"(---[ \t]*\r?\n)(.*?)(^---[ \t]*(?:\r?\n|$).*)", text, re.S | re.M)
+    return match.groups() if match else None
+
+
+def add_syndication_lines(front_matter: str, urls: List[str], newline: str) -> str:
+    """Add addresses to the "syndication" list in front matter text.
+
+    Keeps everything else exactly as written. Adds a block list when there
+    is no "syndication" key, turns an empty inline list ("syndication: []")
+    into a block list, and appends to an existing block list. Addresses
+    already listed aren't repeated.
+    Docs: https://indieweb.org/rel-syndication
+
+    Args:
+        front_matter: The lines between the "---" fences.
+        urls: Addresses to add.
+        newline: The file's line ending, "\n" or "\r\n".
+
+    Returns:
+        The updated front matter lines.
+
+    Raises:
+        ValueError: If "syndication" holds something this function can't
+            safely extend, such as a non-empty inline list.
+    """
+    lines = front_matter.splitlines()
+    key_index = next((i for i, line in enumerate(lines) if re.match(r"syndication\s*:", line)), None)
+    if key_index is None:
+        new = [*lines, "syndication:", *(f"  - {url}" for url in urls)]
+        return newline.join(new) + newline
+
+    inline = lines[key_index].split(":", 1)[1].strip()
+    if inline not in ("", "[]"):
+        raise ValueError(f'"syndication: {inline}" is not a block list')
+    end = key_index + 1
+    while end < len(lines) and re.match(r"\s+-\s|\s*$", lines[end]) and lines[end].strip():
+        end += 1
+    existing = {line.strip()[1:].strip().strip("\"'") for line in lines[key_index + 1:end]}
+    added = [f"  - {url}" for url in urls if url not in existing]
+    new = [*lines[:key_index], "syndication:", *lines[key_index + 1:end], *added, *lines[end:]]
+    return newline.join(new) + newline
+
+
+def record_syndication(path: str, urls: List[str]) -> bool:
+    """Save a post's cross-posted addresses into its front matter.
+
+    Args:
+        path: Path of the post file, relative to the repository root.
+        urls: Addresses of the Mastodon and Bluesky copies.
+
+    Returns:
+        True if the file was changed. False, with a printed note, if there
+        was nothing to add or the front matter couldn't be safely updated.
+    """
+    if not urls:
+        return False
+    file = Path(path)
+    raw = file.read_bytes().decode("utf-8")
+    bom = "\ufeff" if raw.startswith("\ufeff") else ""
+    text = raw[len(bom):]
+    parts = split_front_matter(text)
+    if parts is None:
+        say(f"  note  {path} has no front matter; addresses not saved")
+        return False
+    opening, front_matter, rest = parts
+    newline = "\r\n" if "\r\n" in opening else "\n"
+    try:
+        updated = add_syndication_lines(front_matter, urls, newline)
+    except ValueError as error:
+        say(f"  note  {path}: {error}; addresses not saved")
+        return False
+    if updated == front_matter:
+        return False
+    file.write_bytes((bom + opening + updated + rest).encode("utf-8"))
+    say(f"  saved where {path} was posted: {', '.join(urls)}")
+    return True
 
 
 # ================================== MAIN ==================================
@@ -597,7 +707,7 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
         argv: Options to parse. Defaults to the real command line.
 
     Returns:
-        The parsed options: new_files or url, and dry_run.
+        The parsed options: new_files or url, dry_run, record_syndication.
     """
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     which = parser.add_mutually_exclusive_group(required=True)
@@ -606,33 +716,36 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     which.add_argument("--url", help="one post's live address")
     parser.add_argument("--dry-run", action="store_true",
                         help="print what would be sent, send nothing")
+    parser.add_argument("--record-syndication", action="store_true",
+                        help="save the new posts' addresses into the post files")
     return parser.parse_args(argv)
 
 
-def collect_urls(args: argparse.Namespace) -> Tuple[List[str], List[str]]:
+def collect_urls(args: argparse.Namespace) -> Tuple[List[Tuple[Optional[str], str]], List[str]]:
     """Find the post addresses to send, waiting for new posts to go live.
 
     Args:
         args: Parsed options.
 
     Returns:
-        A pair: addresses to send, and problems to report.
+        A pair: (post file path, address) to send, where the path is None
+        for a post given by address alone; and problems to report.
     """
     if args.url:
-        return [args.url], []
+        return [(None, args.url)], []
     say("Checking the added files...")
     posts = posts_to_publish(args.new_files)
     if not posts:
         say("No new published posts among the added files.")
         return [], []
     say(f"Waiting for {len(posts)} new post(s) to appear on {SITE_URL} ...")
-    urls, missing = wait_for_posts_to_go_live(posts)
+    found, missing = wait_for_posts_to_go_live(posts)
     problems = [
         f"{post.path} never appeared in the live feed after {WAIT_FOR_DEPLOY_MINUTES} minutes. "
         "Check the deploy, then re-run this workflow by hand with the post's address."
         for post in missing
     ]
-    return urls, problems
+    return [(post.path, url) for post, url in found], problems
 
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -648,11 +761,14 @@ def main(argv: Optional[List[str]] = None) -> int:
     if args.dry_run:
         say("Dry run: nothing will be sent to Bridgy.")
 
-    urls, problems = collect_urls(args)
-    for url in urls:
+    posts, problems = collect_urls(args)
+    for path, url in posts:
         say(f"Post: {url}")
-        if not send_to_bridgy(url, args.dry_run):
+        fine, published = send_to_bridgy(url, args.dry_run)
+        if not fine:
             problems.append(f"Bridgy did not accept {url}; see the FAILED lines above.")
+        if args.record_syndication and path and not args.dry_run:
+            record_syndication(path, published)
 
     for problem in problems:
         report_error(problem)

@@ -31,14 +31,25 @@ const darkCodeTheme = themes.dracula;
 
 /**
  * Settings for posts cross-posted to Mastodon and Bluesky through Bridgy.
- * includeFrontMatterTags: true adds each blog post's front matter tags as
- * hashtags on the last line of its social posts, merged with any hashtags
- * already in the post; false leaves tags out. Used by the remark plugin below
- * and by src/theme/BlogPostItem/Container.
- * Docs: see the comments at the top of plugins/remark-social-hashtags.mjs
+ * - includeFrontMatterTags: true adds each blog post's front matter tags as
+ *   hashtags on the last line of its social posts, merged with any hashtags
+ *   already in the post; false leaves tags out. Used by the remark plugin
+ *   below and by src/theme/BlogPostItem/Container.
+ *   Docs: see the comments at the top of plugins/remark-social-hashtags.mjs
+ * - showResponses: true shows likes, reposts and replies from Mastodon and
+ *   Bluesky under each post (src/components/SocialResponses); false hides
+ *   them. "Also on" links show either way.
+ * - webmentionUsername: your webmention.io username, usually the domain.
+ *   Bridgy delivers responses there. Docs: https://webmention.io/
+ * - relMe: profile links that prove you own this site, for signing in to
+ *   webmention.io. The profile must link back to the site.
+ *   Docs: https://indielogin.com/setup
  */
 const socialPosts = {
   includeFrontMatterTags: true,
+  showResponses: true,
+  webmentionUsername: "quinnmchugh.net",
+  relMe: ["https://github.com/quinn-p-mchugh"],
 };
 
 const plugins = {
@@ -119,10 +130,28 @@ const config = {
   title: "Quinn McHugh",
   tagline: "Engineer. Designer. Developer.",
   customFields: {
-    forbiddenGiscusPaths: [], // See GiscusComponent.js - Example: "/docs/tutorials/intro"
     socialPosts, // See socialPosts above
   },
   url: "https://quinnmchugh.net",
+  /**
+   * Extra <head> tags on every page. "webmention" tells Bridgy where to send
+   * Mastodon and Bluesky responses; "me" links prove site ownership for
+   * signing in to webmention.io. Settings: socialPosts above.
+   * Docs: https://docusaurus.io/docs/api/docusaurus-config#headTags
+   */
+  headTags: [
+    {
+      tagName: "link",
+      attributes: {
+        rel: "webmention",
+        href: `https://webmention.io/${socialPosts.webmentionUsername}/webmention`,
+      },
+    },
+    ...socialPosts.relMe.map((href) => ({
+      tagName: "link",
+      attributes: { rel: "me", href },
+    })),
+  ],
   baseUrl: "/",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",

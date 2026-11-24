@@ -6,6 +6,9 @@
 #      BLOG_FOLDERS_TO_FEEDS setting.
 #   2. This workflow waits for Vercel (or any host) to put it on the live site.
 #   3. It tells Bridgy about the post. Bridgy formats and publishes it.
+#   4. It saves the addresses of the new Mastodon and Bluesky posts into the
+#      post's front matter ("syndication") and commits that, so the website
+#      shows "Also on" links and Bridgy can send replies back (backfeed).
 # The script that does the work, with plain-English notes, is
 # .github/scripts/send_new_posts_to_bridgy.py
 #
@@ -53,8 +56,11 @@ on:
 # GitHub cancel a queued run when a third push arrives, losing its posts, and
 # overlap is harmless: Bridgy never publishes the same page twice.
 
+# "write" lets step 4 commit the saved addresses. The token can only push
+# to this repository, and pushes made with it don't start new workflow runs.
+# Docs: https://docs.github.com/actions/security-for-github-actions/security-guides/automatic-token-authentication
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   cross-post:
@@ -101,7 +107,7 @@ jobs:
         if: github.event_name != 'workflow_dispatch'
         run: |
           mapfile -t files < added.txt
-          python3 .github/scripts/send_new_posts_to_bridgy.py --new-files "${files[@]}"
+          python3 .github/scripts/send_new_posts_to_bridgy.py --record-syndication --new-files "${files[@]}"
 
       - name: Send posts to Bridgy (manual run)
         if: github.event_name == 'workflow_dispatch'
@@ -115,5 +121,32 @@ jobs:
             mapfile -t files < added.txt
             args=(--new-files "${files[@]}")
           fi
-          if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+          if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); else args+=(--record-syndication); fi
           python3 .github/scripts/send_new_posts_to_bridgy.py "${args[@]}"
+
+      - name: Commit the saved Mastodon and Bluesky addresses
+        # Runs even if some posts failed, so addresses already saved aren't
+        # lost, but only on main, so a manual run from another branch can't
+        # push that branch's commits to main.
+        if: always() && github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain -- ':(glob)blog*/**')" ]; then
+            echo "No addresses to save."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- ':(glob)blog*/**'
+          git commit -m "Save where new posts were cross-posted"
+          # Someone may have pushed meanwhile: replay on top and try again.
+          for attempt in 1 2 3; do
+            if git pull --rebase --quiet origin main && git push --quiet origin HEAD:main; then
+              echo "Saved and pushed."
+              exit 0
+            fi
+            echo "Push attempt $attempt failed; retrying in 10s."
+            sleep 10
+          done
+          echo "::error::Could not push the saved addresses. They will be missing from the posts' front matter."
+          exit 1
