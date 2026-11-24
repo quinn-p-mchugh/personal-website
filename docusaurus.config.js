@@ -19,6 +19,7 @@ import remarkWikiLinkPlus from "remark-wiki-link-plus";
 //import remarkPresetLintRetextEnglish from 'remark-preset-lint-retext-english';
 import remarkValidateLinks from "remark-validate-links";
 import remarkPrism from "remark-prism";
+import remarkSocialHashtags from "./plugins/remark-social-hashtags.mjs";
 import tailwindPlugin from "./plugins/tailwind.config.cjs";
 
 //import rehypeRemark from 'rehype-remark'
@@ -27,6 +28,18 @@ import tailwindPlugin from "./plugins/tailwind.config.cjs";
 const { themes } = require("prism-react-renderer");
 const lightCodeTheme = themes.github;
 const darkCodeTheme = themes.dracula;
+
+/**
+ * Settings for posts cross-posted to Mastodon and Bluesky through Bridgy.
+ * includeFrontMatterTags: true adds each blog post's front matter tags as
+ * hashtags on the last line of its social posts, merged with any hashtags
+ * already in the post; false leaves tags out. Used by the remark plugin below
+ * and by src/theme/BlogPostItem/Container.
+ * Docs: see the comments at the top of plugins/remark-social-hashtags.mjs
+ */
+const socialPosts = {
+  includeFrontMatterTags: true,
+};
 
 const plugins = {
   remarkPlugins: [
@@ -52,6 +65,8 @@ const plugins = {
       { repository: "https://github.com/quinn-p-mchugh/personal-website" },
     ], // https://github.com/remarkjs/remark-validate-links?tab=readme-ov-file#options
     [remarkPrism, {}], // https://github.com/sergioramos/remark-prism?tab=readme-ov-file
+    // Prepares blog posts' hashtags for cross-posting. Settings: socialPosts above.
+    [remarkSocialHashtags, socialPosts],
   ],
   rehypePlugins: [],
 };
@@ -81,6 +96,16 @@ const contentConfig = {
       description:
         "Half-baked, outlandish, and occasionally good ideas from Quinn McHugh",
     },
+    resourcesBlog: {
+      title: "Quinn McHugh's Resources",
+      description:
+        "Useful tools, articles, and other finds from around the web, shared by Quinn McHugh",
+    },
+    highlightsBlog: {
+      title: "Quinn McHugh's Highlights",
+      description:
+        "Passages worth remembering from what Quinn McHugh reads, watches, and listens to",
+    },
   },
   docsConfig: { // Docs Plugin Documentation: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-docs
     projects: {
@@ -95,6 +120,7 @@ const config = {
   tagline: "Engineer. Designer. Developer.",
   customFields: {
     forbiddenGiscusPaths: [], // See GiscusComponent.js - Example: "/docs/tutorials/intro"
+    socialPosts, // See socialPosts above
   },
   url: "https://quinnmchugh.net",
   baseUrl: "/",
@@ -206,6 +232,86 @@ const config = {
         feedOptions: {
           title: contentConfig.blogConfig.microBlog.title,
           description: contentConfig.blogConfig.microBlog.description,
+          type: contentConfig.blogConfig.feedType,
+          copyright: contentConfig.blogConfig.copyright,
+          limit: contentConfig.blogConfig.feedLimit,
+          xslt: true,
+        },
+        remarkPlugins: plugins.remarkPlugins,
+        rehypePlugins: plugins.rehypePlugins,
+        tags: contentConfig.tags,
+        authorsMapPath: contentConfig.blogConfig.authorsMapPath,
+      },
+    ],
+    [
+      "@docusaurus/plugin-content-blog",
+      {
+        /**
+         * Required for any multi-instance plugin
+         */
+        id: "blog-resources",
+        /**
+         * URL route for the blog section of your site.
+         * *DO NOT* include a trailing slash.
+         */
+        routeBasePath: "resources",
+        /**
+         * Path to data on filesystem relative to site dir.
+         */
+        path: "blog-resources",
+        blogTitle: contentConfig.blogConfig.resourcesBlog.title,
+        blogDescription: contentConfig.blogConfig.resourcesBlog.description,
+        blogSidebarTitle:
+          "Resources: tools, articles, and other finds worth sharing",
+        blogSidebarCount: contentConfig.blogConfig.sidebarCount,
+        showReadingTime: false,
+        showLastUpdateAuthor: true,
+        showLastUpdateTime: true,
+        onInlineTags: contentConfig.onInlineTags,
+        onUntruncatedBlogPosts: contentConfig.blogConfig.onUntruncatedBlogPosts,
+        feedOptions: {
+          title: contentConfig.blogConfig.resourcesBlog.title,
+          description: contentConfig.blogConfig.resourcesBlog.description,
+          type: contentConfig.blogConfig.feedType,
+          copyright: contentConfig.blogConfig.copyright,
+          limit: contentConfig.blogConfig.feedLimit,
+          xslt: true,
+        },
+        remarkPlugins: plugins.remarkPlugins,
+        rehypePlugins: plugins.rehypePlugins,
+        tags: contentConfig.tags,
+        authorsMapPath: contentConfig.blogConfig.authorsMapPath,
+      },
+    ],
+    [
+      "@docusaurus/plugin-content-blog",
+      {
+        /**
+         * Required for any multi-instance plugin
+         */
+        id: "blog-highlights",
+        /**
+         * URL route for the blog section of your site.
+         * *DO NOT* include a trailing slash.
+         */
+        routeBasePath: "highlights",
+        /**
+         * Path to data on filesystem relative to site dir.
+         */
+        path: "blog-highlights",
+        blogTitle: contentConfig.blogConfig.highlightsBlog.title,
+        blogDescription: contentConfig.blogConfig.highlightsBlog.description,
+        blogSidebarTitle:
+          "Highlights: passages worth remembering",
+        blogSidebarCount: contentConfig.blogConfig.sidebarCount,
+        showReadingTime: false,
+        showLastUpdateAuthor: true,
+        showLastUpdateTime: true,
+        onInlineTags: contentConfig.onInlineTags,
+        onUntruncatedBlogPosts: contentConfig.blogConfig.onUntruncatedBlogPosts,
+        feedOptions: {
+          title: contentConfig.blogConfig.highlightsBlog.title,
+          description: contentConfig.blogConfig.highlightsBlog.description,
           type: contentConfig.blogConfig.feedType,
           copyright: contentConfig.blogConfig.copyright,
           limit: contentConfig.blogConfig.feedLimit,
@@ -346,6 +452,8 @@ const config = {
               { to: "/blog", label: "Blog" },
               { to: "/blog-micro", label: "Microblog" },
               { to: "/ideas", label: "Ideas" },
+              { to: "/resources", label: "Resources" },
+              { to: "/highlights", label: "Highlights" },
             ],
           },
           {
