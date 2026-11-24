@@ -29,6 +29,7 @@
  * where socialHashtagOptions is { ...socialPosts, blogs } and blogs lists the
  * "path" and "tags" of every blog plugin (see blogPluginOptions there).
  * Remark plugin docs: https://docusaurus.io/docs/markdown-features/plugins
+ * Tests: tests/social-posts/remark-social-hashtags.test.mjs (run with npm test).
  */
 import path from "node:path";
 import { createRequire } from "node:module";

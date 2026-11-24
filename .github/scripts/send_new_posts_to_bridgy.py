@@ -46,6 +46,7 @@ Usage:
     (the workflow commits them).
 
 Needs only Python 3.9+ and its standard library. No packages to install.
+Tests: test_send_new_posts_to_bridgy.py next to this file (run with npm test).
 """
 
 import argparse
@@ -828,6 +829,24 @@ def collect_urls(args: argparse.Namespace) -> Tuple[List[Tuple[Optional[str], st
     return [(post.path, url) for post, url in found], problems
 
 
+def publish_post(path: Optional[str], url: str, args: argparse.Namespace) -> Optional[str]:
+    """Send one post to Bridgy and, if asked, save where it was published.
+
+    Args:
+        path: The post file, or None if it isn't known.
+        url: The post's live address.
+        args: Parsed options (dry_run, record_syndication).
+
+    Returns:
+        A problem to report, or None if everything worked.
+    """
+    say(f"Post: {url}")
+    fine, published = send_to_bridgy(url, args.dry_run)
+    if args.record_syndication and path and not args.dry_run:
+        record_syndication(path, published)
+    return None if fine else f"Bridgy did not accept {url}; see the FAILED lines above."
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     """Run the whole job.
 
@@ -843,12 +862,9 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     posts, problems = collect_urls(args)
     for path, url in posts:
-        say(f"Post: {url}")
-        fine, published = send_to_bridgy(url, args.dry_run)
-        if not fine:
-            problems.append(f"Bridgy did not accept {url}; see the FAILED lines above.")
-        if args.record_syndication and path and not args.dry_run:
-            record_syndication(path, published)
+        problem = publish_post(path, url, args)
+        if problem:
+            problems.append(problem)
 
     for problem in problems:
         report_error(problem)

@@ -1,6 +1,7 @@
 /**
  * Small helpers shared by the blog post theme wrappers in
  * src/theme/BlogPostItem, so they all apply the same rules.
+ * Tests: tests/social-posts/hashtags.test.mjs (run with npm test).
  */
 
 /**

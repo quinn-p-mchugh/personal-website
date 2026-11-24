@@ -3,6 +3,7 @@
  *
  * Shared by plugins/remark-social-hashtags.mjs (build time) and
  * src/theme/BlogPostItem/Container (page rendering), so both use the same rule.
+ * Tests: tests/social-posts/hashtags.test.mjs (run with npm test).
  */
 
 /**
