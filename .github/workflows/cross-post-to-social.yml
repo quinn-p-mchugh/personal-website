@@ -1,0 +1,110 @@
+# Cross-posts new blog posts to Mastodon and Bluesky through Bridgy.
+#
+# What happens:
+#   1. You commit a new post to main (from GitHub's web editor, your laptop,
+#      anywhere) in blog/, blog-micro/ or blog-ideas/.
+#   2. This workflow waits for Vercel (or any host) to put it on the live site.
+#   3. It tells Bridgy about the post. Bridgy formats and publishes it.
+# The script that does the work, with plain-English notes, is
+# .github/scripts/send_new_posts_to_bridgy.py
+#
+# GitHub Actions docs: https://docs.github.com/actions
+# Bridgy docs: https://brid.gy/about
+
+name: Cross-post to Mastodon and Bluesky
+
+on:
+  # Runs when a commit to main changes one of the blog folders.
+  # Docs: https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#push
+  push:
+    branches: [main]
+    paths:
+      - "blog/**"
+      - "blog-micro/**"
+      - "blog-ideas/**"
+
+  # Daily safety net, in case a push run failed (for example, a slow deploy).
+  # Re-sends posts added in the last 3 days of commits; Bridgy skips any
+  # already published, so nothing is posted twice.
+  # Time is UTC (13:17 UTC is 8:17 or 9:17 in New York).
+  # Docs: https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule
+  schedule:
+    - cron: "17 13 * * *"
+
+  # "Run workflow" button on the Actions tab.
+  # Docs: https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      post_url:
+        description: "One post's full address. Leave blank to send posts added in the last 3 days."
+        required: false
+        default: ""
+      dry_run:
+        description: "Dry run: only show what would be sent"
+        type: boolean
+        default: true
+
+# Never run two of these at once, so a post can't be sent twice in parallel.
+# Docs: https://docs.github.com/actions/using-jobs/using-concurrency
+concurrency:
+  group: cross-post-to-social
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  cross-post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Get the repository's files
+        uses: actions/checkout@v5
+
+      - name: Find post files that were added
+        if: github.event_name != 'workflow_dispatch' || inputs.post_url == ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          # Lists files whose status is "added". Edits to existing posts are
+          # ignored on purpose. Uses GitHub's API, so no git history is needed.
+          # Docs: https://docs.github.com/rest/commits/commits
+          added() { gh api "repos/$REPO/commits/$1" --jq '.files[] | select(.status=="added") | .filename'; }
+          if [ "$EVENT" = "push" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ]; then
+            gh api "repos/$REPO/compare/$BEFORE...$AFTER" --jq '.files[] | select(.status=="added") | .filename' > added.txt
+          elif [ "$EVENT" = "push" ]; then
+            added "$AFTER" > added.txt
+          else
+            since=$(date -u -d '3 days ago' +%Y-%m-%dT%H:%M:%SZ)
+            : > added.txt
+            for sha in $(gh api "repos/$REPO/commits?sha=main&since=$since&per_page=100" --jq '.[].sha'); do
+              added "$sha" >> added.txt
+            done
+          fi
+          sort -u -o added.txt added.txt
+          echo "Added files:"; cat added.txt
+
+      - name: Send new posts to Bridgy
+        if: github.event_name != 'workflow_dispatch'
+        run: |
+          mapfile -t files < added.txt
+          python3 .github/scripts/send_new_posts_to_bridgy.py --new-files "${files[@]}"
+
+      - name: Send posts to Bridgy (manual run)
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          POST_URL: ${{ inputs.post_url }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          if [ -n "$POST_URL" ]; then
+            args=(--url "$POST_URL")
+          else
+            mapfile -t files < added.txt
+            args=(--new-files "${files[@]}")
+          fi
+          if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+          python3 .github/scripts/send_new_posts_to_bridgy.py "${args[@]}"
