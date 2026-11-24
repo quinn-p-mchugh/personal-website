@@ -8,7 +8,8 @@
  *    default). A post with `tags: [Climate, Animal Welfare]` gets
  *    "#Climate #AnimalWelfare" added to its last line of hashtags, or to a
  *    new last line if it has none. Hashtags already in the post aren't
- *    repeated, ignoring letter case. The added hashtags are hidden on the
+ *    repeated, ignoring letter case. Tags in socialPosts.excludedTags are
+ *    left out. The added hashtags are hidden on the
  *    website, which already shows the tags, but Bridgy still includes them
  *    in the social post. Titled posts are posted as "Title: link" rather than
  *    their text, so their hashtags are added by
@@ -31,7 +32,7 @@
  */
 import path from "node:path";
 import { createRequire } from "node:module";
-import { HASHTAG_CHARACTER, newHashtagNames, toHashtagName } from "../src/utils/hashtags.mjs";
+import { HASHTAG_CHARACTER, hashtagNamesFromTags, newHashtagNames } from "../src/utils/hashtags.mjs";
 
 /**
  * Matches a hashtag: "#" then hashtag characters, not inside a word, a URL
@@ -130,10 +131,10 @@ async function readTagLabels(blogFolder, tags) {
 }
 
 /**
- * Reads a post's tag labels from its front matter.
+ * Reads a post's tags from its front matter.
  *
  * Docusaurus accepts tags as plain strings or as objects with a "label". A
- * string that is a key in the tags file is replaced by that tag's label.
+ * string that is a key in the tags file shows as that tag's label.
  * Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#markdown-front-matter
  *
  * Args:
@@ -141,14 +142,18 @@ async function readTagLabels(blogFolder, tags) {
  *     tagLabels: Map of tag keys to labels from readTagLabels.
  *
  * Returns:
- *     The tag labels as strings; empty if the post has no tags.
+ *     { key, label } for each tag with a label: key is the string written in
+ *     front matter (undefined for a tag written as an object); label is what
+ *     the site shows. Empty if the post has no tags.
  */
-function frontMatterTagLabels(frontMatter, tagLabels) {
+function frontMatterTags(frontMatter, tagLabels) {
   const tags = (frontMatter && frontMatter.tags) || [];
   if (!Array.isArray(tags)) return [];
   return tags
-    .map((tag) => (typeof tag === "string" ? tagLabels.get(tag) || tag : tag && tag.label))
-    .filter((label) => typeof label === "string" && label.trim() !== "");
+    .map((tag) =>
+      typeof tag === "string" ? { key: tag, label: tagLabels.get(tag) || tag } : { key: undefined, label: tag && tag.label }
+    )
+    .filter((tag) => typeof tag.label === "string" && tag.label.trim() !== "");
 }
 
 /**
@@ -310,12 +315,32 @@ function blogOf(filePath, blogs, siteDir) {
 }
 
 /**
+ * Works out the hashtags for a post's front matter tags.
+ *
+ * Args:
+ *     blog: { folder, options } from blogOf.
+ *     frontMatter: The post's parsed front matter, possibly undefined.
+ *     excludedTags: The socialPosts.excludedTags setting.
+ *
+ * Returns:
+ *     A promise of hashtag names without "#", excluded tags and repeats
+ *     left out.
+ */
+async function tagHashtags(blog, frontMatter, excludedTags) {
+  const tagLabels = await readTagLabels(blog.folder, blog.options.tags);
+  return hashtagNamesFromTags(frontMatterTags(frontMatter, tagLabels), excludedTags);
+}
+
+/**
  * Remark plugin entry point.
  *
  * Args:
  *     options.includeFrontMatterTags: true (the default) to add front matter
  *         tags as hashtags; false to only list the post's own hashtags for
  *         Bluesky. Set once, in socialPosts in docusaurus.config.js.
+ *     options.excludedTags: Tags never turned into hashtags, matched by key
+ *         or label ignoring case, spaces and punctuation. Set once, in
+ *         socialPosts in docusaurus.config.js. Defaults to none.
  *     options.blogs: The "path" and "tags" options of every blog plugin, as
  *         { path, tags } objects. "path" says which folder is that blog;
  *         "tags" says which tags file resolves tag keys, read the way
@@ -327,7 +352,10 @@ function blogOf(filePath, blogs, siteDir) {
  *     A transformer that updates each blog post's Markdown tree.
  */
 export default function remarkSocialHashtags(options = {}) {
-  const { includeFrontMatterTags = true, siteDir = process.cwd(), blogs = [] } = options;
+  const { includeFrontMatterTags = true, excludedTags = [], siteDir = process.cwd(), blogs = [] } = options;
+  if (!Array.isArray(excludedTags)) {
+    console.warn("[remark-social-hashtags] socialPosts.excludedTags should be a list like [\"Meta\"]; no tags are excluded.");
+  }
   if (!blogs.length) {
     console.warn("[remark-social-hashtags] No blogs given in the \"blogs\" option, so no hashtags are added.");
   }
@@ -338,7 +366,7 @@ export default function remarkSocialHashtags(options = {}) {
     const frontMatter = file.data && file.data.frontMatter;
     const inPost = newHashtagNames(hashtagsIn(textOf(tree)));
     const fromTags = includeFrontMatterTags
-      ? newHashtagNames(frontMatterTagLabels(frontMatter, await readTagLabels(blog.folder, blog.options.tags)).map(toHashtagName), inPost)
+      ? newHashtagNames(await tagHashtags(blog, frontMatter, excludedTags), inPost)
       : [];
 
     if (fromTags.length && isUntitled(frontMatter)) appendHashtags(tree, fromTags);

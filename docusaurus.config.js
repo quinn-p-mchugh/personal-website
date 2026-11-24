@@ -36,6 +36,11 @@ const darkCodeTheme = themes.dracula;
  *   already in the post; false leaves tags out. Used by the remark plugin
  *   below and by src/theme/BlogPostItem/Container.
  *   Docs: see the comments at the top of plugins/remark-social-hashtags.mjs
+ * - excludedTags: tags never turned into hashtags, e.g. ["Meta", "pkm"].
+ *   Each entry matches a tag's key or its label, ignoring case, spaces and
+ *   punctuation ("site updates" matches "Site Updates" and "SiteUpdates").
+ *   The tags still show on the website. Hashtags typed in a post's body
+ *   are always kept. [] excludes nothing.
  * - showResponses: true shows likes, reposts and replies from Mastodon and
  *   Bluesky under each post (src/components/SocialResponses); false hides
  *   them. "Also on" links show either way.
@@ -47,6 +52,7 @@ const darkCodeTheme = themes.dracula;
  */
 const socialPosts = {
   includeFrontMatterTags: true,
+  excludedTags: [],
   showResponses: true,
   webmentionUsername: "quinnmchugh.net",
   relMe: ["https://github.com/quinn-p-mchugh"],

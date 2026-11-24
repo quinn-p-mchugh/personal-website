@@ -27,7 +27,7 @@ import clsx from "clsx";
 import Container from "@theme-original/BlogPostItem/Container";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { useBlogPost } from "@docusaurus/plugin-content-blog/client";
-import { hashtagNamesFromLabels } from "@site/src/utils/hashtags.mjs";
+import { hashtagNamesFromTags } from "@site/src/utils/hashtags.mjs";
 import { hasTitle, socialPostSettings } from "@site/src/utils/socialPosts.mjs";
 
 /**
@@ -47,19 +47,44 @@ const BRIDGY_PUBLISH_TARGETS = [
 const BRIDGY_CONTENT_CLASSES = ["e-bridgy-mastodon-content", "e-bridgy-bluesky-content"];
 
 /**
+ * Pairs each of a post's tags with the way it was written in front matter.
+ *
+ * Docusaurus builds metadata.tags from front matter tags one for one, in the
+ * same order (normalizeTags in @docusaurus/utils), so the same position
+ * gives the same tag. The key is what lets excludedTags match a tags file key.
+ *
+ * Args:
+ *     metadata: The post's Docusaurus metadata.
+ *     frontMatter: The post's front matter.
+ *
+ * Returns:
+ *     { key, label } for each tag: key is the front matter string, or
+ *     undefined for a tag written as an object; label is what the site shows.
+ */
+function postTags(metadata, frontMatter) {
+  const written = (frontMatter && Array.isArray(frontMatter.tags) && frontMatter.tags) || [];
+  return (metadata.tags || []).map((tag, i) => ({
+    key: typeof written[i] === "string" ? written[i] : undefined,
+    label: tag.label,
+  }));
+}
+
+/**
  * Works out the hashtags for a titled post's social text.
  *
  * Args:
  *     metadata: The post's Docusaurus metadata.
- *     includeFrontMatterTags: The socialPosts setting from docusaurus.config.js.
+ *     frontMatter: The post's front matter.
+ *     socialPosts: The socialPosts settings from docusaurus.config.js.
  *
  * Returns:
  *     Hashtag names without "#", e.g. ["Climate", "AIEthics"]. Empty for
- *     untitled posts, posts without tags, or when the setting is off.
+ *     untitled posts, posts without tags (after excludedTags), or when
+ *     includeFrontMatterTags is off.
  */
-function titledPostHashtags(metadata, includeFrontMatterTags) {
-  if (!includeFrontMatterTags || !hasTitle(metadata.title)) return [];
-  return hashtagNamesFromLabels((metadata.tags || []).map((tag) => tag.label));
+function titledPostHashtags(metadata, frontMatter, socialPosts) {
+  if (socialPosts.includeFrontMatterTags === false || !hasTitle(metadata.title)) return [];
+  return hashtagNamesFromTags(postTags(metadata, frontMatter), socialPosts.excludedTags);
 }
 
 /**
@@ -95,15 +120,15 @@ function TitledPostSocialText({ title, url, description, hashtags }) {
  *     props.metadata: The post's Docusaurus metadata.
  *     props.frontMatter: The post's front matter.
  *     props.siteUrl: The site's address, e.g. "https://quinnmchugh.net".
- *     props.includeFrontMatterTags: The socialPosts setting.
+ *     props.socialPosts: The socialPosts settings.
  *
  * Returns:
  *     A hidden <div> holding the post's address and date, the link-back rule,
  *     one link per Bridgy publish target, and, for a titled post with tags,
  *     its social text.
  */
-function BridgyPostDetails({ metadata, frontMatter, siteUrl, includeFrontMatterTags }) {
-  const hashtags = titledPostHashtags(metadata, includeFrontMatterTags);
+function BridgyPostDetails({ metadata, frontMatter, siteUrl, socialPosts }) {
+  const hashtags = titledPostHashtags(metadata, frontMatter, socialPosts);
   const url = new URL(metadata.permalink, siteUrl).href;
   return (
     <div hidden aria-hidden="true">
@@ -149,7 +174,6 @@ export default function ContainerWrapper({ className, children, ...props }) {
     );
   }
 
-  const socialPosts = socialPostSettings(siteConfig);
   return (
     <Container className={clsx(className, "h-entry")} {...props}>
       {children}
@@ -157,7 +181,7 @@ export default function ContainerWrapper({ className, children, ...props }) {
         metadata={metadata}
         frontMatter={frontMatter}
         siteUrl={siteConfig.url}
-        includeFrontMatterTags={socialPosts.includeFrontMatterTags !== false}
+        socialPosts={socialPostSettings(siteConfig)}
       />
     </Container>
   );

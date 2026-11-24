@@ -59,14 +59,52 @@ export function newHashtagNames(names, alreadyUsed = []) {
 }
 
 /**
- * Converts tag labels to hashtag names, without repeats.
+ * Builds a lookup of the tags that must never become hashtags.
+ *
+ * Entries are compared in hashtag form, ignoring case, so "site updates",
+ * "Site Updates" and "SiteUpdates" are the same entry.
  *
  * Args:
- *     labels: Tag labels, e.g. ["Climate", "AI ethics"].
+ *     excludedTags: The socialPosts.excludedTags setting; anything that
+ *         isn't a list of strings is treated as an empty list.
  *
  * Returns:
- *     Hashtag names without "#", e.g. ["Climate", "AIEthics"].
+ *     A Set of lowercase hashtag names.
  */
-export function hashtagNamesFromLabels(labels) {
-  return newHashtagNames(labels.map(toHashtagName));
+export function excludedTagSet(excludedTags) {
+  const entries = Array.isArray(excludedTags) ? excludedTags.filter((tag) => typeof tag === "string") : [];
+  return new Set(entries.map((tag) => toHashtagName(tag).toLowerCase()).filter(Boolean));
+}
+
+/**
+ * Tells whether a tag is on the excluded list.
+ *
+ * Args:
+ *     tag: { key, label }: the tag as written in front matter (a tags file
+ *         key or a plain label; undefined for a tag written as an object),
+ *         and the label Docusaurus shows.
+ *     excluded: A Set from excludedTagSet.
+ *
+ * Returns:
+ *     True if the tag's key or label matches an excluded entry.
+ */
+export function isExcludedTag(tag, excluded) {
+  return [tag.key, tag.label].some(
+    (form) => typeof form === "string" && excluded.has(toHashtagName(form).toLowerCase())
+  );
+}
+
+/**
+ * Converts a post's tags to hashtag names, leaving out excluded tags.
+ *
+ * Args:
+ *     tags: { key, label } for each of the post's tags, in order.
+ *     excludedTags: The socialPosts.excludedTags setting.
+ *
+ * Returns:
+ *     Hashtag names without "#", without repeats, e.g. ["Climate", "AIEthics"].
+ */
+export function hashtagNamesFromTags(tags, excludedTags) {
+  const excluded = excludedTagSet(excludedTags);
+  return newHashtagNames(tags.filter((tag) => !isExcludedTag(tag, excluded)).map((tag) => toHashtagName(tag.label)));
 }
