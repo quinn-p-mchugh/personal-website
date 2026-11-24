@@ -104,7 +104,7 @@ USER_AGENT = (
 # Docusaurus blog file names start with a date: 2026-11-23-my-post.md
 # Docs: https://docusaurus.io/docs/blog#blog-post-date
 DATED_NAME = re.compile(r"^(\d{4})-(\d{2})-(\d{2})-(.+)$")
-ISO_DATE = re.compile(r"^(\d{4})-(\d{2})-(\d{2})")
+ISO_DATE = re.compile(r"^(\d{4})-(\d{2})-(\d{2})$")
 
 # Bridgy's wording for a page it has published before, and for a page it is
 # publishing in another request right now (from Bridgy's publish.py).
@@ -173,21 +173,41 @@ def report_error(message: str) -> None:
 # ============================ READING POST FILES ==========================
 
 
+def front_matter_value(raw: str) -> str:
+    """Clean one front matter value the way YAML reads simple scalars.
+
+    A quoted value keeps everything inside its quotes, including " #". An
+    unquoted value loses a trailing " # comment".
+
+    Args:
+        raw: The text after "key:", e.g. ' "my #1 post"  # note'.
+
+    Returns:
+        The value, e.g. "my #1 post".
+    """
+    value = raw.strip()
+    if value[:1] in ("'", '"'):
+        closing = value.find(value[0], 1)
+        return value[1:closing] if closing != -1 else value[1:]
+    return value.split(" #", 1)[0].strip()
+
+
 def read_front_matter(path: str) -> Dict[str, str]:
     """Read the simple "key: value" lines from a post's front matter.
 
     Only flat, top-level values are read (draft, unlisted, slug, date),
     which is all this script needs. List items, comments and nested values
-    are ignored, and a trailing " # comment" is removed from values.
+    are ignored. A byte-order mark or bytes that aren't valid UTF-8 don't
+    stop the file being read.
 
     Args:
         path: Path to a Markdown file.
 
     Returns:
-        A dict of keys to values with surrounding quotes removed. Empty if
-        the file has no front matter.
+        A dict of keys to cleaned values. Empty if the file has no front
+        matter.
     """
-    text = Path(path).read_text(encoding="utf-8")
+    text = Path(path).read_text(encoding="utf-8", errors="replace").lstrip("\ufeff")
     if not text.startswith("---"):
         return {}
     end = text.find("\n---", 3)
@@ -200,7 +220,7 @@ def read_front_matter(path: str) -> Dict[str, str]:
         if ":" not in stripped or stripped.startswith(("#", "-")) or is_nested:
             continue
         key, _, value = stripped.partition(":")
-        values[key.strip()] = value.split(" #", 1)[0].strip().strip("\"'")
+        values[key.strip()] = front_matter_value(value)
     return values
 
 
@@ -252,7 +272,8 @@ def skip_reason(path: str) -> Optional[str]:
         return "draft: true"
     if is_true(front_matter.get("unlisted")):
         return "unlisted: true"
-    if post_date_parts(post_name(file), front_matter) is None:
+    has_date = bool(front_matter.get("date")) or DATED_NAME.match(post_name(file))
+    if not has_date:
         return "no date in its file name or front matter, so it's a page like Welcome.md"
     return None
 
@@ -274,6 +295,9 @@ def post_date_parts(name: str, front_matter: Dict[str, str]) -> Optional[Tuple[s
     """Find a post's date the way Docusaurus does.
 
     A "date" in the front matter wins over a date at the start of the name.
+    A front matter date with a time of day gives no usable date: Docusaurus
+    may shift it to another day when it converts the time to UTC, so the
+    address is then matched on its slug alone.
     Docs: https://docusaurus.io/docs/blog#blog-post-date
 
     Args:
@@ -281,11 +305,13 @@ def post_date_parts(name: str, front_matter: Dict[str, str]) -> Optional[Tuple[s
         front_matter: The post's front matter values.
 
     Returns:
-        (year, month, day) as strings, or None if the post has no date.
+        (year, month, day) as strings, or None if the post has no usable
+        date.
     """
-    front_date = ISO_DATE.match(front_matter.get("date", ""))
-    if front_date:
-        return front_date.groups()
+    front_value = front_matter.get("date", "")
+    if front_value:
+        front_date = ISO_DATE.match(front_value)
+        return front_date.groups() if front_date else None
     name_date = DATED_NAME.match(name)
     return name_date.groups()[:3] if name_date else None
 
@@ -493,7 +519,7 @@ def is_temporary_failure(res: Response) -> bool:
         "already publishing" 429, which means another request has it in hand.
     """
     if res.status == 429:
-        return ALREADY_PUBLISHING not in res.body
+        return ALREADY_PUBLISHING not in res.body.lower()
     return res.status == 0 or res.status >= 500
 
 
@@ -531,9 +557,9 @@ def describe_outcome(network: str, res: Response) -> Tuple[bool, str]:
     """
     if 200 <= res.status < 300:
         return True, f"  sent  {network}: {res.location or 'accepted'}"
-    if ALREADY_PUBLISHED in res.body:
+    if ALREADY_PUBLISHED in res.body.lower():
         return True, f"  ok    {network}: already published earlier, nothing to do"
-    if res.status == 429 and ALREADY_PUBLISHING in res.body:
+    if res.status == 429 and ALREADY_PUBLISHING in res.body.lower():
         return True, f"  ok    {network}: Bridgy is already publishing this right now"
     return False, f"  FAILED  {network} (HTTP {res.status}): {short(res.body)}"
 

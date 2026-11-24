@@ -27,7 +27,10 @@ on:
 
   # Daily safety net, in case a push run failed (for example, a slow deploy).
   # Re-sends posts added in the last 3 days of commits; Bridgy skips any
-  # already published, so nothing is posted twice.
+  # already published, so nothing is posted twice. GitHub pauses scheduled
+  # runs in a repository with no activity for 60 days; pushing a post, or
+  # re-enabling the workflow on the Actions tab, turns it back on.
+  # Docs: https://docs.github.com/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/disabling-and-enabling-a-workflow
   # Time is UTC (13:17 UTC is 8:17 or 9:17 in New York).
   # Docs: https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule
   schedule:
@@ -46,11 +49,9 @@ on:
         type: boolean
         default: true
 
-# Never run two of these at once, so a post can't be sent twice in parallel.
-# Docs: https://docs.github.com/actions/using-jobs/using-concurrency
-concurrency:
-  group: cross-post-to-social
-  cancel-in-progress: false
+# Runs are allowed to overlap on purpose. A concurrency group would let
+# GitHub cancel a queued run when a third push arrives, losing its posts, and
+# overlap is harmless: Bridgy never publishes the same page twice.
 
 permissions:
   contents: read
@@ -74,17 +75,23 @@ jobs:
         run: |
           # Lists files whose status is "added". Edits to existing posts are
           # ignored on purpose. Uses GitHub's API, so no git history is needed.
+          # --paginate fetches every page, so large pushes aren't cut short.
           # Docs: https://docs.github.com/rest/commits/commits
-          added() { gh api "repos/$REPO/commits/$1" --jq '.files[] | select(.status=="added") | .filename'; }
+          set -euo pipefail
+          ADDED='.files[]? | select(.status=="added") | .filename'
+          added_in_commit() { gh api --paginate "repos/$REPO/commits/$1" --jq "$ADDED"; }
           if [ "$EVENT" = "push" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ]; then
-            gh api "repos/$REPO/compare/$BEFORE...$AFTER" --jq '.files[] | select(.status=="added") | .filename' > added.txt
+            # A force-push can make the previous commit unknown to GitHub;
+            # fall back to the files of the newest commit.
+            gh api --paginate "repos/$REPO/compare/$BEFORE...$AFTER" --jq "$ADDED" > added.txt \
+              || added_in_commit "$AFTER" > added.txt
           elif [ "$EVENT" = "push" ]; then
-            added "$AFTER" > added.txt
+            added_in_commit "$AFTER" > added.txt
           else
             since=$(date -u -d '3 days ago' +%Y-%m-%dT%H:%M:%SZ)
             : > added.txt
-            for sha in $(gh api "repos/$REPO/commits?sha=main&since=$since&per_page=100" --jq '.[].sha'); do
-              added "$sha" >> added.txt
+            for sha in $(gh api --paginate "repos/$REPO/commits?sha=main&since=$since&per_page=100" --jq '.[].sha'); do
+              added_in_commit "$sha" >> added.txt
             done
           fi
           sort -u -o added.txt added.txt

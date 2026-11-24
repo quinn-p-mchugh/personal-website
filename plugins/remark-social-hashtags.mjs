@@ -26,7 +26,9 @@
  * where socialPosts is { includeFrontMatterTags: true }.
  * Remark plugin docs: https://docusaurus.io/docs/markdown-features/plugins
  */
+import fs from "node:fs";
 import path from "node:path";
+import { createRequire } from "node:module";
 import { newHashtagNames, toHashtagName } from "../src/utils/hashtags.mjs";
 
 /** Matches a hashtag: "#" then letters, digits or "_", not inside a word or URL. */
@@ -85,22 +87,56 @@ function hashtagsIn(text) {
 }
 
 /**
+ * Reads the site's predefined tags, so a tag key can be shown by its label.
+ *
+ * Docusaurus lets posts refer to tags defined in a YAML file by key, e.g.
+ * "pkm" for a tag labelled "Personal Knowledge Management". Using the label
+ * here matches what the website shows and what the Container component uses
+ * for titled posts. js-yaml ships with Docusaurus. Any problem (no file, bad
+ * YAML, js-yaml missing) gives an empty map, so keys are used as written.
+ * Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#tags-file
+ *
+ * Args:
+ *     tagsFile: Path to the tags YAML file.
+ *
+ * Returns:
+ *     A Map of tag keys to labels.
+ */
+function readTagLabels(tagsFile) {
+  try {
+    if (!fs.existsSync(tagsFile)) return new Map();
+    const yaml = createRequire(import.meta.url)("js-yaml");
+    const definitions = yaml.load(fs.readFileSync(tagsFile, "utf8")) || {};
+    return new Map(
+      Object.entries(definitions)
+        .filter(([, tag]) => tag && typeof tag.label === "string")
+        .map(([key, tag]) => [key, tag.label])
+    );
+  } catch (error) {
+    console.warn(`[remark-social-hashtags] Could not read ${tagsFile}: ${error.message}`);
+    return new Map();
+  }
+}
+
+/**
  * Reads a post's tag labels from its front matter.
  *
- * Docusaurus accepts tags as plain strings or as objects with a "label".
+ * Docusaurus accepts tags as plain strings or as objects with a "label". A
+ * string that is a key in the tags file is replaced by that tag's label.
  * Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#markdown-front-matter
  *
  * Args:
  *     frontMatter: The post's parsed front matter, possibly undefined.
+ *     tagLabels: Map of tag keys to labels from readTagLabels.
  *
  * Returns:
  *     The tag labels as strings; empty if the post has no tags.
  */
-function frontMatterTagLabels(frontMatter) {
+function frontMatterTagLabels(frontMatter, tagLabels) {
   const tags = (frontMatter && frontMatter.tags) || [];
   if (!Array.isArray(tags)) return [];
   return tags
-    .map((tag) => (typeof tag === "string" ? tag : tag && tag.label))
+    .map((tag) => (typeof tag === "string" ? tagLabels.get(tag) || tag : tag && tag.label))
     .filter((label) => typeof label === "string" && label.trim() !== "");
 }
 
@@ -244,12 +280,19 @@ function isBlogPost(filePath, siteDir) {
  *         Bluesky. Set once, in socialPosts in docusaurus.config.js.
  *     options.siteDir: The website's root folder. Defaults to the folder the
  *         build runs in, which for Docusaurus is the site folder.
+ *     options.tagsFile: The predefined tags file, relative to siteDir.
+ *         Defaults to "content-tags.yml".
  *
  * Returns:
  *     A transformer that updates each blog post's Markdown tree.
  */
 export default function remarkSocialHashtags(options = {}) {
-  const { includeFrontMatterTags = true, siteDir = process.cwd() } = options;
+  const {
+    includeFrontMatterTags = true,
+    siteDir = process.cwd(),
+    tagsFile = "content-tags.yml",
+  } = options;
+  const tagLabels = readTagLabels(path.resolve(siteDir, tagsFile));
 
   return (tree, file) => {
     if (!isBlogPost(file.path, siteDir)) return;
@@ -257,7 +300,7 @@ export default function remarkSocialHashtags(options = {}) {
     const frontMatter = file.data && file.data.frontMatter;
     const inPost = newHashtagNames(hashtagsIn(textOf(tree)));
     const fromTags = includeFrontMatterTags
-      ? newHashtagNames(frontMatterTagLabels(frontMatter).map(toHashtagName), inPost)
+      ? newHashtagNames(frontMatterTagLabels(frontMatter, tagLabels).map(toHashtagName), inPost)
       : [];
 
     if (fromTags.length && isUntitled(frontMatter)) appendHashtags(tree, fromTags);
