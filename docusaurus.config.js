@@ -45,19 +45,19 @@ const darkCodeTheme = themes.dracula;
  *   webmention.io. The profile must link back to the site.
  *   Docs: https://indielogin.com/setup
  */
-/**
- * Predefined tags file, relative to each blog's folder. Used for every blog's
- * "tags" option and by the hashtag plugin, so both read the same file.
- * Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#tags
- */
-const tagsFile = "../content-tags.yml";
-
 const socialPosts = {
   includeFrontMatterTags: true,
   showResponses: true,
   webmentionUsername: "quinnmchugh.net",
   relMe: ["https://github.com/quinn-p-mchugh"],
 };
+
+/**
+ * Options for the hashtag remark plugin. "blogs" is filled in at the bottom
+ * of this file from the blog plugins' own options, so each blog's "path"
+ * and "tags" settings stay the only source of truth.
+ */
+const socialHashtagOptions = { ...socialPosts, blogs: [] };
 
 const plugins = {
   remarkPlugins: [
@@ -84,14 +84,14 @@ const plugins = {
     ], // https://github.com/remarkjs/remark-validate-links?tab=readme-ov-file#options
     [remarkPrism, {}], // https://github.com/sergioramos/remark-prism?tab=readme-ov-file
     // Prepares blog posts' hashtags for cross-posting. Settings: socialPosts above.
-    [remarkSocialHashtags, { ...socialPosts, tags: tagsFile }],
+    [remarkSocialHashtags, socialHashtagOptions],
   ],
   rehypePlugins: [],
 };
 
 
 const contentConfig = {
-  tags: tagsFile,
+  tags: "../content-tags.yml",
   onInlineTags: "warn",
   blogConfig: { // Blog Plugin Documentation: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog
     sidebarCount: "ALL",
@@ -681,5 +681,41 @@ const config = {
       },
     }),
 };
+
+/**
+ * Reads the "path" and "tags" options of every blog plugin in the config:
+ * the classic preset's blog and each "@docusaurus/plugin-content-blog" entry.
+ * Only these two are copied, because the full options contain remarkPlugins,
+ * which contain this list, and Docusaurus can't save a config that loops.
+ *
+ * Args:
+ *     siteConfig: The Docusaurus config object above.
+ *
+ * Returns:
+ *     An array of { path, tags } objects, one per blog. A setting that isn't
+ *     written in the config is left out, so the plugin uses Docusaurus's
+ *     default for it.
+ */
+function blogPluginOptions(siteConfig) {
+  const blogs = [];
+  const add = (options = {}) => {
+    const blog = {};
+    if ("path" in options) blog.path = options.path;
+    if ("tags" in options) blog.tags = options.tags;
+    blogs.push(blog);
+  };
+  for (const entry of siteConfig.presets || []) {
+    const [name, presetOptions] = Array.isArray(entry) ? entry : [entry, {}];
+    const isClassic = name === "classic" || name === "@docusaurus/preset-classic";
+    if (isClassic && presetOptions && presetOptions.blog) add(presetOptions.blog);
+  }
+  for (const entry of siteConfig.plugins || []) {
+    const [name, pluginOptions] = Array.isArray(entry) ? entry : [entry, {}];
+    if (name === "@docusaurus/plugin-content-blog") add(pluginOptions || {});
+  }
+  return blogs;
+}
+
+socialHashtagOptions.blogs = blogPluginOptions(config);
 
 module.exports = config;
