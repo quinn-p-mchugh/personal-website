@@ -20,7 +20,7 @@
  */
 import React, { useEffect, useState } from "react";
 import styles from "./styles.module.css";
-import { formatDate, groupMentions, mentionsApiUrl, networkName } from "./mentions.mjs";
+import { formatDate, groupMentions, initialOf, mentionsApiUrl, networkName } from "./mentions.mjs";
 
 /** Link attributes for addresses written by other people. */
 const EXTERNAL_LINK = { target: "_blank", rel: "nofollow ugc noopener noreferrer" };
@@ -51,8 +51,27 @@ export function SyndicationLinks({ urls }) {
   );
 }
 
+/** The responses state before webmention.io has answered. */
+const LOADING = { status: "loading", groups: null };
+
+/**
+ * Tells whether any responses arrived.
+ *
+ * Args:
+ *     groups: { likes, reposts, replies } from groupMentions, or null.
+ *
+ * Returns:
+ *     True if at least one group has an entry.
+ */
+function hasAnyResponse(groups) {
+  return Boolean(groups) && Object.values(groups).some((entries) => entries.length > 0);
+}
+
 /**
  * Loads a page's responses from webmention.io.
+ *
+ * Starts again from "loading" when the page changes, so one post never
+ * shows another post's responses while the new ones load.
  *
  * Args:
  *     pageUrl: The post's full address.
@@ -62,8 +81,9 @@ export function SyndicationLinks({ urls }) {
  *     { likes, reposts, replies } once ready.
  */
 function useResponses(pageUrl) {
-  const [state, setState] = useState({ status: "loading", groups: null });
+  const [state, setState] = useState(LOADING);
   useEffect(() => {
+    setState(LOADING);
     const controller = new AbortController();
     fetch(mentionsApiUrl(pageUrl), { signal: controller.signal })
       .then((res) => {
@@ -105,7 +125,7 @@ function Avatar({ author, size }) {
     />
   ) : (
     <span className={styles.avatarFallback} title={author.name} style={{ width: size, height: size }}>
-      {author.name.slice(0, 1).toUpperCase()}
+      {initialOf(author.name)}
     </span>
   );
   return author.url ? (
@@ -202,8 +222,7 @@ function Reply({ reply }) {
  */
 export default function SocialResponses({ pageUrl, syndication }) {
   const { status, groups } = useResponses(pageUrl);
-  const hasResponses =
-    status === "ready" && (groups.likes.length || groups.reposts.length || groups.replies.length);
+  const hasResponses = status === "ready" && hasAnyResponse(groups);
   if (!hasResponses && !syndication.length) return null;
 
   return (

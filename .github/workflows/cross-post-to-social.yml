@@ -44,7 +44,7 @@ on:
   workflow_dispatch:
     inputs:
       post_url:
-        description: "One post's full address. Leave blank to send posts added in the last 3 days."
+        description: "One post's full address (its Mastodon and Bluesky addresses are saved too). Leave blank to send posts added in the last 3 days."
         required: false
         default: ""
       dry_run:
@@ -145,6 +145,9 @@ jobs:
               echo "Saved and pushed."
               exit 0
             fi
+            # A failed rebase (say, the same post edited meanwhile) leaves git
+            # mid-rebase; undo it so the next attempt starts clean.
+            git rebase --abort 2>/dev/null || true
             echo "Push attempt $attempt failed; retrying in 10s."
             sleep 10
           done

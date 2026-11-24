@@ -14,6 +14,7 @@ import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { useBlogPost } from "@docusaurus/plugin-content-blog/client";
 import SocialResponses, { SyndicationLinks } from "@site/src/components/SocialResponses";
 import { syndicationUrls } from "@site/src/components/SocialResponses/mentions.mjs";
+import { socialPostSettings } from "@site/src/utils/socialPosts.mjs";
 
 /**
  * The post footer, followed by cross-post links and responses.
@@ -31,7 +32,7 @@ export default function FooterWrapper(props) {
 
   if (!isBlogPostPage) return <Footer {...props} />;
 
-  const socialPosts = (siteConfig.customFields && siteConfig.customFields.socialPosts) || {};
+  const socialPosts = socialPostSettings(siteConfig);
   const syndication = syndicationUrls(frontMatter && frontMatter.syndication);
   const pageUrl = new URL(metadata.permalink, siteConfig.url).href;
   return (

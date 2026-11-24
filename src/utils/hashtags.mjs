@@ -6,24 +6,35 @@
  */
 
 /**
+ * Characters a hashtag name may contain: letters, the accent and vowel marks
+ * that combine with them (as in Hindi or Thai), digits, and "_". Mastodon
+ * uses the same set. Shared with plugins/remark-social-hashtags.mjs.
+ * Docs: https://docs.joinmastodon.org/user/posting/#hashtags
+ */
+export const HASHTAG_CHARACTER = "[\\p{L}\\p{M}\\p{N}_]";
+
+/**
  * Converts a tag label to a hashtag name.
  *
- * Words are split on anything that isn't a letter or digit, and each word's
- * first letter is capitalized, so "animal welfare" becomes "AnimalWelfare"
- * and "AI ethics" becomes "AIEthics". Same rule as the Readwise script.
+ * Words are split on anything that isn't a letter, mark or digit, and each
+ * word's first letter is capitalized, so "animal welfare" becomes
+ * "AnimalWelfare" and "AI ethics" becomes "AIEthics". Same rule as the
+ * Readwise script.
  *
  * Args:
  *     label: A tag label, e.g. "Personal Knowledge Management (PKM)".
  *
  * Returns:
- *     The hashtag name without "#", or "" if the label has no letters or digits.
+ *     The hashtag name without "#". "" if the label has no letters or digits,
+ *     or only digits, since "#2026" is a number, not a hashtag, on Mastodon.
  */
 export function toHashtagName(label) {
-  return String(label)
-    .split(/[^\p{L}\p{N}]+/u)
+  const name = String(label)
+    .split(/[^\p{L}\p{M}\p{N}]+/u)
     .filter(Boolean)
     .map((word) => word[0].toUpperCase() + word.slice(1))
     .join("");
+  return /^\p{N}*$/u.test(name) ? "" : name;
 }
 
 /**

@@ -108,6 +108,64 @@ export function authorOf(author) {
 }
 
 /**
+ * Gets the value that identifies a response, for spotting repeats.
+ *
+ * Args:
+ *     item: One jf2 response.
+ *
+ * Returns:
+ *     The response's own address, else its source page, else its
+ *     webmention.io id, as a string; "" if it has none of these.
+ */
+export function responseKey(item) {
+  const key = item.url || item["wm-source"] || item["wm-id"];
+  return key ? String(key) : "";
+}
+
+/**
+ * Picks the parts of a response that are safe to show.
+ *
+ * Args:
+ *     item: One jf2 response.
+ *     key: Its value from responseKey.
+ *
+ * Returns:
+ *     { id, url, author, text, published }: url is a safe web address or
+ *     null; text is plain text, possibly ""; published is a date string,
+ *     possibly "".
+ */
+export function responseEntry(item, key) {
+  const text = item.content && typeof item.content.text === "string" ? item.content.text.trim() : "";
+  const published = [item.published, item["wm-received"]].find((date) => typeof date === "string");
+  return {
+    id: String(item["wm-id"] || key),
+    url: safeUrl(item.url) || safeUrl(item["wm-source"]),
+    author: authorOf(item.author),
+    text,
+    published: published || "",
+  };
+}
+
+/**
+ * Names the group a response belongs in.
+ *
+ * Args:
+ *     item: One jf2 response.
+ *     entry: Its entry from responseEntry.
+ *
+ * Returns:
+ *     "likes", "reposts" or "replies"; null for kinds that aren't shown,
+ *     such as bookmarks or mentions without text.
+ */
+export function responseGroup(item, entry) {
+  const property = item["wm-property"];
+  if (property === "like-of") return "likes";
+  if (property === "repost-of") return "reposts";
+  if ((property === "in-reply-to" || property === "mention-of") && entry.text) return "replies";
+  return null;
+}
+
+/**
  * Sorts webmention.io responses into likes, reposts and replies.
  *
  * Private responses are left out. Bridgy can send the same response more
@@ -118,32 +176,36 @@ export function authorOf(author) {
  *     children: The "children" list from a jf2 response.
  *
  * Returns:
- *     { likes, reposts, replies }, each a list of
- *     { id, url, author, text, published }.
+ *     { likes, reposts, replies }, each a list of entries from
+ *     responseEntry, in the order received.
  */
 export function groupMentions(children) {
   const groups = { likes: [], reposts: [], replies: [] };
   const seen = new Set();
   for (const item of Array.isArray(children) ? children : []) {
-    if (!item || item["wm-private"]) continue;
-    const key = item.url || item["wm-source"] || item["wm-id"];
+    if (!item || typeof item !== "object" || item["wm-private"]) continue;
+    const key = responseKey(item);
     if (!key || seen.has(key)) continue;
     seen.add(key);
-
-    const text = item.content && typeof item.content.text === "string" ? item.content.text.trim() : "";
-    const entry = {
-      id: String(item["wm-id"] || key),
-      url: safeUrl(item.url) || safeUrl(item["wm-source"]),
-      author: authorOf(item.author),
-      text,
-      published: typeof item.published === "string" ? item.published : item["wm-received"] || "",
-    };
-    const property = item["wm-property"];
-    if (property === "like-of") groups.likes.push(entry);
-    else if (property === "repost-of") groups.reposts.push(entry);
-    else if ((property === "in-reply-to" || property === "mention-of") && text) groups.replies.push(entry);
+    const entry = responseEntry(item, key);
+    const group = responseGroup(item, entry);
+    if (group) groups[group].push(entry);
   }
   return groups;
+}
+
+/**
+ * Gets the first character of a name, for an avatar placeholder.
+ *
+ * Args:
+ *     name: A person's name; never empty (authorOf guarantees it).
+ *
+ * Returns:
+ *     The first character in capitals. Works for emoji and other characters
+ *     that take two code units, which a plain name[0] would cut in half.
+ */
+export function initialOf(name) {
+  return (Array.from(name)[0] || "?").toUpperCase();
 }
 
 /**

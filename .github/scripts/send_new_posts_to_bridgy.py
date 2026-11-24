@@ -14,9 +14,9 @@ What this does, in plain terms:
     safe: Bridgy answers "already published" and nothing happens.
 
 How it finds new posts:
-    It never guesses web addresses. It waits until each new post shows up in
-    the live site's JSON feed (so the site has finished deploying, and the
-    address is exactly what Docusaurus built), then sends that address.
+    It works out each new post's address with Docusaurus's own rules, then
+    waits until exactly that address shows up in the live site's JSON feed
+    (so the site has finished deploying), then sends it.
 
     The safety-net run also works from files added in commits, not from post
     dates in the feed, on purpose: posts without a date in their file name
@@ -38,7 +38,8 @@ Usage:
         Post files added in recent commits (used on push and by the daily
         safety-net run). Waits for each to appear in the live feed.
     send_new_posts_to_bridgy.py --url URL [--dry-run]
-        One specific post address (manual runs).
+        One specific post address (manual runs). Its post file is found by
+        address, so --record-syndication works here too.
 
     --dry-run prints what would be sent without contacting Bridgy.
     --record-syndication saves the new posts' addresses into the post files
@@ -48,8 +49,10 @@ Needs only Python 3.9+ and its standard library. No packages to install.
 """
 
 import argparse
+import http.client
 import json
 import os
+import posixpath
 import re
 import sys
 import time
@@ -113,10 +116,21 @@ USER_AGENT = (
     "(+https://github.com/quinn-p-mchugh/personal-website)"
 )
 
-# Docusaurus blog file names start with a date: 2026-11-23-my-post.md
+# Docusaurus's rule for a date in a blog post's path, relative to the blog
+# folder: 2026-11-23-my-post.md, 2026/11/23/my-post.md or
+# 2026-11-23-my-post/index.md. Copied from DATE_FILENAME_REGEX in
+# @docusaurus/plugin-content-blog/lib/blogUtils.js (version 3.5.2).
 # Docs: https://docusaurus.io/docs/blog#blog-post-date
-DATED_NAME = re.compile(r"^(\d{4})-(\d{2})-(\d{2})-(.+)$")
-ISO_DATE = re.compile(r"^(\d{4})-(\d{2})-(\d{2})$")
+DATE_IN_PATH = re.compile(
+    r"^(?P<folder>.*)(?P<date>\d{4}[-/]\d{1,2}[-/]\d{1,2})[-/]?(?P<text>.*?)(?:/index)?\.mdx?$"
+)
+
+# What Docusaurus removes from an undated post's path to get its slug.
+MARKDOWN_ENDING = re.compile(r"(?:/index)?\.mdx?$")
+
+# A top-level "syndication:" line, and a YAML list item ("  - value").
+SYNDICATION_KEY = re.compile(r"syndication\s*:(.*)$")
+LIST_ITEM = re.compile(r"(\s*)-(?:\s|$)")
 
 # Bridgy's wording for a page it has published before, and for a page it is
 # publishing in another request right now (from Bridgy's publish.py).
@@ -131,15 +145,13 @@ class ExpectedPost:
     Attributes:
         path: The file's path in the repository.
         blog_folder: Top-level folder, e.g. "blog-micro".
-        slug: Last part of the post's address, e.g. "my-post".
-        date_path: "/YYYY/MM/DD/" that Docusaurus puts in the address, or ""
-            when the address has none (no date, or an absolute slug).
+        address_path: The path part of the post's address, as Docusaurus
+            builds it, e.g. "/blog-micro/2026/11/23/my-post".
     """
 
     path: str
     blog_folder: str
-    slug: str
-    date_path: str
+    address_path: str
 
 
 @dataclass(frozen=True)
@@ -284,57 +296,84 @@ def skip_reason(path: str) -> Optional[str]:
         return "draft: true"
     if is_true(front_matter.get("unlisted")):
         return "unlisted: true"
-    has_date = bool(front_matter.get("date")) or DATED_NAME.match(post_name(file))
+    has_date = bool(front_matter.get("date")) or DATE_IN_PATH.match(blog_relative_path(file))
     if not has_date:
         return "no date in its file name or front matter, so it's a page like Welcome.md"
     return None
 
 
-def post_name(file: Path) -> str:
-    """Get the name Docusaurus builds a post's address from.
+def blog_relative_path(file: Path) -> str:
+    """Get a post's path inside its blog folder, the way Docusaurus sees it.
 
     Args:
-        file: Path of a post file.
+        file: Path of a post file, relative to the repository root, whose
+            first part is the blog folder.
 
     Returns:
-        The file name without extension, or the folder name for a post
-        written as folder/index.md.
+        The rest of the path with "/" separators, e.g.
+        "2026/2026-11-23-my-post.md".
     """
-    return file.parent.name if file.stem == "index" else file.stem
+    return Path(*file.parts[1:]).as_posix()
 
 
-def post_date_parts(name: str, front_matter: Dict[str, str]) -> Optional[Tuple[str, str, str]]:
-    """Find a post's date the way Docusaurus does.
+def post_slug(relative_path: str, front_matter: Dict[str, str]) -> str:
+    """Work out a post's slug exactly as Docusaurus does.
 
-    A "date" in the front matter wins over a date at the start of the name.
-    A front matter date with a time of day gives no usable date: Docusaurus
-    may shift it to another day when it converts the time to UTC, so the
-    address is then matched on its slug alone.
-    Docs: https://docusaurus.io/docs/blog#blog-post-date
+    A front matter "slug" wins. Otherwise a date in the path becomes
+    /YYYY/MM/DD/ followed by the rest of the path; an undated post's slug is
+    its whole path. A front matter "date" never changes the address.
+    Ported from parseBlogFileName and processBlogSourceFile in
+    @docusaurus/plugin-content-blog/lib/blogUtils.js (version 3.5.2).
+    Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#markdown-front-matter
 
     Args:
-        name: File name without extension (or the folder name for index.md).
+        relative_path: The post's path inside its blog folder.
         front_matter: The post's front matter values.
 
     Returns:
-        (year, month, day) as strings, or None if the post has no usable
-        date.
+        The slug, e.g. "/2026/11/23/my-post".
     """
-    front_value = front_matter.get("date", "")
-    if front_value:
-        front_date = ISO_DATE.match(front_value)
-        return front_date.groups() if front_date else None
-    name_date = DATED_NAME.match(name)
-    return name_date.groups()[:3] if name_date else None
+    if front_matter.get("slug"):
+        return front_matter["slug"]
+    dated = DATE_IN_PATH.match(relative_path)
+    if dated:
+        date = dated.group("date").replace("-", "/")
+        return f"/{date}/{dated.group('folder')}{dated.group('text')}"
+    return "/" + MARKDOWN_ENDING.sub("", relative_path)
+
+
+def normalize_address_path(path: str) -> str:
+    """Put an address path into one standard form for comparing.
+
+    Decodes %-escapes, merges repeated slashes and drops the trailing slash,
+    so "/ideas//my%20post/" and "/ideas/my post" compare equal.
+
+    Args:
+        path: The path part of an address.
+
+    Returns:
+        The path in standard form, starting with "/".
+    """
+    decoded = urllib.parse.unquote(path)
+    return "/" + "/".join(part for part in decoded.split("/") if part)
+
+
+def route_base_path(blog_folder: str) -> str:
+    """Get a blog's address prefix (its routeBasePath) from its feed address.
+
+    Args:
+        blog_folder: A key of BLOG_FOLDERS_TO_FEEDS.
+
+    Returns:
+        The site's base path plus the blog's route, e.g. "/ideas" for a
+        feed at "/ideas/feed.json".
+    """
+    site_path = urllib.parse.urlparse(SITE_URL).path
+    return site_path + posixpath.dirname(BLOG_FOLDERS_TO_FEEDS[blog_folder])
 
 
 def expected_post(path: str) -> ExpectedPost:
-    """Work out what a post's address will look like.
-
-    Mirrors how Docusaurus builds blog addresses: the front matter "slug" if
-    there is one, otherwise the file name minus its date prefix (or the
-    folder name, for a post written as folder/index.md). The post's date
-    becomes /YYYY/MM/DD/ in the address, unless the slug starts with "/".
+    """Work out a post's exact address path from its file.
 
     Args:
         path: Path of a post file, relative to the repository root.
@@ -343,19 +382,10 @@ def expected_post(path: str) -> ExpectedPost:
         The expected post.
     """
     file = Path(path)
-    front_matter = read_front_matter(path)
-    name = post_name(file)
-    date_parts = post_date_parts(name, front_matter)
-
-    name_date = DATED_NAME.match(name)
-    default_slug = name_date.group(4) if name_date else name
-    slug = front_matter.get("slug", "")
-    is_absolute_slug = slug.startswith("/")
-    slug = slug.strip("/") or default_slug
-
-    has_date_path = date_parts is not None and not is_absolute_slug
-    date_path = "/{}/{}/{}/".format(*date_parts) if has_date_path else ""
-    return ExpectedPost(path, file.parts[0], slug, date_path)
+    blog_folder = file.parts[0]
+    slug = post_slug(blog_relative_path(file), read_front_matter(path))
+    address_path = normalize_address_path(f"{route_base_path(blog_folder)}/{slug}")
+    return ExpectedPost(path, blog_folder, address_path)
 
 
 def posts_to_publish(paths: List[str]) -> List[ExpectedPost]:
@@ -394,16 +424,32 @@ def request(url: str, form: Optional[Dict[str, str]] = None) -> Response:
         with the error's description as the body.
     """
     data = urllib.parse.urlencode(form).encode() if form else None
-    req = urllib.request.Request(url, data=data, headers={"User-Agent": USER_AGENT})
     try:
+        req = urllib.request.Request(url, data=data, headers={"User-Agent": USER_AGENT})
         with urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT_SECONDS) as res:
             body = res.read().decode("utf-8", "replace")
             return Response(res.status, body, res.headers.get("Location") or "")
     except urllib.error.HTTPError as error:
-        body = error.read().decode("utf-8", "replace")
-        return Response(error.code, body, error.headers.get("Location") or "")
-    except (urllib.error.URLError, TimeoutError, ConnectionError) as error:
+        return Response(error.code, read_error_body(error), error.headers.get("Location") or "")
+    except (urllib.error.URLError, http.client.HTTPException, OSError, ValueError) as error:
+        # URLError: no connection. HTTPException: the answer was cut off.
+        # OSError: timeouts and resets. ValueError: not a web address.
         return Response(0, str(getattr(error, "reason", error)), "")
+
+
+def read_error_body(error: urllib.error.HTTPError) -> str:
+    """Read the text of an HTTP error response, never raising.
+
+    Args:
+        error: The error urllib raised for a 4xx or 5xx answer.
+
+    Returns:
+        The response text, or "" if it couldn't be read.
+    """
+    try:
+        return error.read().decode("utf-8", "replace")
+    except (http.client.HTTPException, OSError):
+        return ""
 
 
 def short(text: str, limit: int = 300) -> str:
@@ -447,22 +493,19 @@ def read_feed(blog_folder: str) -> List[str]:
 
 
 def address_matches(url: str, post: ExpectedPost) -> bool:
-    """Tell whether a feed address is the expected post.
+    """Tell whether an address is the expected post's.
 
-    The address must end with the slug, and contain the date path when one
-    is expected. The date check stops an older post with the same slug from
-    being mistaken for the new one.
+    The whole path must match, so an older post with the same name can't be
+    mistaken for the new one.
 
     Args:
-        url: An address from the live feed.
+        url: A full address, e.g. from the live feed.
         post: The expected post.
 
     Returns:
         True if the address belongs to the post.
     """
-    path = urllib.parse.unquote(urllib.parse.urlparse(url).path).rstrip("/")
-    slug = urllib.parse.unquote(post.slug)
-    return path.endswith("/" + slug) and post.date_path in path + "/"
+    return normalize_address_path(urllib.parse.urlparse(url).path) == post.address_path
 
 
 def find_live_posts(waiting: List[ExpectedPost]) -> Dict[ExpectedPost, str]:
@@ -513,7 +556,7 @@ def wait_for_posts_to_go_live(
             waiting.remove(post)
         if not waiting or time.monotonic() >= deadline:
             break
-        names = ", ".join(post.slug for post in waiting)
+        names = ", ".join(post.address_path for post in waiting)
         say(f"  wait  not on the live site yet: {names}. Checking again in {CHECK_EVERY_SECONDS}s.")
         time.sleep(CHECK_EVERY_SECONDS)
     return found, waiting
@@ -628,8 +671,8 @@ def add_syndication_lines(front_matter: str, urls: List[str], newline: str) -> s
 
     Keeps everything else exactly as written. Adds a block list when there
     is no "syndication" key, turns an empty inline list ("syndication: []")
-    into a block list, and appends to an existing block list. Addresses
-    already listed aren't repeated.
+    into a block list, and appends to an existing block list, matching its
+    indentation. Addresses already listed aren't repeated.
     Docs: https://indieweb.org/rel-syndication
 
     Args:
@@ -638,27 +681,32 @@ def add_syndication_lines(front_matter: str, urls: List[str], newline: str) -> s
         newline: The file's line ending, "\n" or "\r\n".
 
     Returns:
-        The updated front matter lines.
+        The updated front matter lines; unchanged if every address is
+        already listed.
 
     Raises:
         ValueError: If "syndication" holds something this function can't
             safely extend, such as a non-empty inline list.
     """
     lines = front_matter.splitlines()
-    key_index = next((i for i, line in enumerate(lines) if re.match(r"syndication\s*:", line)), None)
+    key_index = next((i for i, line in enumerate(lines) if SYNDICATION_KEY.match(line)), None)
     if key_index is None:
         new = [*lines, "syndication:", *(f"  - {url}" for url in urls)]
         return newline.join(new) + newline
 
-    inline = lines[key_index].split(":", 1)[1].strip()
+    inline = front_matter_value(SYNDICATION_KEY.match(lines[key_index]).group(1))
     if inline not in ("", "[]"):
         raise ValueError(f'"syndication: {inline}" is not a block list')
     end = key_index + 1
-    while end < len(lines) and re.match(r"\s+-\s|\s*$", lines[end]) and lines[end].strip():
+    while end < len(lines) and LIST_ITEM.match(lines[end]):
         end += 1
-    existing = {line.strip()[1:].strip().strip("\"'") for line in lines[key_index + 1:end]}
-    added = [f"  - {url}" for url in urls if url not in existing]
-    new = [*lines[:key_index], "syndication:", *lines[key_index + 1:end], *added, *lines[end:]]
+    items = lines[key_index + 1:end]
+    indent = LIST_ITEM.match(items[0]).group(1) if items else "  "
+    existing = {front_matter_value(item.split("-", 1)[1]) for item in items}
+    added = [f"{indent}- {url}" for url in urls if url not in existing]
+    if not added:
+        return front_matter
+    new = [*lines[:key_index], "syndication:", *items, *added, *lines[end:]]
     return newline.join(new) + newline
 
 
@@ -676,7 +724,11 @@ def record_syndication(path: str, urls: List[str]) -> bool:
     if not urls:
         return False
     file = Path(path)
-    raw = file.read_bytes().decode("utf-8")
+    try:
+        raw = file.read_bytes().decode("utf-8")
+    except (OSError, UnicodeDecodeError) as error:
+        say(f"  note  could not read {path} ({error}); addresses not saved: {', '.join(urls)}")
+        return False
     bom = "\ufeff" if raw.startswith("\ufeff") else ""
     text = raw[len(bom):]
     parts = split_front_matter(text)
@@ -692,7 +744,11 @@ def record_syndication(path: str, urls: List[str]) -> bool:
         return False
     if updated == front_matter:
         return False
-    file.write_bytes((bom + opening + updated + rest).encode("utf-8"))
+    try:
+        file.write_bytes((bom + opening + updated + rest).encode("utf-8"))
+    except OSError as error:
+        say(f"  note  could not write {path} ({error}); addresses not saved: {', '.join(urls)}")
+        return False
     say(f"  saved where {path} was posted: {', '.join(urls)}")
     return True
 
@@ -721,6 +777,28 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
+def find_post_file(url: str) -> Optional[str]:
+    """Find the post file whose address is a given URL.
+
+    Checks every publishable post in the blogs of BLOG_FOLDERS_TO_FEEDS, so
+    a manual run by address can still save where the post went.
+
+    Args:
+        url: A post's full address.
+
+    Returns:
+        The file's path relative to the repository root, or None (with a
+        printed note) if no post file has that address.
+    """
+    for blog_folder in BLOG_FOLDERS_TO_FEEDS:
+        for file in sorted(Path(blog_folder).rglob("*.md*")):
+            path = file.as_posix()
+            if skip_reason(path) is None and address_matches(url, expected_post(path)):
+                return path
+    say(f"  note  no post file has the address {url}; addresses won't be saved")
+    return None
+
+
 def collect_urls(args: argparse.Namespace) -> Tuple[List[Tuple[Optional[str], str]], List[str]]:
     """Find the post addresses to send, waiting for new posts to go live.
 
@@ -732,7 +810,7 @@ def collect_urls(args: argparse.Namespace) -> Tuple[List[Tuple[Optional[str], st
         for a post given by address alone; and problems to report.
     """
     if args.url:
-        return [(None, args.url)], []
+        return [(find_post_file(args.url), args.url)], []
     say("Checking the added files...")
     posts = posts_to_publish(args.new_files)
     if not posts:

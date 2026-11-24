@@ -14,8 +14,8 @@
  *   Bridgy would post only "Title: link" and the tags would be lost.
  *   Untitled posts get their hashtags from plugins/remark-social-hashtags.mjs.
  *
- * Applies to every blog on the site (blog, blog-micro, blog-ideas, and any
- * added later), because all Docusaurus blogs share this theme component. Adds
+ * Applies to every blog on the site, including any added later, because all
+ * Docusaurus blogs share this theme component. Adds
  * markup only on a post's own page, never on list pages, so each page Bridgy
  * reads contains exactly one post.
  *
@@ -28,6 +28,7 @@ import Container from "@theme-original/BlogPostItem/Container";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { useBlogPost } from "@docusaurus/plugin-content-blog/client";
 import { hashtagNamesFromLabels } from "@site/src/utils/hashtags.mjs";
+import { hasTitle, socialPostSettings } from "@site/src/utils/socialPosts.mjs";
 
 /**
  * Networks Bridgy may publish this site's posts to. Delete a line to stop
@@ -44,19 +45,6 @@ const BRIDGY_PUBLISH_TARGETS = [
  * Docs: https://brid.gy/about
  */
 const BRIDGY_CONTENT_CLASSES = ["e-bridgy-mastodon-content", "e-bridgy-bluesky-content"];
-
-/**
- * Tells whether a post has a visible title.
- *
- * Args:
- *     title: The post's title from Docusaurus metadata; may be "".
- *
- * Returns:
- *     True if the title has any non-space characters.
- */
-function hasTitle(title) {
-  return typeof title === "string" && title.trim() !== "";
-}
 
 /**
  * Works out the hashtags for a titled post's social text.
@@ -161,7 +149,7 @@ export default function ContainerWrapper({ className, children, ...props }) {
     );
   }
 
-  const socialPosts = (siteConfig.customFields && siteConfig.customFields.socialPosts) || {};
+  const socialPosts = socialPostSettings(siteConfig);
   return (
     <Container className={clsx(className, "h-entry")} {...props}>
       {children}

@@ -29,16 +29,18 @@
  * "path" and "tags" of every blog plugin (see blogPluginOptions there).
  * Remark plugin docs: https://docusaurus.io/docs/markdown-features/plugins
  */
-import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
-import { newHashtagNames, toHashtagName } from "../src/utils/hashtags.mjs";
+import { HASHTAG_CHARACTER, newHashtagNames, toHashtagName } from "../src/utils/hashtags.mjs";
 
-/** Matches a hashtag: "#" then letters, digits or "_", not inside a word or URL. */
-const HASHTAG = /(^|[^\p{L}\p{N}_&/#])#([\p{L}\p{N}_]+)/gu;
+/**
+ * Matches a hashtag: "#" then hashtag characters, not inside a word, a URL
+ * or an HTML character reference like "&#105;".
+ */
+const HASHTAG = new RegExp(`(^|[^\\p{L}\\p{M}\\p{N}_&/#])#(${HASHTAG_CHARACTER}+)`, "gu");
 
 /** Matches text made only of hashtags and spaces, like "#Quote #Resource". */
-const HASHTAG_LINE = /^\s*(#[\p{L}\p{N}_]+\s*)+$/u;
+const HASHTAG_LINE = new RegExp(`^\\s*(#${HASHTAG_CHARACTER}+\\s*)+$`, "u");
 
 /**
  * Node types whose text is never scanned for hashtags. "yaml" and "toml" are
@@ -86,40 +88,41 @@ function textOf(node) {
 function hashtagsIn(text) {
   return [...String(text).matchAll(HASHTAG)]
     .map((match) => match[2])
-    .filter((name) => !/^\d+$/.test(name)); // "#1" is a number, not a hashtag
+    .filter((name) => !/^\p{N}+$/u.test(name)); // "#1" is a number, not a hashtag
 }
 
-/** Docusaurus's tags file name when the blog's "tags" option isn't set. */
-const DEFAULT_TAGS_FILE = "tags.yml";
-
 /**
- * Reads the site's predefined tags, so a tag key can be shown by its label.
+ * Reads a blog's predefined tags, so a tag key can be shown by its label.
  *
  * Docusaurus lets posts refer to tags defined in a YAML file by key, e.g.
  * "pkm" for a tag labelled "Personal Knowledge Management". Using the label
  * here matches what the website shows and what the Container component uses
- * for titled posts. js-yaml ships with Docusaurus. Any problem (no file, bad
- * YAML, js-yaml missing) gives an empty map, so keys are used as written.
+ * for titled posts.
+ *
+ * The file is found and read by Docusaurus's own getTagsFile (from
+ * @docusaurus/utils-validation, which ships with Docusaurus), the same
+ * function the blog plugin uses. So the "tags" option means exactly what it
+ * means to Docusaurus: a path relative to the blog folder, "tags.yml" when
+ * unset, none when false or null; and a tag without a "label" gets the same
+ * default label. Any problem gives an empty map, so keys are used as written;
+ * Docusaurus itself reports a broken tags file when it builds the blog.
  * Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#tags-file
  *
  * Args:
- *     tagsFile: Path to the tags YAML file.
+ *     blogFolder: Absolute path of the blog's content folder.
+ *     tags: The blog plugin's "tags" option; undefined when it isn't set.
  *
  * Returns:
- *     A Map of tag keys to labels.
+ *     A promise of a Map of tag keys to labels.
  */
-function readTagLabels(tagsFile) {
+async function readTagLabels(blogFolder, tags) {
   try {
-    if (!fs.existsSync(tagsFile)) return new Map();
-    const yaml = createRequire(import.meta.url)("js-yaml");
-    const definitions = yaml.load(fs.readFileSync(tagsFile, "utf8")) || {};
-    return new Map(
-      Object.entries(definitions)
-        .filter(([, tag]) => tag && typeof tag.label === "string")
-        .map(([key, tag]) => [key, tag.label])
-    );
+    const { getTagsFile } = createRequire(import.meta.url)("@docusaurus/utils-validation");
+    const contentPaths = { contentPath: blogFolder, contentPathLocalized: blogFolder };
+    const definitions = (await getTagsFile({ tags, contentPaths })) || {};
+    return new Map(Object.entries(definitions).map(([key, tag]) => [key, tag.label]));
   } catch (error) {
-    console.warn(`[remark-social-hashtags] Could not read ${tagsFile}: ${error.message}`);
+    console.warn(`[remark-social-hashtags] Could not read the tags file for ${blogFolder}: ${error.message}`);
     return new Map();
   }
 }
@@ -289,25 +292,6 @@ function blogOf(filePath, blogs, siteDir) {
 }
 
 /**
- * Works out which tags file applies to a blog, the way Docusaurus does.
- *
- * Mirrors the blog plugin's "tags" option: a path relative to the blog's
- * content folder, "tags.yml" when unset, and no file when false or null.
- * Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#tags
- *
- * Args:
- *     blogFolder: Absolute path of the blog's content folder.
- *     tags: The blog plugin's "tags" option value.
- *
- * Returns:
- *     The tags file's absolute path, or null when tags files are turned off.
- */
-function tagsFileFor(blogFolder, tags) {
-  if (tags === false || tags === null) return null;
-  return path.resolve(blogFolder, tags ?? DEFAULT_TAGS_FILE);
-}
-
-/**
  * Remark plugin entry point.
  *
  * Args:
@@ -329,32 +313,33 @@ export default function remarkSocialHashtags(options = {}) {
   if (!blogs.length) {
     console.warn("[remark-social-hashtags] No blogs given in the \"blogs\" option, so no hashtags are added.");
   }
-  const labelsByFile = new Map();
+  const labelsByBlog = new Map();
 
   /**
-   * Gets the tag labels for a blog, reading each tags file only once.
+   * Gets a blog's tag labels, reading its tags file only once per build.
    *
    * Args:
    *     blog: { folder, options } from blogOf.
    *
    * Returns:
-   *     A Map of tag keys to labels; empty when there is no tags file.
+   *     A promise of a Map of tag keys to labels; empty when there is no
+   *     tags file.
    */
   const tagLabelsFor = (blog) => {
-    const file = tagsFileFor(blog.folder, blog.options.tags);
-    if (!file) return new Map();
-    if (!labelsByFile.has(file)) labelsByFile.set(file, readTagLabels(file));
-    return labelsByFile.get(file);
+    if (!labelsByBlog.has(blog.folder)) {
+      labelsByBlog.set(blog.folder, readTagLabels(blog.folder, blog.options.tags));
+    }
+    return labelsByBlog.get(blog.folder);
   };
 
-  return (tree, file) => {
+  return async (tree, file) => {
     const blog = blogOf(file.path, blogs, siteDir);
     if (!blog) return;
 
     const frontMatter = file.data && file.data.frontMatter;
     const inPost = newHashtagNames(hashtagsIn(textOf(tree)));
     const fromTags = includeFrontMatterTags
-      ? newHashtagNames(frontMatterTagLabels(frontMatter, tagLabelsFor(blog)).map(toHashtagName), inPost)
+      ? newHashtagNames(frontMatterTagLabels(frontMatter, await tagLabelsFor(blog)).map(toHashtagName), inPost)
       : [];
 
     if (fromTags.length && isUntitled(frontMatter)) appendHashtags(tree, fromTags);
