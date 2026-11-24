@@ -106,6 +106,8 @@ function hashtagsIn(text) {
  * unset, none when false or null; and a tag without a "label" gets the same
  * default label. Any problem gives an empty map, so keys are used as written;
  * Docusaurus itself reports a broken tags file when it builds the blog.
+ * Read fresh for each post, not cached, so an edited tags file is picked up
+ * while "docusaurus start" is running. The file is small, so this is cheap.
  * Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#tags-file
  *
  * Args:
@@ -268,27 +270,43 @@ function appendHashtags(tree, names) {
 const DEFAULT_BLOG_PATH = "blog";
 
 /**
+ * Tells whether a file is inside a folder (at any depth).
+ *
+ * Args:
+ *     folder: Absolute path of a folder.
+ *     filePath: Absolute path of a file.
+ *
+ * Returns:
+ *     True if the file is somewhere under the folder. A sibling folder
+ *     whose name merely starts the same way ("blog" and "blog-micro") or
+ *     whose name starts with ".." doesn't count.
+ */
+function isInside(folder, filePath) {
+  const relative = path.relative(folder, filePath);
+  return relative !== "" && !path.isAbsolute(relative) && relative.split(path.sep)[0] !== "..";
+}
+
+/**
  * Finds the blog a file belongs to.
+ *
+ * If blog folders are nested, the innermost one wins, as each Docusaurus
+ * blog only reads its own folder.
  *
  * Args:
  *     filePath: The file's absolute path, possibly undefined.
- *     blogs: Each blog plugin's options, as given in docusaurus.config.js.
+ *     blogs: Each blog's { path, tags } options from docusaurus.config.js.
  *     siteDir: The website's root folder.
  *
  * Returns:
- *     { folder, options }: the blog's absolute content folder and its plugin
+ *     { folder, options }: the blog's absolute content folder and its
  *     options, or null when the file isn't in any blog.
  */
 function blogOf(filePath, blogs, siteDir) {
   if (!filePath) return null;
-  for (const options of blogs) {
-    const folder = path.resolve(siteDir, options.path ?? DEFAULT_BLOG_PATH);
-    const relative = path.relative(folder, filePath);
-    if (relative && !relative.startsWith("..") && !path.isAbsolute(relative)) {
-      return { folder, options };
-    }
-  }
-  return null;
+  return blogs
+    .map((options) => ({ folder: path.resolve(siteDir, options.path ?? DEFAULT_BLOG_PATH), options }))
+    .filter((blog) => isInside(blog.folder, filePath))
+    .sort((a, b) => b.folder.length - a.folder.length)[0] || null;
 }
 
 /**
@@ -313,25 +331,6 @@ export default function remarkSocialHashtags(options = {}) {
   if (!blogs.length) {
     console.warn("[remark-social-hashtags] No blogs given in the \"blogs\" option, so no hashtags are added.");
   }
-  const labelsByBlog = new Map();
-
-  /**
-   * Gets a blog's tag labels, reading its tags file only once per build.
-   *
-   * Args:
-   *     blog: { folder, options } from blogOf.
-   *
-   * Returns:
-   *     A promise of a Map of tag keys to labels; empty when there is no
-   *     tags file.
-   */
-  const tagLabelsFor = (blog) => {
-    if (!labelsByBlog.has(blog.folder)) {
-      labelsByBlog.set(blog.folder, readTagLabels(blog.folder, blog.options.tags));
-    }
-    return labelsByBlog.get(blog.folder);
-  };
-
   return async (tree, file) => {
     const blog = blogOf(file.path, blogs, siteDir);
     if (!blog) return;
@@ -339,7 +338,7 @@ export default function remarkSocialHashtags(options = {}) {
     const frontMatter = file.data && file.data.frontMatter;
     const inPost = newHashtagNames(hashtagsIn(textOf(tree)));
     const fromTags = includeFrontMatterTags
-      ? newHashtagNames(frontMatterTagLabels(frontMatter, await tagLabelsFor(blog)).map(toHashtagName), inPost)
+      ? newHashtagNames(frontMatterTagLabels(frontMatter, await readTagLabels(blog.folder, blog.options.tags)).map(toHashtagName), inPost)
       : [];
 
     if (fromTags.length && isUntitled(frontMatter)) appendHashtags(tree, fromTags);

@@ -489,7 +489,9 @@ def read_feed(blog_folder: str) -> List[str]:
         items = json.loads(res.body).get("items", [])
     except (ValueError, AttributeError) as error:
         raise RuntimeError(f"{feed_url} is not a valid JSON feed ({error})") from error
-    return [item["url"] for item in items if isinstance(item, dict) and item.get("url")]
+    if not isinstance(items, list):
+        raise RuntimeError(f"{feed_url} has no list of items")
+    return [item["url"] for item in items if isinstance(item, dict) and isinstance(item.get("url"), str)]
 
 
 def address_matches(url: str, post: ExpectedPost) -> bool:
