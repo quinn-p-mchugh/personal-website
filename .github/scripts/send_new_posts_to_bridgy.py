@@ -1,67 +1,77 @@
 #!/usr/bin/env python3
-"""
-Send new blog posts to Bridgy so it cross-posts them to Mastodon and Bluesky.
+"""Send new blog posts to Bridgy so it cross-posts them to Mastodon and Bluesky.
 
-What this does, in plain terms
-------------------------------
-Bridgy (https://brid.gy) is a free, open-source service that copies posts from
-a personal website to social networks. You tell it about a new post by sending
-it a "webmention": a tiny web request that says "this page exists, please
-publish it to Mastodon" (or Bluesky). Bridgy then reads the page, formats the
-post for each network (trimming it and adding a link back when it's too long),
-and publishes it. Bridgy holds the Mastodon and Bluesky logins, so this script
-needs no passwords or tokens.
+What this does, in plain terms:
+    Bridgy (https://brid.gy) is a free, open-source service that copies posts
+    from a personal website to social networks. You tell it about a new post
+    by sending it a "webmention": a tiny web request that says "this page
+    exists, please publish it to Mastodon" (or Bluesky). Bridgy then reads the
+    page, formats the post for each network (trimming it and adding a link
+    back when it's too long), and publishes it. Bridgy holds the Mastodon and
+    Bluesky logins, so this script needs no passwords or tokens.
 
-Bridgy never publishes the same page twice, so sending a post again is safe:
-Bridgy answers "already published" and nothing happens.
+    Bridgy never publishes the same page twice, so sending a post again is
+    safe: Bridgy answers "already published" and nothing happens.
 
-How it finds new posts
-----------------------
-This script never guesses web addresses. It waits until each new post shows up
-in the live site's JSON feed (so the site has finished deploying, and the
-address is exactly what Docusaurus built), then sends that address to Bridgy.
+How it finds new posts:
+    It never guesses web addresses. It waits until each new post shows up in
+    the live site's JSON feed (so the site has finished deploying, and the
+    address is exactly what Docusaurus built), then sends that address.
 
-Two ways to run it
-------------------
-  --new-files FILE [FILE ...]   Post files added in recent commits (used on
-                                push and by the daily safety-net run). Waits
-                                for each to appear in the live feed.
-  --url URL                     One specific post address (manual runs).
+    The safety-net run also works from files added in commits, not from post
+    dates in the feed, on purpose: posts without a date in their file name
+    (like Welcome.md) get their date from git history, which can look recent
+    on a fresh deploy.
 
-The safety net works from files added in commits, not from post dates in the
-feed, on purpose: posts without a date in their file name (like Welcome.md)
-get their date from git history, which can look recent on a fresh deploy.
+Usage:
+    send_new_posts_to_bridgy.py --new-files FILE [FILE ...] [--dry-run]
+        Post files added in recent commits (used on push and by the daily
+        safety-net run). Waits for each to appear in the live feed.
+    send_new_posts_to_bridgy.py --url URL [--dry-run]
+        One specific post address (manual runs).
 
-Add --dry-run to print what would be sent without contacting Bridgy.
+    --dry-run prints what would be sent without contacting Bridgy.
 
 Needs only Python 3.9+ and its standard library. No packages to install.
 """
 
 import argparse
 import json
+import os
+import re
 import sys
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Dict, List, Optional, Tuple
 
-# ============================== SETTINGS ===================================
+# ================================ SETTINGS ================================
 
 # The live website. Docs: https://docusaurus.io/docs/api/docusaurus-config#url
 SITE_URL = "https://quinnmchugh.net"
 
-# Each blog folder in the repo, and the address of that blog's JSON feed on
-# the live site. The feed address is "<routeBasePath>/feed.json", set by each
-# blog's routeBasePath in docusaurus.config.js.
+# Every blog on the site that should be cross-posted: its folder in the repo,
+# and the address of its JSON feed on the live site. The address is
+# "<routeBasePath>/feed.json", where routeBasePath is set for each blog in
+# docusaurus.config.js.
 # Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#feedOptions
+#
+# To add a blog: add one line here. Name its folder "blog-something" so the
+# workflow's "blog*/**" trigger notices it with no other change. Each blog
+# also needs feedOptions with type "all" (or "json") in docusaurus.config.js,
+# like the existing ones. To stop cross-posting a blog, delete its line.
 BLOG_FOLDERS_TO_FEEDS = {
     "blog": "/blog/feed.json",
     "blog-micro": "/blog-micro/feed.json",
     "blog-ideas": "/ideas/feed.json",
+    "blog-resources": "/resources/feed.json",
+    "blog-highlights": "/highlights/feed.json",
 }
 
-# Networks to publish to. Each needs to be connected and set to "publish" on
+# Networks to publish to. Each must be connected and set to "publish" on
 # your Bridgy user page first. Docs: https://brid.gy/about
 BRIDGY_TARGETS = [
     "https://brid.gy/publish/mastodon",
@@ -79,24 +89,103 @@ CHECK_EVERY_SECONDS = 30
 # How long to wait for any single web request before giving up.
 REQUEST_TIMEOUT_SECONDS = 60
 
-# ===========================================================================
+# How many times to try a request to Bridgy that failed for a temporary
+# reason (network error, HTTP 5xx, rate limit), and the pause between tries.
+BRIDGY_ATTEMPTS = 3
+BRIDGY_RETRY_SECONDS = 20
 
-USER_AGENT = "send_new_posts_to_bridgy (+https://github.com/quinn-p-mchugh/personal-website)"
+# ==========================================================================
+
+USER_AGENT = (
+    "send_new_posts_to_bridgy "
+    "(+https://github.com/quinn-p-mchugh/personal-website)"
+)
+
+# Docusaurus blog file names start with a date: 2026-11-23-my-post.md
+# Docs: https://docusaurus.io/docs/blog#blog-post-date
+DATED_NAME = re.compile(r"^(\d{4})-(\d{2})-(\d{2})-(.+)$")
+ISO_DATE = re.compile(r"^(\d{4})-(\d{2})-(\d{2})")
+
+# Bridgy's wording for a page it has published before, and for a page it is
+# publishing in another request right now (from Bridgy's publish.py).
+ALREADY_PUBLISHED = "already published"
+ALREADY_PUBLISHING = "already publishing"
 
 
-def say(message):
-    """Print a status line straight away, so GitHub's log shows it live."""
+@dataclass(frozen=True)
+class ExpectedPost:
+    """A new post file, and how to recognise its address in the live feed.
+
+    Attributes:
+        path: The file's path in the repository.
+        blog_folder: Top-level folder, e.g. "blog-micro".
+        slug: Last part of the post's address, e.g. "my-post".
+        date_path: "/YYYY/MM/DD/" that Docusaurus puts in the address, or ""
+            when the address has none (no date, or an absolute slug).
+    """
+
+    path: str
+    blog_folder: str
+    slug: str
+    date_path: str
+
+
+@dataclass(frozen=True)
+class Response:
+    """The parts of an HTTP response this script uses.
+
+    Attributes:
+        status: HTTP status code, or 0 when no response arrived.
+        body: Response text, or the network error's description.
+        location: The Location header, or "".
+    """
+
+    status: int
+    body: str
+    location: str
+
+
+# ================================ OUTPUT ==================================
+
+
+def say(message: str) -> None:
+    """Print a status line straight away, so GitHub's log shows it live.
+
+    Args:
+        message: Text to print.
+    """
     print(message, flush=True)
 
 
-# ------------------------------ reading posts ------------------------------
+def report_error(message: str) -> None:
+    """Print an error, highlighted on the GitHub Actions run page.
+
+    Outside GitHub Actions the "::error::" prefix is replaced by "ERROR: ".
+    Docs: https://docs.github.com/actions/reference/workflows-and-actions/workflow-commands#setting-an-error-message
+
+    Args:
+        message: The problem, in plain words.
+    """
+    prefix = "::error::" if os.environ.get("GITHUB_ACTIONS") == "true" else "ERROR: "
+    say(f"{prefix}{message}")
 
 
-def read_front_matter(path):
-    """Return the simple `key: value` pairs from a post's front matter.
+# ============================ READING POST FILES ==========================
 
-    Only flat values are read (draft, unlisted, slug, title), which is all
-    this script needs. Lists and nested values are ignored.
+
+def read_front_matter(path: str) -> Dict[str, str]:
+    """Read the simple "key: value" lines from a post's front matter.
+
+    Only flat, top-level values are read (draft, unlisted, slug, date),
+    which is all this script needs. List items, comments and nested values
+    are ignored, and a trailing " # comment" is removed from values.
+
+    Args:
+        path: Path to a Markdown file.
+
+    Returns:
+        A dict of keys to values with surrounding quotes removed. Empty if
+        the file has no front matter.
     """
     text = Path(path).read_text(encoding="utf-8")
     if not text.startswith("---"):
@@ -106,198 +195,443 @@ def read_front_matter(path):
         return {}
     values = {}
     for line in text[3:end].splitlines():
-        if ":" not in line or line.lstrip().startswith(("#", "-")):
+        stripped = line.strip()
+        is_nested = line[:1].isspace()
+        if ":" not in stripped or stripped.startswith(("#", "-")) or is_nested:
             continue
-        key, _, value = line.partition(":")
-        values[key.strip()] = value.strip().strip("\"'")
+        key, _, value = stripped.partition(":")
+        values[key.strip()] = value.split(" #", 1)[0].strip().strip("\"'")
     return values
 
 
-def is_true(value):
+def is_true(value: Optional[str]) -> bool:
+    """Tell whether a front matter value means true.
+
+    Args:
+        value: A front matter value, or None if the key is absent.
+
+    Returns:
+        True only for "true" in any letter case.
+    """
     return str(value).strip().lower() == "true"
 
 
-def describe_new_post(path):
-    """Work out whether an added file is a publishable post.
+def skip_reason(path: str) -> Optional[str]:
+    """Explain why an added file is not a post to publish, if it isn't.
 
-    Returns (blog_folder, slug) for a post, or None with a printed reason for
-    anything that isn't one. Follows Docusaurus's own rules: files starting
-    with "_" are ignored, and posts marked draft or unlisted stay off the feed.
+    Follows Docusaurus's own rules: files and folders starting with "_" are
+    ignored, and posts marked draft or unlisted stay off the feed. Two rules
+    are this site's own: the "draft" folder holds unfinished posts, and
+    undated files (like each blog's Welcome.md) are pages, not posts.
     Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#markdown-front-matter
-    """
-    parts = Path(path).parts
-    blog_folder = parts[0] if parts else ""
-    if blog_folder not in BLOG_FOLDERS_TO_FEEDS:
-        return None
-    if Path(path).suffix.lower() not in (".md", ".mdx"):
-        return None
-    if any(part.startswith("_") for part in parts) or "draft" in parts:
-        say(f"  skip  {path}  (template or draft folder)")
-        return None
-    if not Path(path).exists():
-        say(f"  skip  {path}  (file no longer exists)")
-        return None
 
+    Args:
+        path: Path of an added file, relative to the repository root.
+
+    Returns:
+        A short reason to skip it; "" if it isn't a Markdown file in a blog
+        folder at all (skipped without comment); None if it is a post to
+        publish. A file in an unlisted "blog..." folder gets a reason, so a
+        newly added blog that was never configured shows up in the log.
+    """
+    file = Path(path)
+    if file.suffix.lower() not in (".md", ".mdx") or len(file.parts) < 2:
+        return ""
+    if file.parts[0] not in BLOG_FOLDERS_TO_FEEDS:
+        if file.parts[0].startswith("blog"):
+            return f"{file.parts[0]}/ is not listed in BLOG_FOLDERS_TO_FEEDS, so it isn't cross-posted"
+        return ""
+    if any(part.startswith("_") for part in file.parts):
+        return "template"
+    if "draft" in file.parts:
+        return "in the draft folder"
+    if not file.exists():
+        return "file no longer exists"
     front_matter = read_front_matter(path)
     if is_true(front_matter.get("draft")):
-        say(f"  skip  {path}  (draft: true)")
-        return None
+        return "draft: true"
     if is_true(front_matter.get("unlisted")):
-        say(f"  skip  {path}  (unlisted: true)")
-        return None
-
-    # Docusaurus builds the end of the address from the front matter `slug`
-    # if there is one, otherwise from the file name minus its date prefix
-    # (or the folder name, for a post written as folder/index.md).
-    slug = front_matter.get("slug", "").strip("/")
-    if not slug:
-        name = Path(path).stem
-        if name == "index":
-            name = Path(path).parent.name
-        pieces = name.split("-", 3)
-        if len(pieces) == 4 and all(p.isdigit() for p in pieces[:3]):
-            name = pieces[3]
-        slug = name
-    return blog_folder, slug
+        return "unlisted: true"
+    if post_date_parts(post_name(file), front_matter) is None:
+        return "no date in its file name or front matter, so it's a page like Welcome.md"
+    return None
 
 
-# ------------------------------ reading feeds ------------------------------
+def post_name(file: Path) -> str:
+    """Get the name Docusaurus builds a post's address from.
+
+    Args:
+        file: Path of a post file.
+
+    Returns:
+        The file name without extension, or the folder name for a post
+        written as folder/index.md.
+    """
+    return file.parent.name if file.stem == "index" else file.stem
 
 
-def fetch(url, data=None):
-    """Make a web request. Returns (status code, response text, headers)."""
-    request = urllib.request.Request(
-        url,
-        data=urllib.parse.urlencode(data).encode() if data else None,
-        headers={"User-Agent": USER_AGENT},
-    )
+def post_date_parts(name: str, front_matter: Dict[str, str]) -> Optional[Tuple[str, str, str]]:
+    """Find a post's date the way Docusaurus does.
+
+    A "date" in the front matter wins over a date at the start of the name.
+    Docs: https://docusaurus.io/docs/blog#blog-post-date
+
+    Args:
+        name: File name without extension (or the folder name for index.md).
+        front_matter: The post's front matter values.
+
+    Returns:
+        (year, month, day) as strings, or None if the post has no date.
+    """
+    front_date = ISO_DATE.match(front_matter.get("date", ""))
+    if front_date:
+        return front_date.groups()
+    name_date = DATED_NAME.match(name)
+    return name_date.groups()[:3] if name_date else None
+
+
+def expected_post(path: str) -> ExpectedPost:
+    """Work out what a post's address will look like.
+
+    Mirrors how Docusaurus builds blog addresses: the front matter "slug" if
+    there is one, otherwise the file name minus its date prefix (or the
+    folder name, for a post written as folder/index.md). The post's date
+    becomes /YYYY/MM/DD/ in the address, unless the slug starts with "/".
+
+    Args:
+        path: Path of a post file, relative to the repository root.
+
+    Returns:
+        The expected post.
+    """
+    file = Path(path)
+    front_matter = read_front_matter(path)
+    name = post_name(file)
+    date_parts = post_date_parts(name, front_matter)
+
+    name_date = DATED_NAME.match(name)
+    default_slug = name_date.group(4) if name_date else name
+    slug = front_matter.get("slug", "")
+    is_absolute_slug = slug.startswith("/")
+    slug = slug.strip("/") or default_slug
+
+    has_date_path = date_parts is not None and not is_absolute_slug
+    date_path = "/{}/{}/{}/".format(*date_parts) if has_date_path else ""
+    return ExpectedPost(path, file.parts[0], slug, date_path)
+
+
+def posts_to_publish(paths: List[str]) -> List[ExpectedPost]:
+    """Pick out the publishable posts from a list of added files.
+
+    Prints one line for each file that is skipped, and why.
+
+    Args:
+        paths: Paths of added files, relative to the repository root.
+
+    Returns:
+        The posts to wait for and publish, in the order given.
+    """
+    posts = []
+    for path in paths:
+        reason = skip_reason(path)
+        if reason is None:
+            posts.append(expected_post(path))
+        elif reason:
+            say(f"  skip  {path}  ({reason})")
+    return posts
+
+
+# ============================== WEB REQUESTS ==============================
+
+
+def request(url: str, form: Optional[Dict[str, str]] = None) -> Response:
+    """Make one web request, never raising.
+
+    Args:
+        url: Address to request.
+        form: Form fields to send as a POST. Omit for a GET.
+
+    Returns:
+        The response. A network failure or timeout comes back as status 0
+        with the error's description as the body.
+    """
+    data = urllib.parse.urlencode(form).encode() if form else None
+    req = urllib.request.Request(url, data=data, headers={"User-Agent": USER_AGENT})
     try:
-        with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
-            return response.status, response.read().decode("utf-8", "replace"), response.headers
+        with urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT_SECONDS) as res:
+            body = res.read().decode("utf-8", "replace")
+            return Response(res.status, body, res.headers.get("Location") or "")
     except urllib.error.HTTPError as error:
-        return error.code, error.read().decode("utf-8", "replace"), error.headers
+        body = error.read().decode("utf-8", "replace")
+        return Response(error.code, body, error.headers.get("Location") or "")
+    except (urllib.error.URLError, TimeoutError, ConnectionError) as error:
+        return Response(0, str(getattr(error, "reason", error)), "")
 
 
-def read_feed(blog_folder):
-    """Return the addresses of the posts in a blog's live feed."""
+def short(text: str, limit: int = 300) -> str:
+    """Collapse whitespace and cut text to a readable length for the log.
+
+    Args:
+        text: Any text, e.g. an HTML error page.
+        limit: Maximum characters to keep.
+
+    Returns:
+        The text on one line, at most `limit` characters.
+    """
+    return " ".join(text.split())[:limit]
+
+
+# =============================== LIVE FEEDS ===============================
+
+
+def read_feed(blog_folder: str) -> List[str]:
+    """Read the addresses of the posts in one blog's live feed.
+
+    Args:
+        blog_folder: A key of BLOG_FOLDERS_TO_FEEDS.
+
+    Returns:
+        Post addresses, newest first.
+
+    Raises:
+        RuntimeError: If the feed can't be fetched or isn't valid JSON.
+    """
     feed_url = SITE_URL + BLOG_FOLDERS_TO_FEEDS[blog_folder]
     # A changing query string makes caches hand back the newest copy.
-    status, body, _ = fetch(f"{feed_url}?nocache={int(time.time())}")
-    if status != 200:
-        raise RuntimeError(f"Could not read {feed_url} (HTTP {status})")
-    items = json.loads(body).get("items", [])
-    return [item["url"] for item in items if item.get("url")]
+    res = request(f"{feed_url}?nocache={int(time.time())}")
+    if res.status != 200:
+        raise RuntimeError(f"could not read {feed_url} (HTTP {res.status}: {short(res.body, 120)})")
+    try:
+        items = json.loads(res.body).get("items", [])
+    except (ValueError, AttributeError) as error:
+        raise RuntimeError(f"{feed_url} is not a valid JSON feed ({error})") from error
+    return [item["url"] for item in items if isinstance(item, dict) and item.get("url")]
 
 
-def address_ends_with_slug(url, slug):
+def address_matches(url: str, post: ExpectedPost) -> bool:
+    """Tell whether a feed address is the expected post.
+
+    The address must end with the slug, and contain the date path when one
+    is expected. The date check stops an older post with the same slug from
+    being mistaken for the new one.
+
+    Args:
+        url: An address from the live feed.
+        post: The expected post.
+
+    Returns:
+        True if the address belongs to the post.
+    """
     path = urllib.parse.unquote(urllib.parse.urlparse(url).path).rstrip("/")
-    return path.endswith("/" + urllib.parse.unquote(slug))
+    slug = urllib.parse.unquote(post.slug)
+    return path.endswith("/" + slug) and post.date_path in path + "/"
 
 
-def wait_for_posts_to_go_live(posts):
-    """Wait until every (blog_folder, slug) appears in its live feed.
+def find_live_posts(waiting: List[ExpectedPost]) -> Dict[ExpectedPost, str]:
+    """Check the live feeds once for the posts still being waited for.
 
-    Returns (found addresses, slugs that never appeared).
+    A feed that can't be read is reported and treated as "not yet", since
+    the site may be part-way through deploying.
+
+    Args:
+        waiting: Posts not found yet.
+
+    Returns:
+        The posts found, each mapped to its live address.
+    """
+    found = {}
+    for blog_folder in sorted({post.blog_folder for post in waiting}):
+        try:
+            live = read_feed(blog_folder)
+        except RuntimeError as error:
+            say(f"  note  {error}; will try again")
+            continue
+        for post in (p for p in waiting if p.blog_folder == blog_folder):
+            match = next((url for url in live if address_matches(url, post)), None)
+            if match:
+                found[post] = match
+    return found
+
+
+def wait_for_posts_to_go_live(posts: List[ExpectedPost]) -> Tuple[List[str], List[ExpectedPost]]:
+    """Wait until every post appears in its live feed, or time runs out.
+
+    Args:
+        posts: Posts to wait for.
+
+    Returns:
+        A pair: the live addresses found, and the posts that never appeared
+        within WAIT_FOR_DEPLOY_MINUTES.
     """
     waiting = list(posts)
-    found = []
+    found_urls = []
     deadline = time.monotonic() + WAIT_FOR_DEPLOY_MINUTES * 60
-    while True:
-        for blog_folder in sorted({folder for folder, _ in waiting}):
-            try:
-                live = read_feed(blog_folder)
-            except Exception as error:  # the site may be mid-deploy
-                say(f"  note  {error}; will try again")
-                continue
-            for post in [p for p in waiting if p[0] == blog_folder]:
-                matches = [url for url in live if address_ends_with_slug(url, post[1])]
-                if matches:
-                    say(f"  live  {matches[0]}")
-                    found.append(matches[0])
-                    waiting.remove(post)
-        if not waiting:
-            return found, []
-        if time.monotonic() >= deadline:
-            return found, waiting
-        names = ", ".join(slug for _, slug in waiting)
+    while waiting:
+        for post, url in find_live_posts(waiting).items():
+            say(f"  live  {url}")
+            found_urls.append(url)
+            waiting.remove(post)
+        if not waiting or time.monotonic() >= deadline:
+            break
+        names = ", ".join(post.slug for post in waiting)
         say(f"  wait  not on the live site yet: {names}. Checking again in {CHECK_EVERY_SECONDS}s.")
         time.sleep(CHECK_EVERY_SECONDS)
+    return found_urls, waiting
 
 
-# ----------------------------- sending to Bridgy ---------------------------
+# ============================ SENDING TO BRIDGY ===========================
 
 
-def send_to_bridgy(post_url, dry_run):
-    """Ask Bridgy to publish one post to each network. Returns True if fine."""
+def is_temporary_failure(res: Response) -> bool:
+    """Tell whether a failed Bridgy request is worth trying again.
+
+    Args:
+        res: Bridgy's response.
+
+    Returns:
+        True for network errors, HTTP 5xx and rate limits, except Bridgy's
+        "already publishing" 429, which means another request has it in hand.
+    """
+    if res.status == 429:
+        return ALREADY_PUBLISHING not in res.body
+    return res.status == 0 or res.status >= 500
+
+
+def send_webmention(post_url: str, target: str) -> Response:
+    """Ask Bridgy to publish one post to one network, retrying blips.
+
+    Args:
+        post_url: The post's live address.
+        target: One of BRIDGY_TARGETS.
+
+    Returns:
+        Bridgy's final response.
+    """
+    form = {"source": post_url, "target": target}
+    res = request(BRIDGY_WEBMENTION_ENDPOINT, form)
+    for attempt in range(2, BRIDGY_ATTEMPTS + 1):
+        if not is_temporary_failure(res):
+            break
+        say(f"  retry Bridgy answered HTTP {res.status}; trying again in {BRIDGY_RETRY_SECONDS}s "
+            f"(attempt {attempt} of {BRIDGY_ATTEMPTS})")
+        time.sleep(BRIDGY_RETRY_SECONDS)
+        res = request(BRIDGY_WEBMENTION_ENDPOINT, form)
+    return res
+
+
+def describe_outcome(network: str, res: Response) -> Tuple[bool, str]:
+    """Turn Bridgy's response into a pass/fail and a log line.
+
+    Args:
+        network: Network name for the log, e.g. "mastodon".
+        res: Bridgy's response.
+
+    Returns:
+        A pair: True if nothing more needs doing, and the line to print.
+    """
+    if 200 <= res.status < 300:
+        return True, f"  sent  {network}: {res.location or 'accepted'}"
+    if ALREADY_PUBLISHED in res.body:
+        return True, f"  ok    {network}: already published earlier, nothing to do"
+    if res.status == 429 and ALREADY_PUBLISHING in res.body:
+        return True, f"  ok    {network}: Bridgy is already publishing this right now"
+    return False, f"  FAILED  {network} (HTTP {res.status}): {short(res.body)}"
+
+
+def send_to_bridgy(post_url: str, dry_run: bool) -> bool:
+    """Ask Bridgy to publish one post to every network in BRIDGY_TARGETS.
+
+    Args:
+        post_url: The post's live address.
+        dry_run: If True, only print what would be sent.
+
+    Returns:
+        True if every network published it, had already, or was skipped by
+        the dry run.
+    """
     all_fine = True
     for target in BRIDGY_TARGETS:
-        network = target.rsplit("/", 1)[-1]
+        network = target.rstrip("/").rsplit("/", 1)[-1]
         if dry_run:
             say(f"  dry run  would send {post_url} to {network}")
             continue
-        status, body, headers = fetch(
-            BRIDGY_WEBMENTION_ENDPOINT, data={"source": post_url, "target": target}
-        )
-        if status in (200, 201, 202):
-            where = headers.get("Location") or "accepted"
-            say(f"  sent  {network}: {where}")
-        elif "already published" in body:
-            say(f"  ok    {network}: already published earlier, nothing to do")
-        elif status == 429 and "already publishing" in body:
-            say(f"  ok    {network}: Bridgy is already publishing this right now")
-        else:
-            all_fine = False
-            short = " ".join(body.split())[:300]
-            say(f"  FAILED  {network} (HTTP {status}): {short}")
+        fine, line = describe_outcome(network, send_webmention(post_url, target))
+        say(line)
+        all_fine = all_fine and fine
     return all_fine
 
 
-# ---------------------------------- main -----------------------------------
+# ================================== MAIN ==================================
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
+    """Read the command-line options.
+
+    Args:
+        argv: Options to parse. Defaults to the real command line.
+
+    Returns:
+        The parsed options: new_files or url, and dry_run.
+    """
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     which = parser.add_mutually_exclusive_group(required=True)
-    which.add_argument("--new-files", nargs="*", metavar="FILE")
-    which.add_argument("--url")
-    parser.add_argument("--dry-run", action="store_true")
-    args = parser.parse_args()
+    which.add_argument("--new-files", nargs="*", metavar="FILE",
+                       help="post files added in recent commits")
+    which.add_argument("--url", help="one post's live address")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="print what would be sent, send nothing")
+    return parser.parse_args(argv)
 
+
+def collect_urls(args: argparse.Namespace) -> Tuple[List[str], List[str]]:
+    """Find the post addresses to send, waiting for new posts to go live.
+
+    Args:
+        args: Parsed options.
+
+    Returns:
+        A pair: addresses to send, and problems to report.
+    """
+    if args.url:
+        return [args.url], []
+    say("Checking the added files...")
+    posts = posts_to_publish(args.new_files)
+    if not posts:
+        say("No new published posts among the added files.")
+        return [], []
+    say(f"Waiting for {len(posts)} new post(s) to appear on {SITE_URL} ...")
+    urls, missing = wait_for_posts_to_go_live(posts)
+    problems = [
+        f"{post.path} never appeared in the live feed after {WAIT_FOR_DEPLOY_MINUTES} minutes. "
+        "Check the deploy, then re-run this workflow by hand with the post's address."
+        for post in missing
+    ]
+    return urls, problems
+
+
+def main(argv: Optional[List[str]] = None) -> int:
+    """Run the whole job.
+
+    Args:
+        argv: Options to parse. Defaults to the real command line.
+
+    Returns:
+        0 if everything worked, 1 if anything needs attention.
+    """
+    args = parse_args(argv)
     if args.dry_run:
         say("Dry run: nothing will be sent to Bridgy.")
 
-    problems = []
-    if args.url:
-        urls = [args.url]
-    else:
-        say("Checking the added files...")
-        posts = [p for p in (describe_new_post(f) for f in args.new_files) if p]
-        if not posts:
-            say("No new published posts among the added files. Done.")
-            return 0
-        say(f"Waiting for {len(posts)} new post(s) to appear on {SITE_URL} ...")
-        urls, missing = wait_for_posts_to_go_live(posts)
-        for folder, slug in missing:
-            problems.append(
-                f"'{slug}' in {folder}/ never appeared in the live feed after "
-                f"{WAIT_FOR_DEPLOY_MINUTES} minutes. Check the deploy, then re-run this "
-                "workflow by hand with the post's address."
-            )
-
-    if not urls:
-        say("No posts to send.")
+    urls, problems = collect_urls(args)
     for url in urls:
         say(f"Post: {url}")
         if not send_to_bridgy(url, args.dry_run):
             problems.append(f"Bridgy did not accept {url}; see the FAILED lines above.")
 
-    if problems:
-        say("\nProblems:")
-        for problem in problems:
-            say(f"  - {problem}")
-        return 1
-    say("All done.")
-    return 0
+    for problem in problems:
+        report_error(problem)
+    say("Finished with problems." if problems else "All done.")
+    return 1 if problems else 0
 
 
 if __name__ == "__main__":

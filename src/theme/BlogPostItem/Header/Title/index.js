@@ -17,13 +17,32 @@ import clsx from "clsx";
 import Title from "@theme-original/BlogPostItem/Header/Title";
 import { useBlogPost } from "@docusaurus/plugin-content-blog/client";
 
+/**
+ * Tells whether a post has a visible title.
+ *
+ * Args:
+ *     title: The post's title from Docusaurus metadata; may be "".
+ *
+ * Returns:
+ *     True if the title has any non-space characters.
+ */
+function hasTitle(title) {
+  return typeof title === "string" && title.trim() !== "";
+}
+
+/**
+ * The post title, marked as p-name on a titled post's own page.
+ *
+ * Args:
+ *     props.className: Classes Docusaurus passes to the title.
+ *     props: Any other props, passed through unchanged.
+ *
+ * Returns:
+ *     Docusaurus's original title, with the "p-name" class added only on a
+ *     post's own page and only when the post has a title.
+ */
 export default function TitleWrapper({ className, ...props }) {
   const { metadata, isBlogPostPage } = useBlogPost();
-  const hasTitle = Boolean(metadata.title && metadata.title.trim());
-  return (
-    <Title
-      className={clsx(className, isBlogPostPage && hasTitle && "p-name")}
-      {...props}
-    />
-  );
+  const isNamed = isBlogPostPage && hasTitle(metadata.title);
+  return <Title className={clsx(className, isNamed && "p-name")} {...props} />;
 }

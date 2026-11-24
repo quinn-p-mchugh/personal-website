@@ -2,7 +2,8 @@
 #
 # What happens:
 #   1. You commit a new post to main (from GitHub's web editor, your laptop,
-#      anywhere) in blog/, blog-micro/ or blog-ideas/.
+#      anywhere) in one of the blog folders listed in the script's
+#      BLOG_FOLDERS_TO_FEEDS setting.
 #   2. This workflow waits for Vercel (or any host) to put it on the live site.
 #   3. It tells Bridgy about the post. Bridgy formats and publishes it.
 # The script that does the work, with plain-English notes, is
@@ -14,14 +15,15 @@
 name: Cross-post to Mastodon and Bluesky
 
 on:
-  # Runs when a commit to main changes one of the blog folders.
-  # Docs: https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#push
+  # Runs when a commit to main changes any folder whose name starts with
+  # "blog" (blog/, blog-micro/, blog-ideas/, and any blog added later). Which
+  # blogs are actually cross-posted is set in BLOG_FOLDERS_TO_FEEDS in the
+  # script, so adding a blog is a one-line change there.
+  # Docs: https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onpushpull_requestpull_request_targetpathspaths-ignore
   push:
     branches: [main]
     paths:
-      - "blog/**"
-      - "blog-micro/**"
-      - "blog-ideas/**"
+      - "blog*/**"
 
   # Daily safety net, in case a push run failed (for example, a slow deploy).
   # Re-sends posts added in the last 3 days of commits; Bridgy skips any
