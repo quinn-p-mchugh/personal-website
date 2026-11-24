@@ -22,8 +22,9 @@
  * changed. Docs pages and other pages are left alone.
  *
  * Usage in docusaurus.config.js, inside remarkPlugins:
- *     [remarkSocialHashtags, socialPosts]
- * where socialPosts is { includeFrontMatterTags: true }.
+ *     [remarkSocialHashtags, { ...socialPosts, tags: tagsFile }]
+ * where socialPosts is { includeFrontMatterTags: true, ... } and tagsFile is
+ * the same value given to each blog plugin's "tags" option.
  * Remark plugin docs: https://docusaurus.io/docs/markdown-features/plugins
  */
 import fs from "node:fs";
@@ -85,6 +86,9 @@ function hashtagsIn(text) {
     .map((match) => match[2])
     .filter((name) => !/^\d+$/.test(name)); // "#1" is a number, not a hashtag
 }
+
+/** Docusaurus's tags file name when the blog's "tags" option isn't set. */
+const DEFAULT_TAGS_FILE = "tags.yml";
 
 /**
  * Reads the site's predefined tags, so a tag key can be shown by its label.
@@ -256,19 +260,39 @@ function appendHashtags(tree, names) {
 }
 
 /**
- * Tells whether a file is a post in one of the site's blog folders.
+ * Finds the blog folder a file belongs to.
  *
  * Args:
  *     filePath: The file's absolute path, possibly undefined.
  *     siteDir: The website's root folder.
  *
  * Returns:
- *     True if the file's top folder, relative to the site, starts with "blog".
+ *     The absolute path of the file's top folder when its name starts with
+ *     "blog" (a blog's content folder), otherwise null.
  */
-function isBlogPost(filePath, siteDir) {
-  if (!filePath) return false;
+function blogFolderOf(filePath, siteDir) {
+  if (!filePath) return null;
   const topFolder = path.relative(siteDir, filePath).split(path.sep)[0];
-  return topFolder.startsWith("blog");
+  return topFolder.startsWith("blog") ? path.join(siteDir, topFolder) : null;
+}
+
+/**
+ * Works out which tags file applies to a blog, the way Docusaurus does.
+ *
+ * Mirrors the blog plugin's "tags" option: a path relative to the blog's
+ * content folder, "tags.yml" when unset, and no file when false or null.
+ * Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#tags
+ *
+ * Args:
+ *     blogFolder: Absolute path of the blog's content folder.
+ *     tags: The blog plugin's "tags" option value.
+ *
+ * Returns:
+ *     The tags file's absolute path, or null when tags files are turned off.
+ */
+function tagsFileFor(blogFolder, tags) {
+  if (tags === false || tags === null) return null;
+  return path.resolve(blogFolder, tags ?? DEFAULT_TAGS_FILE);
 }
 
 /**
@@ -280,27 +304,41 @@ function isBlogPost(filePath, siteDir) {
  *         Bluesky. Set once, in socialPosts in docusaurus.config.js.
  *     options.siteDir: The website's root folder. Defaults to the folder the
  *         build runs in, which for Docusaurus is the site folder.
- *     options.tagsFile: The predefined tags file, relative to siteDir.
- *         Defaults to "content-tags.yml".
+ *     options.tags: The same value as the blog plugin's "tags" option, so tag
+ *         keys resolve from the same file Docusaurus uses: a path relative to
+ *         each blog's folder, "tags.yml" when unset, none when false or null.
  *
  * Returns:
  *     A transformer that updates each blog post's Markdown tree.
  */
 export default function remarkSocialHashtags(options = {}) {
-  const {
-    includeFrontMatterTags = true,
-    siteDir = process.cwd(),
-    tagsFile = "content-tags.yml",
-  } = options;
-  const tagLabels = readTagLabels(path.resolve(siteDir, tagsFile));
+  const { includeFrontMatterTags = true, siteDir = process.cwd(), tags } = options;
+  const labelsByFile = new Map();
+
+  /**
+   * Gets the tag labels for a blog, reading each tags file only once.
+   *
+   * Args:
+   *     blogFolder: Absolute path of the blog's content folder.
+   *
+   * Returns:
+   *     A Map of tag keys to labels; empty when there is no tags file.
+   */
+  const tagLabelsFor = (blogFolder) => {
+    const file = tagsFileFor(blogFolder, tags);
+    if (!file) return new Map();
+    if (!labelsByFile.has(file)) labelsByFile.set(file, readTagLabels(file));
+    return labelsByFile.get(file);
+  };
 
   return (tree, file) => {
-    if (!isBlogPost(file.path, siteDir)) return;
+    const blogFolder = blogFolderOf(file.path, siteDir);
+    if (!blogFolder) return;
 
     const frontMatter = file.data && file.data.frontMatter;
     const inPost = newHashtagNames(hashtagsIn(textOf(tree)));
     const fromTags = includeFrontMatterTags
-      ? newHashtagNames(frontMatterTagLabels(frontMatter, tagLabels).map(toHashtagName), inPost)
+      ? newHashtagNames(frontMatterTagLabels(frontMatter, tagLabelsFor(blogFolder)).map(toHashtagName), inPost)
       : [];
 
     if (fromTags.length && isUntitled(frontMatter)) appendHashtags(tree, fromTags);

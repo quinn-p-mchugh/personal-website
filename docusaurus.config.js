@@ -45,6 +45,13 @@ const darkCodeTheme = themes.dracula;
  *   webmention.io. The profile must link back to the site.
  *   Docs: https://indielogin.com/setup
  */
+/**
+ * Predefined tags file, relative to each blog's folder. Used for every blog's
+ * "tags" option and by the hashtag plugin, so both read the same file.
+ * Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#tags
+ */
+const tagsFile = "../content-tags.yml";
+
 const socialPosts = {
   includeFrontMatterTags: true,
   showResponses: true,
@@ -77,14 +84,14 @@ const plugins = {
     ], // https://github.com/remarkjs/remark-validate-links?tab=readme-ov-file#options
     [remarkPrism, {}], // https://github.com/sergioramos/remark-prism?tab=readme-ov-file
     // Prepares blog posts' hashtags for cross-posting. Settings: socialPosts above.
-    [remarkSocialHashtags, socialPosts],
+    [remarkSocialHashtags, { ...socialPosts, tags: tagsFile }],
   ],
   rehypePlugins: [],
 };
 
 
 const contentConfig = {
-  tags: "../content-tags.yml",
+  tags: tagsFile,
   onInlineTags: "warn",
   blogConfig: { // Blog Plugin Documentation: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog
     sidebarCount: "ALL",
@@ -130,6 +137,9 @@ const config = {
   title: "Quinn McHugh",
   tagline: "Engineer. Designer. Developer.",
   customFields: {
+    // Giscus comments show on docs pages only; blog posts show Mastodon and
+    // Bluesky responses instead (see socialPosts above).
+    forbiddenGiscusPaths: [], // See GiscusComponent.js - Example: "/docs/tutorials/intro"
     socialPosts, // See socialPosts above
   },
   url: "https://quinnmchugh.net",
