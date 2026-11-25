@@ -1,10 +1,13 @@
 /**
  * Wraps Docusaurus's blog post footer to add, on a post's own page:
- * - "Also on Mastodon · Bluesky" links to the post's cross-posted copies
- *   (always, because Bridgy needs them to match replies back to the post);
+ * - "Also on Mastodon, Bluesky" links to the post's cross-posted copies:
+ *   always in the page, because Bridgy needs them to match replies back to
+ *   the post, and hidden when the showSyndicationLinks setting is off;
  * - the responses from those networks (likes, reposts, replies), when the
- *   plugin's showResponses setting is on and webmentionUsername is set.
- * Both live in src/components/SocialResponses.
+ *   plugin's responses.enabled setting is on, webmentionUsername is set,
+ *   and the post's front matter doesn't say "crosspost_responses: false".
+ * Both are theme components (src/theme/CrosspostSyndicationLinks and
+ * src/theme/CrosspostResponses), so a site can restyle or swizzle them.
  *
  * Wraps the original component: https://docusaurus.io/docs/swizzling#wrapping
  */
@@ -13,7 +16,8 @@ import Footer from "@theme-init/BlogPostItem/Footer";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { useBlogPost } from "@docusaurus/plugin-content-blog/client";
 import useCrosspostSettings from "../../../client/useCrosspostSettings.js";
-import SocialResponses, { SyndicationLinks } from "../../../components/SocialResponses/index.js";
+import CrosspostResponses from "@theme/CrosspostResponses";
+import CrosspostSyndicationLinks from "@theme/CrosspostSyndicationLinks";
 import { syndicationUrls } from "../../../components/SocialResponses/mentions.js";
 import { postAddress } from "../../../shared/posts.js";
 
@@ -34,17 +38,16 @@ export default function FooterWrapper(props) {
 
   if (!isBlogPostPage) return <Footer {...props} />;
 
-  const showResponses = settings.showResponses && settings.webmentionUsername !== "";
+  const showResponses =
+    settings.responses.enabled && settings.webmentionUsername !== "" && !(frontMatter && frontMatter.crosspost_responses === false);
   const syndication = syndicationUrls(frontMatter && frontMatter.syndication);
   // The same address the rest of the plugin uses (trailingSlash applied).
   const pageUrl = postAddress(metadata.permalink, siteConfig);
   return (
     <>
       <Footer {...props} />
-      <SyndicationLinks urls={syndication} />
-      {showResponses && (
-        <SocialResponses pageUrl={pageUrl} syndication={syndication} />
-      )}
+      <CrosspostSyndicationLinks urls={syndication} visible={settings.showSyndicationLinks !== false} />
+      {showResponses && <CrosspostResponses pageUrl={pageUrl} syndication={syndication} settings={settings.responses} />}
     </>
   );
 }

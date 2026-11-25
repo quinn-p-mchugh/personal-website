@@ -31,6 +31,10 @@ export const DEFAULT_MAX_FILE_SIZE_BYTES = 1_900_000;
  */
 export const DEFAULT_MAX_WIDTH_OR_HEIGHT_PIXELS = 2000;
 
+/** Avatars shown per likes or reposts row by default: enough that a row
+ * grows with its count, about two lines on a phone. */
+export const DEFAULT_MAX_AVATARS_SHOWN = 20;
+
 /**
  * One tag or hashtag name. Hashtags may be written with or without "#"
  * ("TIL" or "#TIL"); case, spaces and punctuation don't matter. A name with
@@ -111,8 +115,40 @@ export const OPTIONS_SCHEMA = Joi.object({
   // webmention.io; each profile must link back. Docs: https://indielogin.com/setup
   relMe: Joi.array().items(Joi.string().uri({ scheme: ["https", "http"] })).default([]),
 
-  // Show likes, reposts and replies from Mastodon and Bluesky under posts.
-  showResponses: Joi.boolean().default(true),
+  // Show "Also on Mastodon, Bluesky" links under each cross-posted post.
+  // When off, the links stay in the page, hidden, because Bridgy reads them
+  // to match replies back to the post.
+  showSyndicationLinks: Joi.boolean().default(true),
+
+  // The responses section under each post: likes, reposts and replies from
+  // Mastodon and Bluesky (theme/CrosspostResponses). A post can hide it with
+  // "crosspost_responses: false" in its front matter.
+  responses: Joi.object({
+    // Show the section at all (it also needs webmentionUsername).
+    enabled: Joi.boolean().default(true),
+    // Show the likes row, the reposts row, and the replies.
+    showLikes: Joi.boolean().default(true),
+    showReposts: Joi.boolean().default(true),
+    showReplies: Joi.boolean().default(true),
+    // Avatars shown per likes or reposts row; the rest are behind a
+    // "+N more" button that lists everyone. 0 shows only the counts.
+    maxAvatarsShown: Joi.number().integer().min(0).default(DEFAULT_MAX_AVATARS_SHOWN),
+    // Order of the replies: "oldest" first (reads like a conversation) or
+    // "newest" first. With maxRepliesShown, the first ones in this order show.
+    replyOrder: Joi.string().valid("oldest", "newest").default("oldest"),
+    // Replies shown before a "Show N more replies" button; null shows all.
+    maxRepliesShown: Joi.number().integer().min(1).allow(null).default(null),
+    // The "Reply on Mastodon" and "Reply on Bluesky" buttons at the top.
+    showReplyButtons: Joi.boolean().default(true),
+    // Level of the "Responses" heading, so it fits the page's outline; the
+    // likes, reposts and replies headings are one level lower.
+    headingLevel: Joi.number().integer().min(2).max(6).default(2),
+  }).default(),
+
+  // Renamed: refused with a message pointing to the new name.
+  showResponses: Joi.any()
+    .forbidden()
+    .messages({ "any.unknown": '"showResponses" was renamed: use responses.enabled (true or false)' }),
 
   // A post's TAGS -> HASHTAGS in its Mastodon and Bluesky copies.
   tagsToHashtags: Joi.object({

@@ -135,6 +135,32 @@ export function authorOf(author) {
 }
 
 /**
+ * Works out a person's handle from their profile address, to show under
+ * their name. webmention.io doesn't send handles, but the profile address
+ * holds one on both networks.
+ *
+ * Args:
+ *     profileUrl: A profile address, e.g. "https://mastodon.social/@quinn"
+ *         or "https://bsky.app/profile/quinn.bsky.social"; may be null.
+ *
+ * Returns:
+ *     "@quinn@mastodon.social" or "@quinn.bsky.social"; for other
+ *     addresses, the host and path (e.g. "example.com/me"); "" if none.
+ */
+export function handleOf(profileUrl) {
+  const safe = safeUrl(profileUrl);
+  if (!safe) return "";
+  const url = new URL(safe);
+  const parts = url.pathname.split("/").filter(Boolean).map((part) => decodeURIComponent(part));
+  if ((url.hostname === "bsky.app" || url.hostname.endsWith(".bsky.app")) && parts[0] === "profile" && parts[1]) {
+    return `@${parts[1]}`;
+  }
+  // Mastodon and most other fediverse servers: https://server/@user
+  if (parts.length === 1 && /^@[^@]+$/.test(parts[0])) return `${parts[0]}@${url.hostname}`;
+  return `${url.hostname}${url.pathname.replace(/\/$/, "")}`;
+}
+
+/**
  * Gets the value that identifies a response, for spotting repeats.
  *
  * Args:
@@ -236,16 +262,23 @@ export function initialOf(name) {
 }
 
 /**
- * Formats a response date for display.
+ * Formats a response date for display, in the site's language.
  *
  * Args:
  *     iso: An ISO 8601 date string, possibly empty.
+ *     locale: A BCP 47 language tag, e.g. the site's current locale
+ *         ("en" by default).
  *
  * Returns:
- *     A date like "Nov 24, 2026", or "" if the value isn't a valid date.
+ *     The date, e.g. "Nov 24, 2026" in English; "" if missing or invalid.
  */
-export function formatDate(iso) {
+export function formatDate(iso, locale = "en") {
   const date = new Date(iso);
   if (!iso || Number.isNaN(date.getTime())) return "";
-  return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+  try {
+    return date.toLocaleDateString(locale, { year: "numeric", month: "short", day: "numeric" });
+  } catch {
+    // An unknown language tag: fall back to English.
+    return date.toLocaleDateString("en", { year: "numeric", month: "short", day: "numeric" });
+  }
 }

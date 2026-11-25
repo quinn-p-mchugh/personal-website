@@ -41,7 +41,18 @@ const crosspost = {
   // Profiles that link back here, for signing in to webmention.io.
   relMe: ["https://github.com/quinn-p-mchugh"],
   // Likes, reposts and replies under each post.
-  showResponses: true,
+  showSyndicationLinks: true,
+  responses: {
+    enabled: true,
+    showLikes: true,
+    showReposts: true,
+    showReplies: true,
+    maxAvatarsShown: 20,
+    maxRepliesShown: null, // null: show every reply
+    replyOrder: "oldest", // or "newest"
+    showReplyButtons: true,
+    headingLevel: 2,
+  },
 
   // A post's TAGS -> HASHTAGS in its Mastodon and Bluesky copies.
   // excludedTags: tags that never become hashtags, e.g. ["Meta"].

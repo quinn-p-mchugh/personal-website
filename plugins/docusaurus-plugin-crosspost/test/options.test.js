@@ -21,7 +21,17 @@ test("every setting has a default", () => {
   });
   assert.deepEqual(options.socialPostTemplates, []);
   assert.equal(options.templatesPath, "crosspost-templates");
-  assert.equal(options.showResponses, true);
+  assert.deepEqual(options.responses, {
+    enabled: true,
+    showLikes: true,
+    showReposts: true,
+    showReplies: true,
+    maxAvatarsShown: 20,
+    maxRepliesShown: null,
+    replyOrder: "oldest",
+    showReplyButtons: true,
+    headingLevel: 2,
+  });
 });
 
 test("partial settings keep the other defaults", () => {
@@ -66,5 +76,16 @@ test("headTags adds the webmention link only when a username is set", () => {
 });
 
 test("browserSettings shares only what the theme components need", () => {
-  assert.deepEqual(Object.keys(browserSettings(normalizeOptions({}))).sort(), ["networks", "showResponses", "webmentionUsername"]);
+  assert.deepEqual(Object.keys(browserSettings(normalizeOptions({}))).sort(), ["networks", "responses", "showSyndicationLinks", "webmentionUsername"]);
+});
+
+test("responses settings: limits are checked, and the old name is explained", () => {
+  assert.equal(normalizeOptions({ responses: { maxAvatarsShown: 0 } }).responses.maxAvatarsShown, 0, "0 = counts only");
+  assert.equal(normalizeOptions({ responses: { maxRepliesShown: 5 } }).responses.maxRepliesShown, 5);
+  assert.throws(() => normalizeOptions({ responses: { maxRepliesShown: 0 } }), /maxRepliesShown/);
+  assert.throws(() => normalizeOptions({ responses: { maxAvatarsShown: -1 } }), /maxAvatarsShown/);
+  assert.equal(normalizeOptions({ responses: { replyOrder: "newest" } }).responses.replyOrder, "newest");
+  assert.throws(() => normalizeOptions({ responses: { replyOrder: "random" } }), /replyOrder/);
+  assert.throws(() => normalizeOptions({ responses: { headingLevel: 1 } }), /headingLevel/, "h1 is the page title");
+  assert.throws(() => normalizeOptions({ showResponses: false }), /showResponses" was renamed: use responses\.enabled/);
 });
