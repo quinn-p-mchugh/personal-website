@@ -1,0 +1,138 @@
+# Cross-posts new blog posts to Mastodon and Bluesky through Bridgy, using
+# docusaurus-plugin-crosspost's "send" command.
+#
+# To use: copy this file into your site's .github/workflows/ folder, change
+# SITE_URL below, and commit. Nothing else is needed: Bridgy holds the
+# Mastodon and Bluesky logins, so there are no secrets to add.
+#
+# What happens:
+#   1. You commit a new post to main.
+#   2. This workflow waits until your host (Vercel, Netlify, Cloudflare,
+#      GitHub Pages...) has put it on the live site.
+#   3. It tells Bridgy about it. Bridgy formats and publishes it.
+#   4. It saves the new Mastodon and Bluesky addresses in the post's front
+#      matter ("syndication") and commits that, so the post shows "Also on"
+#      links and Bridgy can send replies back.
+#
+# GitHub Actions docs: https://docs.github.com/actions
+# Bridgy docs: https://brid.gy/about
+
+name: Cross-post to Mastodon and Bluesky
+
+on:
+  # A push to main that adds or changes Markdown files.
+  # Docs: https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#onpushpull_requestpull_request_targetpathspaths-ignore
+  push:
+    branches: [main]
+    paths: ["**/*.md", "**/*.mdx"]
+
+  # Daily safety net, in case a push run failed (for example, a slow
+  # deploy). Re-sends posts added in the last 3 days; Bridgy skips any it
+  # already published. Time is UTC. GitHub pauses scheduled runs in a
+  # repository with no activity for 60 days.
+  # Docs: https://docs.github.com/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule
+  schedule:
+    - cron: "17 13 * * *"
+
+  # "Run workflow" button on the Actions tab.
+  workflow_dispatch:
+    inputs:
+      post_url:
+        description: "One post's live address. Leave blank to send posts added in the last 3 days."
+        required: false
+        default: ""
+      dry_run:
+        description: "Dry run: only show what would be sent"
+        type: boolean
+        default: true
+
+env:
+  # Your live site's address, with any base path. CHANGE THIS.
+  SITE_URL: https://example.com
+
+# Runs may overlap on purpose: a concurrency group could cancel a queued run
+# and lose its posts, and overlap is harmless because Bridgy never
+# publishes the same page twice.
+
+# "write" lets the last step commit the saved addresses. Pushes made with
+# this token don't start new workflow runs.
+# Docs: https://docs.github.com/actions/security-for-github-actions/security-guides/automatic-token-authentication
+permissions:
+  contents: write
+
+jobs:
+  cross-post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # The folder holding your site's package.json. Change "." if your site
+    # is in a subfolder of the repository, e.g. "website", and add
+    # "cache-dependency-path: website/package-lock.json" under setup-node.
+    # Docs: https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#defaultsrun
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      # Full history (fetch-depth: 0) so the command can see which files a
+      # push added; "blob:none" skips old file contents to keep it quick.
+      # Pinned to an exact commit; the comment says which release.
+      # Docs: https://github.com/actions/checkout#usage
+      - name: Get the repository's files
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          fetch-depth: 0
+          filter: blob:none
+
+      - name: Set up Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install the site's packages
+        run: npm ci --no-audit --no-fund
+
+      - name: Send new posts to Bridgy
+        env:
+          EVENT: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+          POST_URL: ${{ inputs.post_url }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          args=(send --site-url "$SITE_URL")
+          if [ -n "$POST_URL" ]; then
+            args+=(--url "$POST_URL")
+          elif [ "$EVENT" = "push" ]; then
+            args+=(--added-since "$BEFORE")
+          else
+            args+=(--added-in-last-days 3)
+          fi
+          if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); else args+=(--save-syndication); fi
+          npx --no docusaurus-plugin-crosspost "${args[@]}"
+
+      - name: Commit the saved Mastodon and Bluesky addresses
+        # Runs even if some posts failed, so saved addresses aren't lost; only
+        # on main, so a manual run from another branch can't push to main.
+        if: always() && github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain -- '*.md' '*.mdx')" ]; then
+            echo "No addresses to save."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- '*.md' '*.mdx'
+          git commit -m "Save where new posts were cross-posted"
+          # Someone may have pushed meanwhile: replay on top and try again.
+          for attempt in 1 2 3; do
+            if git pull --rebase --quiet origin main && git push --quiet origin HEAD:main; then
+              echo "Saved and pushed."
+              exit 0
+            fi
+            # A failed rebase leaves git mid-rebase; undo it before retrying.
+            git rebase --abort 2>/dev/null || true
+            echo "Push attempt $attempt failed; retrying in 10s."
+            sleep 10
+          done
+          echo "::error::Couldn't push the saved addresses. They'll be missing from the posts' front matter."
+          exit 1

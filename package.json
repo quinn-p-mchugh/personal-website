@@ -2,6 +2,9 @@
   "name": "personal-website",
   "version": "0.0.0",
   "private": true,
+  "workspaces": [
+    "plugins/docusaurus-plugin-crosspost"
+  ],
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
@@ -9,12 +12,13 @@
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
-    "test": "node --test \"tests/**/*.test.mjs\" && python3 -m unittest discover -s .github/scripts -p \"test_*.py\"",
+    "test": "npm test --workspace docusaurus-plugin-crosspost",
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids"
   },
   "dependencies": {
+    "docusaurus-plugin-crosspost": "*",
     "@calcom/embed-react": "^1.0.12",
     "@docusaurus/core": "^3.10.2",
     "@docusaurus/faster": "^3.10.2",
