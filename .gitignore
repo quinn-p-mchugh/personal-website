@@ -1,6 +1,8 @@
 .*
 # dependencies
 /node_modules
+# Packages installed for the local plugin (npm workspace)
+plugins/*/node_modules
 
 # production
 /build

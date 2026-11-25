@@ -10,13 +10,13 @@
  * left out entirely, Docusaurus uses the file name as the title, and the post
  * would be treated as an article.
  *
- * Swizzled in "wrap" mode: https://docusaurus.io/docs/swizzling#wrapping
+ * Wraps the original component: https://docusaurus.io/docs/swizzling#wrapping
  */
 import React from "react";
 import clsx from "clsx";
-import Title from "@theme-original/BlogPostItem/Header/Title";
+import Title from "@theme-init/BlogPostItem/Header/Title";
 import { useBlogPost } from "@docusaurus/plugin-content-blog/client";
-import { hasTitle } from "@site/src/utils/socialPosts.mjs";
+import { hasTitle } from "../../../../shared/posts.js";
 
 /**
  * The post title, marked as p-name on a titled post's own page.

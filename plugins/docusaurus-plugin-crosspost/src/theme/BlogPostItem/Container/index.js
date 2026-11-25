@@ -12,32 +12,27 @@
  * - Titled posts with tags get their own social text, "Title: link", the
  *   front matter description if any, and a line of hashtags. Without it,
  *   Bridgy would post only "Title: link" and the tags would be lost.
- *   Untitled posts get their hashtags from plugins/remark-social-hashtags.mjs.
+ *   Untitled posts get their hashtags from src/remarkHashtags.js.
+ * - Images for the social posts are added after the build, by
+ *   src/images.js, inside this same element.
  *
  * Applies to every blog on the site, including any added later, because all
- * Docusaurus blogs share this theme component. Adds
- * markup only on a post's own page, never on list pages, so each page Bridgy
- * reads contains exactly one post.
+ * Docusaurus blogs share this theme component. Adds markup only on a post's
+ * own page, never on list pages, so each page Bridgy reads contains exactly
+ * one post.
  *
- * Swizzled in "wrap" mode, so Docusaurus upgrades keep working:
- * https://docusaurus.io/docs/swizzling#wrapping
+ * Wraps the original component rather than replacing it, so Docusaurus
+ * upgrades keep working: https://docusaurus.io/docs/swizzling#wrapping
  */
 import React from "react";
 import clsx from "clsx";
-import Container from "@theme-original/BlogPostItem/Container";
+import Container from "@theme-init/BlogPostItem/Container";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { useBlogPost } from "@docusaurus/plugin-content-blog/client";
-import { hashtagNamesFromTags } from "@site/src/utils/hashtags.mjs";
-import { hasTitle, socialPostSettings } from "@site/src/utils/socialPosts.mjs";
-
-/**
- * Networks Bridgy may publish this site's posts to. Delete a line to stop
- * cross-posting there. Docs: https://brid.gy/about
- */
-const BRIDGY_PUBLISH_TARGETS = [
-  "https://brid.gy/publish/mastodon",
-  "https://brid.gy/publish/bluesky",
-];
+import useCrosspostSettings from "../../../client/useCrosspostSettings.js";
+import { hashtagNamesFromTags } from "../../../shared/hashtags.js";
+import { BRIDGY_PUBLISH_TARGETS } from "../../../shared/names.js";
+import { hasTitle } from "../../../shared/posts.js";
 
 /**
  * Bridgy's per-network text overrides. Content in elements with these classes
@@ -51,7 +46,8 @@ const BRIDGY_CONTENT_CLASSES = ["e-bridgy-mastodon-content", "e-bridgy-bluesky-c
  *
  * Docusaurus builds metadata.tags from front matter tags one for one, in the
  * same order (normalizeTags in @docusaurus/utils), so the same position
- * gives the same tag. The key is what lets excludedTags match a tags file key.
+ * gives the same tag. The key is what lets tagsToHashtags.except match a tags
+ * file key.
  *
  * Args:
  *     metadata: The post's Docusaurus metadata.
@@ -75,16 +71,16 @@ function postTags(metadata, frontMatter) {
  * Args:
  *     metadata: The post's Docusaurus metadata.
  *     frontMatter: The post's front matter.
- *     socialPosts: The socialPosts settings from docusaurus.config.js.
+ *     tagsToHashtags: The plugin's tagsToHashtags setting.
  *
  * Returns:
  *     Hashtag names without "#", e.g. ["Climate", "AIEthics"]. Empty for
- *     untitled posts, posts without tags (after excludedTags), or when
- *     includeFrontMatterTags is off.
+ *     untitled posts, posts without tags (after "except"), or when
+ *     tagsToHashtags is turned off.
  */
-function titledPostHashtags(metadata, frontMatter, socialPosts) {
-  if (socialPosts.includeFrontMatterTags === false || !hasTitle(metadata.title)) return [];
-  return hashtagNamesFromTags(postTags(metadata, frontMatter), socialPosts.excludedTags);
+function titledPostHashtags(metadata, frontMatter, tagsToHashtags) {
+  if (!tagsToHashtags.enabled || !hasTitle(metadata.title)) return [];
+  return hashtagNamesFromTags(postTags(metadata, frontMatter), tagsToHashtags.except);
 }
 
 /**
@@ -120,23 +116,24 @@ function TitledPostSocialText({ title, url, description, hashtags }) {
  *     props.metadata: The post's Docusaurus metadata.
  *     props.frontMatter: The post's front matter.
  *     props.siteUrl: The site's address, e.g. "https://quinnmchugh.net".
- *     props.socialPosts: The socialPosts settings.
+ *     props.settings: The plugin's settings, from useCrosspostSettings.
  *
  * Returns:
  *     A hidden <div> holding the post's address and date, the link-back rule,
- *     one link per Bridgy publish target, and, for a titled post with tags,
- *     its social text.
+ *     one link per network Bridgy may publish to, and, for a titled post with
+ *     tags, its social text. Marked "data-crosspost-details" so the image
+ *     step after the build can find it.
  */
-function BridgyPostDetails({ metadata, frontMatter, siteUrl, socialPosts }) {
-  const hashtags = titledPostHashtags(metadata, frontMatter, socialPosts);
+function BridgyPostDetails({ metadata, frontMatter, siteUrl, settings }) {
+  const hashtags = titledPostHashtags(metadata, frontMatter, settings.tagsToHashtags);
   const url = new URL(metadata.permalink, siteUrl).href;
   return (
-    <div hidden aria-hidden="true">
+    <div hidden aria-hidden="true" data-crosspost-details="">
       <a className="u-url" href={metadata.permalink} />
       <time className="dt-published" dateTime={metadata.date} />
       <data className="p-bridgy-omit-link" value="maybe" />
-      {BRIDGY_PUBLISH_TARGETS.map((target) => (
-        <a key={target} href={target} />
+      {settings.networks.map((network) => (
+        <a key={network} href={BRIDGY_PUBLISH_TARGETS[network]} />
       ))}
       {hashtags.length > 0 && (
         <TitledPostSocialText
@@ -165,6 +162,7 @@ function BridgyPostDetails({ metadata, frontMatter, siteUrl, socialPosts }) {
 export default function ContainerWrapper({ className, children, ...props }) {
   const { metadata, frontMatter, isBlogPostPage } = useBlogPost();
   const { siteConfig } = useDocusaurusContext();
+  const settings = useCrosspostSettings();
 
   if (!isBlogPostPage) {
     return (
@@ -181,7 +179,7 @@ export default function ContainerWrapper({ className, children, ...props }) {
         metadata={metadata}
         frontMatter={frontMatter}
         siteUrl={siteConfig.url}
-        socialPosts={socialPostSettings(siteConfig)}
+        settings={settings}
       />
     </Container>
   );

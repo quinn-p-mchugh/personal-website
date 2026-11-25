@@ -20,7 +20,7 @@
  */
 import React, { useEffect, useState } from "react";
 import styles from "./styles.module.css";
-import { formatDate, groupMentions, initialOf, mentionsApiUrl, networkName } from "./mentions.mjs";
+import { formatDate, groupMentions, initialOf, mentionsApiUrl, networkName } from "./mentions.js";
 
 /** Link attributes for addresses written by other people. */
 const EXTERNAL_LINK = { target: "_blank", rel: "nofollow ugc noopener noreferrer" };

@@ -19,7 +19,7 @@ import remarkWikiLinkPlus from "remark-wiki-link-plus";
 //import remarkPresetLintRetextEnglish from 'remark-preset-lint-retext-english';
 import remarkValidateLinks from "remark-validate-links";
 import remarkPrism from "remark-prism";
-import remarkSocialHashtags from "./plugins/remark-social-hashtags.mjs";
+import { withCrosspost } from "docusaurus-plugin-crosspost";
 import tailwindPlugin from "./plugins/tailwind.config.cjs";
 
 //import rehypeRemark from 'rehype-remark'
@@ -30,40 +30,33 @@ const lightCodeTheme = themes.github;
 const darkCodeTheme = themes.dracula;
 
 /**
- * Settings for posts cross-posted to Mastodon and Bluesky through Bridgy.
- * - includeFrontMatterTags: true adds each blog post's front matter tags as
- *   hashtags on the last line of its social posts, merged with any hashtags
- *   already in the post; false leaves tags out. Used by the remark plugin
- *   below and by src/theme/BlogPostItem/Container.
- *   Docs: see the comments at the top of plugins/remark-social-hashtags.mjs
- * - excludedTags: tags never turned into hashtags, e.g. ["Meta", "pkm"].
- *   Each entry matches a tag's key or its label, ignoring case, spaces and
- *   punctuation ("site updates" matches "Site Updates" and "SiteUpdates").
- *   The tags still show on the website. Hashtags typed in a post's body
- *   are always kept. [] excludes nothing.
- * - showResponses: true shows likes, reposts and replies from Mastodon and
- *   Bluesky under each post (src/components/SocialResponses); false hides
- *   them. "Also on" links show either way.
- * - webmentionUsername: your webmention.io username, usually the domain.
- *   Bridgy delivers responses there. Docs: https://webmention.io/
- * - relMe: profile links that prove you own this site, for signing in to
- *   webmention.io. The profile must link back to the site.
- *   Docs: https://indielogin.com/setup
+ * Cross-posting blog posts to Mastodon and Bluesky, through Bridgy, and
+ * showing the responses under each post. Every setting is optional; the
+ * values below that match the defaults are written out so they're easy to
+ * change. Full explanations: plugins/docusaurus-plugin-crosspost/README.md
  */
-const socialPosts = {
-  includeFrontMatterTags: true,
-  excludedTags: [],
-  showResponses: true,
+const crosspost = {
+  // Where Bridgy sends likes, reposts and replies. Docs: https://webmention.io/
   webmentionUsername: "quinnmchugh.net",
+  // Profiles that link back here, for signing in to webmention.io.
   relMe: ["https://github.com/quinn-p-mchugh"],
-};
+  // Likes, reposts and replies under each post.
+  showResponses: true,
 
-/**
- * Options for the hashtag remark plugin. "blogs" is filled in at the bottom
- * of this file from the blog plugins' own options, so each blog's "path"
- * and "tags" settings stay the only source of truth.
- */
-const socialHashtagOptions = { ...socialPosts, blogs: [] };
+  // A post's TAGS -> HASHTAGS in its Mastodon and Bluesky copies.
+  // "except": tags that never become hashtags there, e.g. ["Meta"].
+  tagsToHashtags: { enabled: true, except: [] },
+
+  // HASHTAGS written in a post -> TAGS on this website (tag pages).
+  // "except": hashtags that never become tags here, e.g. ["TIL"].
+  // Your files aren't changed; tags are added while the site builds.
+  hashtagsToTags: { enabled: false, except: [] },
+
+  // A post's IMAGES -> pictures in its Mastodon and Bluesky copies (up to 4,
+  // with alt text). "resize" shrinks images too big for Bluesky; "remote"
+  // includes images hosted on other websites.
+  images: { enabled: true, resize: true, remote: true },
+};
 
 const plugins = {
   remarkPlugins: [
@@ -89,8 +82,6 @@ const plugins = {
       { repository: "https://github.com/quinn-p-mchugh/personal-website" },
     ], // https://github.com/remarkjs/remark-validate-links?tab=readme-ov-file#options
     [remarkPrism, {}], // https://github.com/sergioramos/remark-prism?tab=readme-ov-file
-    // Prepares blog posts' hashtags for cross-posting. Settings: socialPosts above.
-    [remarkSocialHashtags, socialHashtagOptions],
   ],
   rehypePlugins: [],
 };
@@ -144,30 +135,10 @@ const config = {
   tagline: "Engineer. Designer. Developer.",
   customFields: {
     // Giscus comments show on docs pages only; blog posts show Mastodon and
-    // Bluesky responses instead (see socialPosts above).
+    // Bluesky responses instead (see crosspost above).
     forbiddenGiscusPaths: [], // See GiscusComponent.js - Example: "/docs/tutorials/intro"
-    socialPosts, // See socialPosts above
   },
   url: "https://quinnmchugh.net",
-  /**
-   * Extra <head> tags on every page. "webmention" tells Bridgy where to send
-   * Mastodon and Bluesky responses; "me" links prove site ownership for
-   * signing in to webmention.io. Settings: socialPosts above.
-   * Docs: https://docusaurus.io/docs/api/docusaurus-config#headTags
-   */
-  headTags: [
-    {
-      tagName: "link",
-      attributes: {
-        rel: "webmention",
-        href: `https://webmention.io/${socialPosts.webmentionUsername}/webmention`,
-      },
-    },
-    ...socialPosts.relMe.map((href) => ({
-      tagName: "link",
-      attributes: { rel: "me", href },
-    })),
-  ],
   baseUrl: "/",
   onBrokenLinks: "throw",
   favicon: "img/favicon.ico",
@@ -707,40 +678,5 @@ const config = {
     }),
 };
 
-/**
- * Reads the "path" and "tags" options of every blog plugin in the config:
- * the classic preset's blog and each "@docusaurus/plugin-content-blog" entry.
- * Only these two are copied, because the full options contain remarkPlugins,
- * which contain this list, and Docusaurus can't save a config that loops.
- *
- * Args:
- *     siteConfig: The Docusaurus config object above.
- *
- * Returns:
- *     An array of { path, tags } objects, one per blog. A setting that isn't
- *     written in the config is left out, so the plugin uses Docusaurus's
- *     default for it.
- */
-function blogPluginOptions(siteConfig) {
-  const blogs = [];
-  const add = (options = {}) => {
-    const blog = {};
-    if ("path" in options) blog.path = options.path;
-    if ("tags" in options) blog.tags = options.tags;
-    blogs.push(blog);
-  };
-  for (const entry of siteConfig.presets || []) {
-    const [name, presetOptions] = Array.isArray(entry) ? entry : [entry, {}];
-    const isClassic = name === "classic" || name === "@docusaurus/preset-classic";
-    if (isClassic && presetOptions && presetOptions.blog) add(presetOptions.blog);
-  }
-  for (const entry of siteConfig.plugins || []) {
-    const [name, pluginOptions] = Array.isArray(entry) ? entry : [entry, {}];
-    if (name === "@docusaurus/plugin-content-blog") add(pluginOptions || {});
-  }
-  return blogs;
-}
-
-socialHashtagOptions.blogs = blogPluginOptions(config);
-
-module.exports = config;
+// Adds cross-posting to every blog above. Settings: crosspost, near the top.
+module.exports = withCrosspost(config, crosspost);

@@ -8,7 +8,7 @@
  * comes back. They have no React or browser code, so they can be tested with
  * plain Node.
  * Docs: https://brid.gy/about and https://github.com/aaronpk/webmention.io
- * Tests: tests/social-posts/mentions.test.mjs (run with npm test).
+ * Tests: test/mentions.test.js
  */
 
 /** webmention.io's public API for one page's responses. Docs: README above. */

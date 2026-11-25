@@ -1,7 +1,7 @@
 /**
- * Tests for plugins/remark-social-hashtags.mjs.
- * Run with: npm test   (Node 22 or newer; built-in test runner. The tags file
- * tests need the site's npm packages installed, as for a build).
+ * Tests for src/remarkHashtags.js.
+ * Run with: npm test   (Node 22 or newer; Node's built-in test runner. The
+ * tags file tests need the npm packages installed, as for a build).
  * Docs: https://nodejs.org/api/test.html
  */
 import { after, test } from "node:test";
@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import remarkSocialHashtags from "../../plugins/remark-social-hashtags.mjs";
+import remarkHashtags from "../src/remarkHashtags.js";
 
 /** A throwaway site folder with a shared tags file and one per-blog file. */
 const site = fs.mkdtempSync(path.join(os.tmpdir(), "social-hashtags-"));
@@ -37,7 +37,7 @@ async function run(options, filePath, frontMatter, body = "Some text") {
   const quiet = console.warn;
   console.warn = () => {};
   try {
-    await remarkSocialHashtags({ siteDir: site, ...options })(tree, {
+    await remarkHashtags({ siteDir: site, ...options })(tree, {
       path: path.join(site, filePath),
       data: { frontMatter },
     });
@@ -79,11 +79,12 @@ test("titled posts get categories but no added text", async () => {
   assert.deepEqual(result, { added: "", categories: "Climate" });
 });
 
-test("excludedTags and includeFrontMatterTags are honoured", async () => {
-  const excluded = await run({ blogs: shared, excludedTags: ["personal knowledge management"] }, "blog-a/p.md",
+test("tagsToHashtags.except and tagsToHashtags.enabled are honoured", async () => {
+  const except = { enabled: true, except: ["personal knowledge management"] };
+  const excluded = await run({ blogs: shared, tagsToHashtags: except }, "blog-a/p.md",
     untitled(["pkm", "Climate"]));
   assert.equal(excluded.added, "#Climate");
-  const off = await run({ blogs: shared, includeFrontMatterTags: false }, "blog-a/p.md", untitled(["Climate"]), "#Own");
+  const off = await run({ blogs: shared, tagsToHashtags: { enabled: false, except: [] } }, "blog-a/p.md", untitled(["Climate"]), "#Own");
   assert.deepEqual(off, { added: "", categories: "Own" });
 });
 

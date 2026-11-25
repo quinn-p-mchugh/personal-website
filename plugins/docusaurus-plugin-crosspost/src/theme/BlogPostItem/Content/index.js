@@ -4,11 +4,11 @@
  * Microformats docs: https://microformats.org/wiki/h-entry
  * Bridgy docs: https://brid.gy/about
  *
- * Swizzled in "wrap" mode: https://docusaurus.io/docs/swizzling#wrapping
+ * Wraps the original component: https://docusaurus.io/docs/swizzling#wrapping
  */
 import React from "react";
 import clsx from "clsx";
-import Content from "@theme-original/BlogPostItem/Content";
+import Content from "@theme-init/BlogPostItem/Content";
 import { useBlogPost } from "@docusaurus/plugin-content-blog/client";
 
 /**

@@ -1,6 +1,6 @@
 /**
- * Tests for src/components/SocialResponses/mentions.mjs.
- * Run with: npm test   (Node 22 or newer; built-in test runner, no packages)
+ * Tests for src/components/SocialResponses/mentions.js.
+ * Run with: npm test   (Node 22 or newer; Node's built-in test runner)
  * Docs: https://nodejs.org/api/test.html
  */
 import { test } from "node:test";
@@ -14,7 +14,7 @@ import {
   networkName,
   safeUrl,
   syndicationUrls,
-} from "../../src/components/SocialResponses/mentions.mjs";
+} from "../src/components/SocialResponses/mentions.js";
 
 test("safeUrl allows only http and https addresses", () => {
   assert.equal(safeUrl("https://a.social/@me"), "https://a.social/@me");

@@ -5,9 +5,8 @@
 # What's tested (all with built-in test runners, no extra packages):
 #   - .github/scripts/send_new_posts_to_bridgy.py
 #       Python's unittest: .github/scripts/test_send_new_posts_to_bridgy.py
-#   - plugins/remark-social-hashtags.mjs, src/utils/*.mjs and
-#     src/components/SocialResponses/mentions.mjs
-#       Node's test runner: tests/social-posts/*.test.mjs
+#   - plugins/docusaurus-plugin-crosspost (the cross-posting plugin)
+#       Node's test runner: plugins/docusaurus-plugin-crosspost/test/*.test.js
 # Run the same tests locally with: npm test
 #
 # GitHub Actions docs: https://docs.github.com/actions
@@ -20,10 +19,7 @@ on:
     paths:
       - ".github/scripts/**"
       - ".github/workflows/test-social-posts.yml"
-      - "plugins/**"
-      - "src/utils/**"
-      - "src/components/SocialResponses/**"
-      - "tests/**"
+      - "plugins/docusaurus-plugin-crosspost/**"
       - "package.json"
       - "package-lock.json"
   push:
@@ -31,10 +27,7 @@ on:
     paths:
       - ".github/scripts/**"
       - ".github/workflows/test-social-posts.yml"
-      - "plugins/**"
-      - "src/utils/**"
-      - "src/components/SocialResponses/**"
-      - "tests/**"
+      - "plugins/docusaurus-plugin-crosspost/**"
       - "package.json"
       - "package-lock.json"
   # "Run workflow" button on the Actions tab.
