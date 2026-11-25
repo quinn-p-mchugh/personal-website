@@ -128,10 +128,16 @@ export const OPTIONS_SCHEMA = Joi.object({
     // Avatars shown per likes or reposts row; the rest are behind a
     // "+N more" button that lists everyone. 0 shows only the counts.
     maxAvatarsShown: Joi.number().integer().min(0).default(DEFAULT_MAX_AVATARS_SHOWN),
+    // Order of the replies: "oldest" first (reads like a conversation) or
+    // "newest" first. With maxRepliesShown, the first ones in this order show.
+    replyOrder: Joi.string().valid("oldest", "newest").default("oldest"),
     // Replies shown before a "Show N more replies" button; null shows all.
     maxRepliesShown: Joi.number().integer().min(1).allow(null).default(null),
     // The "Reply on Mastodon" and "Reply on Bluesky" buttons at the top.
     showReplyButtons: Joi.boolean().default(true),
+    // Level of the "Responses" heading, so it fits the page's outline; the
+    // likes, reposts and replies headings are one level lower.
+    headingLevel: Joi.number().integer().min(2).max(6).default(2),
   }).default(),
 
   // Renamed: refused with a message pointing to the new name.

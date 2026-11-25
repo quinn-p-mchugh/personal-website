@@ -18,7 +18,8 @@
  * - A labelled <section> with its own heading, and a heading for each kind
  *   of response, so screen reader users can jump between them.
  * - Lists for avatars and replies; replies are an ordered list, oldest
- *   first. Each reply's date is a <time> element.
+ *   first unless replyOrder is "newest". Each reply's date is a <time>
+ *   element.
  * - Avatars in the likes and reposts rows are links named by the person's
  *   name (their alt text). A reply's avatar links to the same profile as
  *   the name next to it, so it is hidden from screen readers and skipped
@@ -64,8 +65,25 @@ const DEFAULT_SETTINGS = {
   showReplies: true,
   maxAvatarsShown: 20,
   maxRepliesShown: null,
+  replyOrder: "oldest",
   showReplyButtons: true,
+  headingLevel: 2,
 };
+
+/**
+ * Picks the heading elements for the section, so it fits the page's outline.
+ *
+ * Args:
+ *     level: The section heading's level, 2 to 6 (the headingLevel setting).
+ *
+ * Returns:
+ *     { Heading, Subheading }: e.g. "h2" and "h3"; the subheading is one
+ *     level lower, at most h6.
+ */
+export function headingTags(level) {
+  const safe = Math.min(Math.max(Number.parseInt(level, 10) || 2, 2), 6);
+  return { Heading: `h${safe}`, Subheading: `h${Math.min(safe + 1, 6)}` };
+}
 
 /** The responses state before webmention.io has answered. */
 const LOADING = { status: "loading", groups: null };
@@ -269,11 +287,12 @@ function ShowAllButton({ visible, title, onClick, countsOnly = false }) {
  *     props.entries: Responses of that kind.
  *     props.maxAvatars: Most avatars to show (the maxAvatarsShown setting);
  *         with 0, only the count and a "Show all" button.
+ *     props.Subheading: The heading element for the count, e.g. "h3".
  *
  * Returns:
  *     The row, or nothing if there are no entries.
  */
-function Reactions({ kind, title, entries, maxAvatars }) {
+function Reactions({ kind, title, entries, maxAvatars, Subheading = "h3" }) {
   const headingId = useId();
   const [showingAll, setShowingAll] = useState(false);
   if (!entries.length) return null;
@@ -281,9 +300,9 @@ function Reactions({ kind, title, entries, maxAvatars }) {
   const hidden = entries.length - shown.length;
   return (
     <div className={`crosspost-reactions crosspost-reactions--${kind}`}>
-      <h3 className="crosspost-reactions__title" id={headingId}>
+      <Subheading className="crosspost-reactions__title" id={headingId}>
         {title}
-      </h3>
+      </Subheading>
       {shown.length > 0 ? (
         <ul className="crosspost-reactions__faces" aria-labelledby={headingId}>
           {shown.map((entry) => (
@@ -411,7 +430,7 @@ function Reply({ reply, locale, focusRef }) {
  *         copies; the reply buttons link to these.
  *     props.settings: The plugin's "responses" settings (showLikes,
  *         showReposts, showReplies, maxAvatarsShown, maxRepliesShown,
- *         showReplyButtons);
+ *         replyOrder, showReplyButtons, headingLevel);
  *         missing ones use DEFAULT_SETTINGS.
  *
  * Returns:
@@ -420,6 +439,7 @@ function Reply({ reply, locale, focusRef }) {
  */
 export default function CrosspostResponses({ pageUrl, syndication, settings: given }) {
   const settings = { ...DEFAULT_SETTINGS, ...given };
+  const { Heading, Subheading } = headingTags(settings.headingLevel);
   const { status, groups } = useResponses(pageUrl);
   const [showingAllReplies, setShowingAllReplies] = useState(false);
   const firstNewReplyRef = useRef(null);
@@ -437,8 +457,9 @@ export default function CrosspostResponses({ pageUrl, syndication, settings: giv
       }
     : null;
   const replyLimit = settings.maxRepliesShown;
-  const shownReplies =
-    groups && replyLimit != null && !showingAllReplies ? groups.replies.slice(0, replyLimit) : groups ? groups.replies : [];
+  // webmention.io returns them oldest first (mentionsApiUrl asks for that).
+  const orderedReplies = groups ? (settings.replyOrder === "newest" ? [...groups.replies].reverse() : groups.replies) : [];
+  const shownReplies = replyLimit != null && !showingAllReplies ? orderedReplies.slice(0, replyLimit) : orderedReplies;
   const hiddenReplies = counts && counts.replies ? counts.replies - shownReplies.length : 0;
 
   // After "Show N more replies", move focus to the first reply it revealed,
@@ -460,9 +481,9 @@ export default function CrosspostResponses({ pageUrl, syndication, settings: giv
 
   return (
     <section className="crosspost-responses" aria-labelledby={headingId}>
-      <h2 className="crosspost-responses__heading" id={headingId}>
+      <Heading className="crosspost-responses__heading" id={headingId}>
         {translate({ id: "crosspost.responses.heading", message: "Responses" })}
-      </h2>
+      </Heading>
 
       {settings.showReplyButtons && syndication.length > 0 && (
         <div className="crosspost-reply-buttons">
@@ -497,6 +518,7 @@ export default function CrosspostResponses({ pageUrl, syndication, settings: giv
                   title={plural("crosspost.responses.likes", "{count} like|{count} likes", counts.likes)}
                   entries={groups.likes}
                   maxAvatars={settings.maxAvatarsShown}
+                  Subheading={Subheading}
                 />
               )}
               {settings.showReposts && (
@@ -505,15 +527,16 @@ export default function CrosspostResponses({ pageUrl, syndication, settings: giv
                   title={plural("crosspost.responses.reposts", "{count} repost|{count} reposts", counts.reposts)}
                   entries={groups.reposts}
                   maxAvatars={settings.maxAvatarsShown}
+                  Subheading={Subheading}
                 />
               )}
             </div>
           )}
           {counts.replies > 0 && (
             <div className="crosspost-replies">
-              <h3 className="crosspost-replies__title" id={repliesHeadingId}>
+              <Subheading className="crosspost-replies__title" id={repliesHeadingId}>
                 {plural("crosspost.responses.replies", "{count} reply|{count} replies", counts.replies)}
-              </h3>
+              </Subheading>
               <ol className="crosspost-replies__list" aria-labelledby={repliesHeadingId}>
                 {shownReplies.map((reply, i) => (
                   <Reply

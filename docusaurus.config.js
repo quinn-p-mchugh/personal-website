@@ -48,7 +48,9 @@ const crosspost = {
     showReplies: true,
     maxAvatarsShown: 20,
     maxRepliesShown: null, // null: show every reply
+    replyOrder: "oldest", // or "newest"
     showReplyButtons: true,
+    headingLevel: 2,
   },
 
   // A post's TAGS -> HASHTAGS in its Mastodon and Bluesky copies.

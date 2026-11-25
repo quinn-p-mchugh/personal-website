@@ -28,7 +28,9 @@ test("every setting has a default", () => {
     showReplies: true,
     maxAvatarsShown: 20,
     maxRepliesShown: null,
+    replyOrder: "oldest",
     showReplyButtons: true,
+    headingLevel: 2,
   });
 });
 
@@ -82,5 +84,8 @@ test("responses settings: limits are checked, and the old name is explained", ()
   assert.equal(normalizeOptions({ responses: { maxRepliesShown: 5 } }).responses.maxRepliesShown, 5);
   assert.throws(() => normalizeOptions({ responses: { maxRepliesShown: 0 } }), /maxRepliesShown/);
   assert.throws(() => normalizeOptions({ responses: { maxAvatarsShown: -1 } }), /maxAvatarsShown/);
+  assert.equal(normalizeOptions({ responses: { replyOrder: "newest" } }).responses.replyOrder, "newest");
+  assert.throws(() => normalizeOptions({ responses: { replyOrder: "random" } }), /replyOrder/);
+  assert.throws(() => normalizeOptions({ responses: { headingLevel: 1 } }), /headingLevel/, "h1 is the page title");
   assert.throws(() => normalizeOptions({ showResponses: false }), /showResponses" was renamed: use responses\.enabled/);
 });

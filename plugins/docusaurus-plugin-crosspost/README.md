@@ -67,7 +67,9 @@ Every setting is optional. These are the defaults:
     showReplies: true,      // the replies
     maxAvatarsShown: 20,    // per likes or reposts row; the rest are behind "+N more". 0 shows counts only
     maxRepliesShown: null,  // null shows every reply; a number shows that many, then "Show N more replies"
+    replyOrder: "oldest",   // "oldest" first (reads like a conversation) or "newest" first
     showReplyButtons: true, // the "Reply on Mastodon" and "Reply on Bluesky" buttons
+    headingLevel: 2,        // "Responses" is an <h2>; its likes, reposts and replies headings one level lower
   },
 
   // A post's TAGS -> HASHTAGS in its Mastodon and Bluesky copies.
