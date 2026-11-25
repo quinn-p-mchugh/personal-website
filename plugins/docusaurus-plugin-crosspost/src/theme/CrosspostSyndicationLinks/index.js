@@ -23,12 +23,25 @@ export const NEW_TAB_NOTE = "(opens in a new tab)";
  *
  * Args:
  *     props.urls: Safe addresses of the copies; may be empty.
+ *     props.visible: False to keep the links only as hidden markup (the
+ *         showSyndicationLinks setting). Bridgy reads hidden markup too,
+ *         as it does the post's other hidden details.
  *
  * Returns:
- *     A paragraph of links, or nothing if there are none.
+ *     A paragraph of links, a hidden element with the links, or nothing if
+ *     there are none.
  */
-export default function CrosspostSyndicationLinks({ urls }) {
+export default function CrosspostSyndicationLinks({ urls, visible = true }) {
   if (!urls.length) return null;
+  if (!visible) {
+    return (
+      <div className="crosspost-syndication crosspost-syndication--hidden" hidden aria-hidden="true">
+        {urls.map((url) => (
+          <a key={url} className="u-syndication" href={url} rel="syndication" tabIndex={-1} />
+        ))}
+      </div>
+    );
+  }
   return (
     <p className="crosspost-syndication">
       <span className="crosspost-syndication__label">Also on </span>

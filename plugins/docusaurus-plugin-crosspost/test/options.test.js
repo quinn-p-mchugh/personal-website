@@ -76,7 +76,7 @@ test("headTags adds the webmention link only when a username is set", () => {
 });
 
 test("browserSettings shares only what the theme components need", () => {
-  assert.deepEqual(Object.keys(browserSettings(normalizeOptions({}))).sort(), ["networks", "responses", "webmentionUsername"]);
+  assert.deepEqual(Object.keys(browserSettings(normalizeOptions({}))).sort(), ["networks", "responses", "showSyndicationLinks", "webmentionUsername"]);
 });
 
 test("responses settings: limits are checked, and the old name is explained", () => {

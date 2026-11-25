@@ -41,6 +41,7 @@ const crosspost = {
   // Profiles that link back here, for signing in to webmention.io.
   relMe: ["https://github.com/quinn-p-mchugh"],
   // Likes, reposts and replies under each post.
+  showSyndicationLinks: true,
   responses: {
     enabled: true,
     showLikes: true,

@@ -115,6 +115,11 @@ export const OPTIONS_SCHEMA = Joi.object({
   // webmention.io; each profile must link back. Docs: https://indielogin.com/setup
   relMe: Joi.array().items(Joi.string().uri({ scheme: ["https", "http"] })).default([]),
 
+  // Show "Also on Mastodon, Bluesky" links under each cross-posted post.
+  // When off, the links stay in the page, hidden, because Bridgy reads them
+  // to match replies back to the post.
+  showSyndicationLinks: Joi.boolean().default(true),
+
   // The responses section under each post: likes, reposts and replies from
   // Mastodon and Bluesky (theme/CrosspostResponses). A post can hide it with
   // "crosspost_responses: false" in its front matter.

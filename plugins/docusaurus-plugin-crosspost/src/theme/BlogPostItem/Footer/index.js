@@ -1,7 +1,8 @@
 /**
  * Wraps Docusaurus's blog post footer to add, on a post's own page:
- * - "Also on Mastodon · Bluesky" links to the post's cross-posted copies
- *   (always, because Bridgy needs them to match replies back to the post);
+ * - "Also on Mastodon, Bluesky" links to the post's cross-posted copies:
+ *   always in the page, because Bridgy needs them to match replies back to
+ *   the post, and hidden when the showSyndicationLinks setting is off;
  * - the responses from those networks (likes, reposts, replies), when the
  *   plugin's responses.enabled setting is on, webmentionUsername is set,
  *   and the post's front matter doesn't say "crosspost_responses: false".
@@ -45,7 +46,7 @@ export default function FooterWrapper(props) {
   return (
     <>
       <Footer {...props} />
-      <CrosspostSyndicationLinks urls={syndication} />
+      <CrosspostSyndicationLinks urls={syndication} visible={settings.showSyndicationLinks !== false} />
       {showResponses && <CrosspostResponses pageUrl={pageUrl} syndication={syndication} settings={settings.responses} />}
     </>
   );

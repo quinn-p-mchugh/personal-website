@@ -58,6 +58,11 @@ Every setting is optional. These are the defaults:
   // Profile links that link back to your site, for signing in to webmention.io.
   relMe: [],
 
+  // "Also on Mastodon, Bluesky" links under each cross-posted post. Off hides
+  // them, but they stay in the page as hidden markup, which Bridgy needs to
+  // match replies back to the post.
+  showSyndicationLinks: true,
+
   // The responses section under each post: likes, reposts and replies.
   // A post can hide it with "crosspost_responses: false" in its front matter.
   responses: {
@@ -234,7 +239,7 @@ syndication:
   - https://bsky.app/profile/you.bsky.social/post/abc
 ```
 
-The post then shows "Also on Mastodon · Bluesky" links and "Reply on" buttons. These links are also how Bridgy matches replies back to untitled posts.
+The post then shows "Also on Mastodon, Bluesky" links (unless `showSyndicationLinks` is off) and "Reply on" buttons. These links are also how Bridgy matches replies back to untitled posts, so they stay in the page as hidden markup even when hidden.
 
 ## Writing untitled posts
 
@@ -280,7 +285,7 @@ The reply buttons use Mastodon's and Bluesky's colors. In light mode they're sli
 
 | Class | Part |
 |---|---|
-| `crosspost-syndication`, `__label`, `__link`, `__link--mastodon`, `__link--bluesky` | "Also on" links |
+| `crosspost-syndication`, `--hidden`, `__label`, `__link`, `__link--mastodon`, `__link--bluesky` | "Also on" links |
 | `crosspost-responses`, `__heading`, `__status`, `__reactions` | The section, its heading, and its loading / empty / error message |
 | `crosspost-reply-buttons`, `crosspost-reply-button`, `--mastodon`, `--bluesky` | Reply buttons |
 | `crosspost-reactions`, `--likes`, `--reposts`, `__title`, `__faces`, `__face`, `__link`, `__more` (the "+N more" button) | Likes and reposts rows |
