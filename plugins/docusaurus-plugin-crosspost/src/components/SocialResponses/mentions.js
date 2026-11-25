@@ -69,10 +69,38 @@ export function syndicationUrls(value) {
 }
 
 /**
+ * Lists the addresses a response to a page might name.
+ *
+ * Bridgy sends a response to the address a post's page ends up at, after
+ * following redirects, so a host that redirects "example.com" to
+ * "www.example.com" (or back) makes responses name the other host. A
+ * response may also name the address with or without a trailing slash.
+ *
+ * Args:
+ *     pageUrl: The post's full address.
+ *
+ * Returns:
+ *     The address with and without "www." and a trailing slash; the
+ *     address as given comes first.
+ */
+export function addressVariants(pageUrl) {
+  const url = new URL(pageUrl);
+  const otherHost = url.hostname.startsWith("www.") ? url.hostname.slice(4) : `www.${url.hostname}`;
+  const variants = [];
+  for (const hostname of [url.hostname, otherHost]) {
+    const copy = new URL(url.href);
+    copy.hostname = hostname;
+    const bare = copy.href.replace(/\/+$/, "");
+    variants.push(bare, `${bare}/`);
+  }
+  const given = url.href;
+  return [given, ...new Set(variants.filter((variant) => variant !== given))];
+}
+
+/**
  * Builds the webmention.io request for one page's responses.
  *
- * Asks for the address with and without a trailing slash, since a response
- * may name either form.
+ * Asks for every address a response might name (see addressVariants).
  *
  * Args:
  *     pageUrl: The post's full address.
@@ -81,10 +109,8 @@ export function syndicationUrls(value) {
  *     The API URL, oldest responses first.
  */
 export function mentionsApiUrl(pageUrl) {
-  const bare = pageUrl.replace(/\/+$/, "");
   const params = new URLSearchParams();
-  params.append("target[]", bare);
-  params.append("target[]", `${bare}/`);
+  for (const target of addressVariants(pageUrl)) params.append("target[]", target);
   params.set("per-page", String(MAX_RESPONSES));
   params.set("sort-by", "published");
   params.set("sort-dir", "up");

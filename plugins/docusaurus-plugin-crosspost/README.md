@@ -175,7 +175,7 @@ Copy [`workflows/crosspost.yml`](workflows/crosspost.yml) from this package into
 1. On each push to `main`, it finds the post files that push **added** (edits never re-post).
 2. It waits until your host has put them on the live site.
 3. It tells Bridgy about each one, retrying if Bridgy is briefly down.
-4. It saves the new Mastodon and Bluesky addresses into each post's `syndication` front matter, and commits that.
+4. It saves the new Mastodon and Bluesky addresses into each post's `syndication` front matter, and commits that. Each post is committed with the author and date of its previous commit, so Docusaurus's "Last updated on … by …" ([`showLastUpdateTime`](https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#showLastUpdateTime), `showLastUpdateAuthor`), which reads a file's newest commit, still shows your last real edit. The committer is `github-actions[bot]`, so the history shows who made it.
 
 A daily run re-sends posts added in the last 3 days, in case a push run failed; Bridgy skips anything already published. The "Run workflow" button sends one post by address, and does a dry run unless you untick it.
 
@@ -208,7 +208,8 @@ Each build writes `crosspost.json` at the root of your site. It lists the networ
 ## Setting up Bridgy and webmention.io
 
 1. Put your site's address in the "website" field of a profile listed in `relMe`, for example your GitHub profile.
-2. Sign in at [webmention.io](https://webmention.io/) with your domain, and set `webmentionUsername` to the username it gives you.
+2. Sign in at [webmention.io](https://webmention.io/) with your domain, and set `webmentionUsername` to the username it gives you. Until you've signed in, webmention.io refuses every response with `account … not found`.
+   - Use the same host as your Docusaurus `url`. If your host redirects one form to the other (for example `example.com` to `www.example.com`), make it redirect to the form in `url`, so your pages, Bridgy and webmention.io all use one address. The responses section looks up both forms either way.
 3. Connect your Mastodon and Bluesky accounts at [brid.gy](https://brid.gy/), and turn on publishing for each. Bridgy then also collects their responses for your site.
 4. Add the workflow above.
 

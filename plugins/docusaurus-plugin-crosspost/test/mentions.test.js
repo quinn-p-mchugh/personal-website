@@ -10,6 +10,7 @@ import {
   formatDate,
   groupMentions,
   initialOf,
+  addressVariants,
   mentionsApiUrl,
   networkName,
   safeUrl,
@@ -36,9 +37,20 @@ test("syndicationUrls accepts a list or one string and drops bad or repeated ent
   assert.deepEqual(syndicationUrls(undefined), []);
 });
 
-test("mentionsApiUrl asks for the page with and without a trailing slash", () => {
-  const url = new URL(mentionsApiUrl("https://site/blog/post/"));
-  assert.deepEqual(url.searchParams.getAll("target[]"), ["https://site/blog/post", "https://site/blog/post/"]);
+test("mentionsApiUrl asks for the page with and without www and a trailing slash", () => {
+  const url = new URL(mentionsApiUrl("https://site.org/blog/post/"));
+  assert.deepEqual(url.searchParams.getAll("target[]"), [
+    "https://site.org/blog/post/",
+    "https://site.org/blog/post",
+    "https://www.site.org/blog/post",
+    "https://www.site.org/blog/post/",
+  ]);
+  assert.deepEqual(addressVariants("https://www.site.org/a"), [
+    "https://www.site.org/a",
+    "https://www.site.org/a/",
+    "https://site.org/a",
+    "https://site.org/a/",
+  ]);
   assert.equal(url.searchParams.get("sort-dir"), "up");
 });
 
