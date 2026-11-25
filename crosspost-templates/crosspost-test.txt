@@ -1,9 +1,0 @@
-New idea: {title}
-
-{content}
-
-Tagged: {tags}
-{description}
-Read it on my site: {url}
-
-{hashtags}
