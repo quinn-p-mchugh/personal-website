@@ -1,8 +1,8 @@
 /**
  * Tests for src/images.js.
  * Run with: npm test   (Node 22 or newer; Node's built-in test runner. Uses
- * sharp, so the npm packages must be installed. "Remote" images come from a
- * small web server on this computer, so no internet is needed.)
+ * sharp, so the npm packages must be installed. Images "from other sites"
+ * come from a small web server on this computer, so no internet is needed.)
  */
 import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
@@ -10,33 +10,25 @@ import fs from "node:fs";
 import http from "node:http";
 import os from "node:os";
 import path from "node:path";
-import { DomUtils, parseDocument } from "htmlparser2";
 import sharp from "sharp";
-import {
-  MAX_ALT_CHARACTERS,
-  addPhotosToPage,
-  dataUrlBytes,
-  findPostParts,
-  imageSource,
-  insertAtEnd,
-  photoMarkup,
-  shrinkImage,
-  socialAltText,
-} from "../src/images.js";
+import { MAX_ALT_CHARACTERS, dataUrlBytes, imageSource, shrinkImage, socialAltText, socialPhotos } from "../src/images.js";
+import { normalizeOptions } from "../src/options.js";
 
 const SITE = "https://example.com";
 const root = fs.mkdtempSync(path.join(os.tmpdir(), "crosspost-images-"));
 const outDir = path.join(root, "build");
 const context = { outDir, siteUrl: SITE, baseUrl: "/", cacheDir: path.join(root, "cache") };
-const settings = { enabled: true, resize: true, remote: true, maxBytes: 1_900_000, maxSide: 2000 };
+const settings = normalizeOptions({}).images;
+const pageUrl = `${SITE}/blog/post/`;
 let server;
-let remoteBase;
+let otherSite;
 
 /**
  * Makes an image that compresses badly, so it's big on disk.
  *
  * Args:
- *     width, height: Size in pixels.
+ *     width: Width in pixels.
+ *     height: Height in pixels.
  *     channels: 3 for a photo, 4 for one with transparency.
  *
  * Returns:
@@ -44,52 +36,40 @@ let remoteBase;
  */
 function noisyImage(width, height, channels = 3) {
   const pixels = Buffer.alloc(width * height * channels);
-  for (let i = 0; i < pixels.length; i += 1) pixels[i] = (i * 2654435761) >>> 13 & 255;
+  for (let i = 0; i < pixels.length; i += 1) pixels[i] = ((i * 2654435761) >>> 13) & 255;
   return sharp(pixels, { raw: { width, height, channels } });
 }
 
 /**
- * Writes a built page shaped like the plugin's post pages.
+ * Builds a parsed <img> element, as socialPhotos receives them.
  *
  * Args:
- *     name: Folder name under the build folder.
- *     images: <img> tags for the post's text.
- *     titled: Whether the post has a title.
+ *     src: The src attribute.
+ *     alt: The alt attribute.
  *
  * Returns:
- *     The page's path.
+ *     An object with an "attribs" property, like htmlparser2's elements.
  */
-function writePage(name, images, titled = false) {
-  const title = titled ? '<h1 class="p-name">A title</h1>' : "";
-  const html =
-    `<!doctype html><html><body><img src="/img/logo.svg" alt="Logo">` +
-    `<article class="h-entry">${title}<div class="e-content"><p>Hi</p>${images.join("")}</div>` +
-    `<div hidden aria-hidden=true data-crosspost-details=""><a class=u-url href="/${name}"></a></div></article>` +
-    `</body></html>`;
-  const file = path.join(outDir, name, "index.html");
-  fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, html);
-  return file;
-}
+const img = (src, alt) => ({ attribs: { src, alt } });
 
 /**
- * Reads the hidden social images a page now has.
+ * Runs a function with build warnings captured instead of printed.
  *
  * Args:
- *     file: The page's path.
+ *     fn: An async function.
  *
  * Returns:
- *     { src, alt } for each <img class="u-photo">, in order.
+ *     A promise of { result, warnings }.
  */
-function photosOn(file) {
-  const parts = findPostParts(fs.readFileSync(file, "utf8"));
-  const photos = [];
-  const walk = (node) => {
-    if (node.name === "img" && String(node.attribs.class).includes("u-photo")) photos.push({ src: node.attribs.src, alt: node.attribs.alt });
-    (node.children || []).forEach(walk);
-  };
-  walk(parts.details);
-  return photos;
+async function quietly(fn) {
+  const warnings = [];
+  const original = console.warn;
+  console.warn = (message) => warnings.push(String(message));
+  try {
+    return { result: await fn(), warnings };
+  } finally {
+    console.warn = original;
+  }
 }
 
 before(async () => {
@@ -108,7 +88,7 @@ before(async () => {
     }
   });
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
-  remoteBase = `http://127.0.0.1:${server.address().port}`;
+  otherSite = `http://127.0.0.1:${server.address().port}`;
 });
 
 after(() => {
@@ -116,123 +96,90 @@ after(() => {
   fs.rmSync(root, { recursive: true, force: true });
 });
 
-/** Runs a function with build warnings captured instead of printed. */
-async function quietly(fn) {
-  const warnings = [];
-  const original = console.warn;
-  console.warn = (message) => warnings.push(String(message));
-  try {
-    return { result: await fn(), warnings };
-  } finally {
-    console.warn = original;
-  }
-}
-
 test("big images are shrunk under the limits; small ones are used as they are", async () => {
-  const file = writePage("post-1", ['<img src="/assets/big.jpg" alt="Big">', '<img src="/assets/small.jpg" alt="Small">']);
-  const { result } = await quietly(() => addPhotosToPage(file, settings, context));
-  assert.equal(result, 2);
-  const [big, small] = photosOn(file);
-  assert.match(big.src, /^https:\/\/example\.com\/crosspost-images\/[0-9a-f]{16}-2000-1900000\.jpg$/);
-  assert.equal(small.src, "https://example.com/assets/small.jpg");
-  const copy = path.join(outDir, new URL(big.src).pathname);
+  const { result } = await quietly(() =>
+    socialPhotos([img("/assets/big.jpg", "Big"), img("/assets/small.jpg", "Small")], pageUrl, settings, context)
+  );
+  const [big, small] = result;
+  assert.match(big.url, /^https:\/\/example\.com\/crosspost-images\/[0-9a-f]{16}-2000-1900000\.jpg$/);
+  assert.equal(small.url, `${SITE}/assets/small.jpg`);
+  const copy = path.join(outDir, new URL(big.url).pathname);
   const info = await sharp(copy).metadata();
-  assert.ok(fs.statSync(copy).size <= settings.maxBytes);
-  assert.ok(Math.max(info.width, info.height) <= settings.maxSide);
+  assert.ok(fs.statSync(copy).size <= settings.maxFileSizeBytes);
+  assert.ok(Math.max(info.width, info.height) <= settings.maxWidthOrHeightPixels);
+});
+
+test("a second build reuses the shrunk copy from the cache", async () => {
+  const first = await quietly(() => socialPhotos([img("/assets/big.jpg", "Big")], pageUrl, settings, context));
+  const cached = fs.readdirSync(context.cacheDir).filter((name) => name.endsWith(".jpg"));
+  assert.equal(cached.length, 1);
+  const second = await quietly(() => socialPhotos([img("/assets/big.jpg", "Big")], pageUrl, settings, context));
+  assert.equal(second.result[0].url, first.result[0].url);
 });
 
 test("transparent images stay transparent when shrunk", async () => {
   const bytes = fs.readFileSync(path.join(outDir, "assets", "alpha.png"));
-  const shrunk = await shrinkImage(bytes, await sharp(bytes).metadata(), { maxBytes: 100_000, maxSide: 2000 });
+  const shrunk = await shrinkImage(bytes, await sharp(bytes).metadata(), { maxFileSizeBytes: 100_000, maxWidthOrHeightPixels: 2000 });
   assert.equal(shrunk.extension, "webp");
   assert.ok(shrunk.bytes.length <= 100_000);
   assert.equal((await sharp(shrunk.bytes).metadata()).hasAlpha, true);
 });
 
-test("remote, data: and HTML images are all used, in order, up to 4", async () => {
-  const dataUrl = `data:image/png;base64,${(await sharp({ create: { width: 8, height: 8, channels: 3, background: "#000" } }).png().toBuffer()).toString("base64")}`;
-  const file = writePage("post-2", [
-    `<img src="${remoteBase}/remote.png" alt="Remote">`,
-    `<img src="${dataUrl}" alt="Inline">`,
-    `<img src="${remoteBase}/missing.png" alt="Gone">`,
-    '<img src="/assets/small.jpg" alt="Third">',
-    '<img src="/assets/small.jpg" alt="Fourth">',
-    '<img src="/assets/small.jpg" alt="Fifth">',
-  ]);
-  const { result, warnings } = await quietly(() => addPhotosToPage(file, settings, context));
-  assert.equal(result, 4);
-  assert.deepEqual(photosOn(file).map((p) => p.alt), ["Remote", "Inline", "Third", "Fourth"]);
-  assert.equal(photosOn(file)[0].src, `${remoteBase}/remote.png`);
-  assert.match(photosOn(file)[1].src, /\/crosspost-images\/[0-9a-f]{16}\.png$/);
+test("images from other sites, data: images and broken ones, in order, up to 4", async () => {
+  const tiny = await sharp({ create: { width: 8, height: 8, channels: 3, background: "#000" } }).png().toBuffer();
+  const { result, warnings } = await quietly(() =>
+    socialPhotos(
+      [
+        img(`${otherSite}/remote.png`, "Remote"),
+        img(`data:image/png;base64,${tiny.toString("base64")}`, "Inline"),
+        img(`${otherSite}/missing.png`, "Gone"),
+        img("/assets/small.jpg", "Third"),
+        img("/assets/small.jpg", "Fourth"),
+        img("/assets/small.jpg", "Fifth"),
+      ],
+      pageUrl,
+      settings,
+      context
+    )
+  );
+  assert.deepEqual(result.map((photo) => photo.alt), ["Remote", "Inline", "Third", "Fourth"]);
+  assert.equal(result[0].url, `${otherSite}/remote.png`);
+  assert.match(result[1].url, /\/crosspost-images\/[0-9a-f]{16}\.png$/);
   assert.ok(warnings.some((w) => w.includes("missing.png")), "a failed download is reported");
   assert.ok(warnings.some((w) => w.includes("only the first 4")), "extra images are reported");
 });
 
-test("remote images are skipped when images.remote is off", async () => {
-  const file = writePage("post-3", [`<img src="${remoteBase}/remote.png" alt="Remote">`]);
-  const { result } = await quietly(() => addPhotosToPage(file, { ...settings, remote: false }, context));
-  assert.equal(result, 0);
+test("images from other sites are skipped when includeImagesFromOtherSites is off", async () => {
+  const off = { ...settings, includeImagesFromOtherSites: false };
+  assert.deepEqual(await socialPhotos([img(`${otherSite}/remote.png`, "Remote")], pageUrl, off, context), []);
 });
 
-test("too-big images are left out when images.resize is off", async () => {
-  const file = writePage("post-4", ['<img src="/assets/big.jpg" alt="Big">']);
-  const { result, warnings } = await quietly(() => addPhotosToPage(file, { ...settings, resize: false }, context));
-  assert.equal(result, 0);
-  assert.ok(warnings.some((w) => w.includes("images.resize is off")));
+test("too-big images are left out when shrinkLargeImages is off", async () => {
+  const off = { ...settings, shrinkLargeImages: false };
+  const { result, warnings } = await quietly(() => socialPhotos([img("/assets/big.jpg", "Big")], pageUrl, off, context));
+  assert.deepEqual(result, []);
+  assert.ok(warnings.some((w) => w.includes("shrinkLargeImages is off")));
 });
 
-test("titled posts and other pages are left alone", async () => {
-  const titled = writePage("post-5", ['<img src="/assets/small.jpg" alt="x">'], true);
-  const before = fs.readFileSync(titled, "utf8");
-  assert.equal(await addPhotosToPage(titled, settings, context), 0);
-  assert.equal(fs.readFileSync(titled, "utf8"), before);
-
-  const other = path.join(outDir, "other.html");
-  fs.writeFileSync(other, "<html><body><img src=/assets/small.jpg></body></html>");
-  assert.equal(await addPhotosToPage(other, settings, context), 0);
-});
-
-test("insertAtEnd changes nothing but the inserted part", () => {
-  const html = '<div><section data-crosspost-details=""><a href=x></a></section><p>after</p></div>';
-  const document = parseDocument(html, { withStartIndices: true, withEndIndices: true });
-  const details = DomUtils.findOne((el) => "data-crosspost-details" in el.attribs, document.children, true);
-  assert.equal(
-    insertAtEnd(html, details, "<i></i>"),
-    '<div><section data-crosspost-details=""><a href=x></a><i></i></section><p>after</p></div>'
-  );
-});
-
-test("alt text is decoded once more and shortened for Mastodon", () => {
-  assert.equal(socialAltText('A &quot;quoted&quot; &amp; photo'), 'A "quoted" & photo');
+test("alt text is decoded once more and shortened for Mastodon", async () => {
+  assert.equal(socialAltText("A &quot;quoted&quot; &amp; photo"), 'A "quoted" & photo');
   assert.equal(socialAltText(undefined), "");
-  const long = "x".repeat(MAX_ALT_CHARACTERS + 10);
-  const quiet = console.warn;
-  console.warn = () => {};
-  const cut = socialAltText(long, "a.png");
-  console.warn = quiet;
+  const { result: cut } = await quietly(async () => socialAltText("x".repeat(MAX_ALT_CHARACTERS + 10), "a.png"));
   assert.equal(Array.from(cut).length, MAX_ALT_CHARACTERS);
   assert.ok(cut.endsWith("…"));
 });
 
-test("photoMarkup escapes addresses and alt text", () => {
-  assert.equal(
-    photoMarkup([{ url: 'https://a/"x".png', alt: 'Say "<hi>" & bye' }]),
-    '<img class="u-photo" loading="lazy" src="https://a/&quot;x&quot;.png" alt="Say &quot;&lt;hi>&quot; &amp; bye">'
-  );
-});
-
-test("imageSource tells local, remote, data and unusable images apart", () => {
-  const page = `${SITE}/blog/post/`;
-  assert.deepEqual(imageSource("/assets/a.png", page, SITE, "/", outDir), {
+test("imageSource tells local, other-site, data and unusable images apart", () => {
+  assert.deepEqual(imageSource("/assets/a.png", pageUrl, SITE, "/", outDir), {
     url: `${SITE}/assets/a.png`,
     file: path.join(outDir, "assets", "a.png"),
   });
-  assert.deepEqual(imageSource("https://other.org/b.jpg", page, SITE, "/", outDir), { url: "https://other.org/b.jpg" });
-  assert.equal(imageSource("/../../etc/passwd", page, SITE, "/", outDir).file, path.join(outDir, "etc", "passwd"));
-  assert.equal(imageSource("javascript:alert(1)", page, SITE, "/", outDir), null);
-  assert.equal(imageSource("data:text/html,hi", page, SITE, "/", outDir), null);
-  assert.ok(imageSource("data:image/svg+xml,%3Csvg%3E", page, SITE, "/", outDir).data);
-  assert.equal(imageSource("/other-base/a.png", page, SITE, "/docs/", outDir), null, "outside the site's base path");
+  assert.deepEqual(imageSource("https://other.org/b.jpg", pageUrl, SITE, "/", outDir), { url: "https://other.org/b.jpg" });
+  assert.equal(imageSource("/../../etc/passwd", pageUrl, SITE, "/", outDir).file, path.join(outDir, "etc", "passwd"));
+  assert.equal(imageSource("javascript:alert(1)", pageUrl, SITE, "/", outDir), null);
+  assert.equal(imageSource("data:text/html,hi", pageUrl, SITE, "/", outDir), null);
+  assert.ok(imageSource("data:image/svg+xml,%3Csvg%3E", pageUrl, SITE, "/", outDir).data);
+  assert.equal(imageSource("/other-base/a.png", pageUrl, SITE, "/docs/", outDir), null, "outside the site's base path");
 });
 
 test("dataUrlBytes reads base64 and plain data: addresses", () => {

@@ -1,9 +1,8 @@
 /**
  * Hashtag rules shared by every part of the plugin, so they all agree:
- * - src/remarkHashtags.js (while building, for untitled posts),
- * - src/hashtagsToTags.js (while building, for site tags),
- * - src/theme/BlogPostItem/Container (in the page, for titled posts).
- * Runs both in Node and in the browser, so it uses no Node modules.
+ * src/postPages.js and src/socialText.js (social posts, after the build)
+ * and src/hashtagsToTags.js (site tags, while building). Uses no Node-only
+ * modules.
  * Tests: test/hashtags.test.js
  */
 
@@ -64,8 +63,9 @@ export function toHashtagName(label) {
 /**
  * Gives the form two names are compared in: hashtag form, lower case.
  *
- * So "site updates", "Site Updates", "SiteUpdates" and "#siteupdates" all
- * count as the same name, wherever names are compared.
+ * So "site updates", "Site Updates", "SiteUpdates", "#SiteUpdates" and
+ * "#siteupdates" all count as the same name, wherever names are compared.
+ * Settings can list hashtags with or without "#": "TIL" and "#TIL" match.
  *
  * Args:
  *     name: A tag key, tag label or hashtag name, with or without "#".
@@ -74,7 +74,7 @@ export function toHashtagName(label) {
  *     The comparison form; "" if the name can't be a hashtag.
  */
 export function comparisonForm(name) {
-  return toHashtagName(String(name).replace(/^#/, "")).toLowerCase();
+  return toHashtagName(String(name).trim().replace(/^#+/, "")).toLowerCase();
 }
 
 /**
@@ -99,34 +99,34 @@ export function newHashtagNames(names, alreadyUsed = []) {
 }
 
 /**
- * Builds a lookup from an "except" list, for fast checks.
+ * Builds a lookup from a list of names, for fast loose comparisons.
  *
  * Args:
- *     except: An "except" setting, e.g. ["Meta", "TIL"]. Anything that
+ *     names: An "excluded..." setting, e.g. ["Meta", "TIL"]. Anything that
  *         isn't a list of strings is treated as an empty list.
  *
  * Returns:
- *     A Set of names in comparison form.
+ *     A Set of the names in comparison form.
  */
-export function exceptSet(except) {
-  const entries = Array.isArray(except) ? except.filter((name) => typeof name === "string") : [];
+export function nameSet(names) {
+  const entries = Array.isArray(names) ? names.filter((name) => typeof name === "string") : [];
   return new Set(entries.map(comparisonForm).filter(Boolean));
 }
 
 /**
- * Tells whether a tag is on an "except" list.
+ * Tells whether a tag is in a set of names.
  *
  * Args:
- *     tag: { key, label }: the tag as written in front matter (a tags file
- *         key or a plain label; undefined for a tag written as an object),
- *         and the label Docusaurus shows.
- *     excepted: A Set from exceptSet.
+ *     tag: { key, label }: the tag as written in front matter (a tags-file
+ *         key or a plain label; null for a tag written as an object), and
+ *         the label Docusaurus shows.
+ *     names: A Set from nameSet.
  *
  * Returns:
- *     True if the tag's key or its label matches an entry.
+ *     True if the tag's key or its label is in the set.
  */
-export function isExceptedTag(tag, excepted) {
-  return [tag.key, tag.label].some((form) => typeof form === "string" && excepted.has(comparisonForm(form)));
+export function isTagInSet(tag, names) {
+  return [tag.key, tag.label].some((form) => typeof form === "string" && names.has(comparisonForm(form)));
 }
 
 /**
@@ -134,13 +134,13 @@ export function isExceptedTag(tag, excepted) {
  *
  * Args:
  *     tags: { key, label } for each of the post's tags, in order.
- *     except: The tagsToHashtags.except setting.
+ *     excludedTags: The tagsToHashtags.excludedTags setting.
  *
  * Returns:
- *     Hashtag names without "#", without repeats or excepted tags,
+ *     Hashtag names without "#", without repeats or excluded tags,
  *     e.g. ["Climate", "AIEthics"].
  */
-export function hashtagNamesFromTags(tags, except) {
-  const excepted = exceptSet(except);
-  return newHashtagNames(tags.filter((tag) => !isExceptedTag(tag, excepted)).map((tag) => toHashtagName(tag.label)));
+export function hashtagNamesFromTags(tags, excludedTags) {
+  const excluded = nameSet(excludedTags);
+  return newHashtagNames(tags.filter((tag) => !isTagInSet(tag, excluded)).map((tag) => toHashtagName(tag.label)));
 }

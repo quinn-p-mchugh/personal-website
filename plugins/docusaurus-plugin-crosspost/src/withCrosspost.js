@@ -5,14 +5,13 @@
  *     const config = { ... };
  *     export default withCrosspost(config, { webmentionUsername: "example.com" });
  *
- * A Docusaurus plugin can't add build steps to other plugins by itself, so
- * this wrapper does three things a plugin entry alone can't:
- * 1. adds the hashtag step (src/remarkHashtags.js) to every blog, with that
- *    blog's own "path" and "tags" settings;
- * 2. if hashtagsToTags is on, adds the hashtags-to-tags step
- *    (src/hashtagsToTags.js) as markdown.parseFrontMatter, keeping any
- *    parseFrontMatter you already had (yours runs first);
- * 3. adds the plugin itself, with your settings.
+ * It does two things:
+ * 1. if hashtagsToTags is on, adds the hashtags-to-tags step
+ *    (src/hashtagsToTags.js) as the site's markdown.parseFrontMatter,
+ *    keeping any parseFrontMatter you already had (yours runs first). A
+ *    plugin can't set this site-wide hook itself.
+ *    Docs: https://docusaurus.io/docs/api/docusaurus-config#markdown
+ * 2. adds the plugin itself, with your settings.
  * It finds blogs in the classic preset's "blog" and in every
  * "@docusaurus/plugin-content-blog" entry, so blogs you add later are
  * covered without changing this call.
@@ -23,7 +22,6 @@ import { fileURLToPath } from "node:url";
 import { blogOptionObjects, blogSummary } from "./blogs.js";
 import { createParseFrontMatter } from "./hashtagsToTags.js";
 import { normalizeOptions } from "./options.js";
-import remarkHashtags from "./remarkHashtags.js";
 import { PLUGIN_NAME } from "./shared/names.js";
 
 /** This plugin's entry file, so Docusaurus loads it like any other plugin. */
@@ -48,12 +46,6 @@ export default function withCrosspost(siteConfig, options = {}) {
   const blogs = blogOptionObjects(siteConfig);
   if (!blogs.length) {
     console.warn(`[${PLUGIN_NAME}] No blogs found in the config, so nothing will be cross-posted.`);
-  }
-
-  for (const blog of blogs) {
-    // A new list per blog: blogs often share one remarkPlugins list.
-    const step = [remarkHashtags, { blogs: [blogSummary(blog)], tagsToHashtags: settings.tagsToHashtags }];
-    blog.remarkPlugins = [...(blog.remarkPlugins || []), step];
   }
 
   if (settings.hashtagsToTags.enabled) {

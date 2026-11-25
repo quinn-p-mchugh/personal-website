@@ -13,7 +13,7 @@
  * - A hashtag that matches a tag in the blog's tags file (by key or label,
  *   ignoring case, spaces and punctuation) adds that tag, so "#PKM" adds
  *   your "pkm" tag. Any other hashtag adds a new tag named as written.
- * - Hashtags in hashtagsToTags.except never become tags.
+ * - Hashtags in hashtagsToTags.excludedHashtags never become tags.
  * - Hashtags in code, links, HTML and MDX code are ignored.
  * - Tags already in the front matter aren't repeated.
  *
@@ -22,7 +22,7 @@
  * Tests: test/hashtagsToTags.test.js
  */
 import { blogOf, frontMatterTags, readTagLabels } from "./blogs.js";
-import { comparisonForm, exceptSet, hashtagsIn } from "./shared/hashtags.js";
+import { comparisonForm, hashtagsIn, nameSet } from "./shared/hashtags.js";
 
 /**
  * Parts of Markdown whose text isn't the post's own words, removed before
@@ -80,22 +80,22 @@ export function tagsForHashtags(hashtags, tagLabels) {
  *     tags: The front matter "tags" value as written; may be undefined.
  *     hashtags: Hashtag names found in the post.
  *     tagLabels: Map of the blog's tag keys to labels.
- *     except: The hashtagsToTags.except setting.
+ *     excludedHashtags: The hashtagsToTags.excludedHashtags setting.
  *
  * Returns:
  *     The new "tags" list, or the original value unchanged when nothing is
  *     added or when "tags" isn't a list (Docusaurus reports that itself).
  */
-export function addHashtagTags(tags, hashtags, tagLabels, except) {
+export function addHashtagTags(tags, hashtags, tagLabels, excludedHashtags) {
   if (tags !== undefined && !Array.isArray(tags)) return tags;
   const existing = frontMatterTags({ tags: tags || [] }, tagLabels);
   const taken = new Set(existing.flatMap((tag) => [tag.key, tag.label]).filter(Boolean).map(comparisonForm));
-  const excepted = exceptSet(except);
+  const excluded = nameSet(excludedHashtags);
 
   const added = [];
   for (const [i, tag] of tagsForHashtags(hashtags, tagLabels).entries()) {
     const forms = [comparisonForm(hashtags[i]), comparisonForm(tag)];
-    if (forms.some((form) => excepted.has(form) || taken.has(form))) continue;
+    if (forms.some((form) => excluded.has(form) || taken.has(form))) continue;
     forms.forEach((form) => taken.add(form));
     added.push(tag);
   }
@@ -107,7 +107,7 @@ export function addHashtagTags(tags, hashtags, tagLabels, except) {
  *
  * Args:
  *     args.blogs: { path, tags } for each blog, from blogSummary.
- *     args.hashtagsToTags: { enabled, except }, from the plugin settings.
+ *     args.hashtagsToTags: { enabled, excludedHashtags }, from the settings.
  *     args.siteDir: The website's root folder.
  *     args.previous: The site's own parseFrontMatter, if it had one; it
  *         still runs first.
@@ -124,7 +124,7 @@ export function createParseFrontMatter({ blogs, hashtagsToTags, siteDir = proces
 
     const hashtags = proseHashtags(result.content);
     if (!hashtags.length) return result;
-    const tags = addHashtagTags(result.frontMatter.tags, hashtags, await readTagLabels(blog), hashtagsToTags.except);
+    const tags = addHashtagTags(result.frontMatter.tags, hashtags, await readTagLabels(blog), hashtagsToTags.excludedHashtags);
     if (tags === result.frontMatter.tags) return result;
     return { ...result, frontMatter: { ...result.frontMatter, tags } };
   };

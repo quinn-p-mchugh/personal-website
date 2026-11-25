@@ -1,21 +1,18 @@
 /**
- * Attaches a post's images to its Mastodon and Bluesky copies (the "images"
- * setting, on by default).
+ * Gets a post's images ready to attach to its Mastodon and Bluesky copies
+ * (the "images" setting, on by default).
  *
  * Bridgy only attaches pictures marked `<img class="u-photo">`, and it
  * doesn't shrink them. Bluesky refuses an image over 2,000,000 bytes, which
- * would make the whole Bluesky post fail. So after Docusaurus has built the
- * site, this step goes through each untitled post's page and:
- * 1. finds the images in the post's text (Markdown `![alt](...)`, HTML
- *    `<img>` and MDX `<img src={require(...)}>` all end up as `<img>`),
- * 2. keeps the first 4, the most Mastodon and Bluesky allow,
- * 3. shrinks any that are too big into a copy under /crosspost-images/,
- * 4. adds hidden `<img class="u-photo" alt="...">` copies for Bridgy.
- * The images readers see are not changed. The hidden copies use
- * loading="lazy", so readers' browsers never download them.
- *
- * Titled posts are skipped: Bridgy posts them as "Title: link", and the
- * networks show the post's preview image from the link instead.
+ * would make the whole Bluesky post fail. So for each image in a post's
+ * text (src/postPages.js finds them in the built page), this file:
+ * - works out where it comes from: the built site, another website, or a
+ *   "data:" address Docusaurus uses for small images;
+ * - reads it, downloading images from other websites (cached between
+ *   builds);
+ * - shrinks it into a copy under /crosspost-images/ if it's too big;
+ * - cleans up its alt text.
+ * The images readers see are not changed.
  *
  * Docs: https://brid.gy/about (u-photo and alt text)
  *       https://docs.joinmastodon.org/user/posting/#attachments (Mastodon limits)
@@ -27,7 +24,6 @@ import { createHash } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { decodeHTML } from "entities";
-import { DomUtils, parseDocument } from "htmlparser2";
 import sharp from "sharp";
 import { PLUGIN_NAME } from "./shared/names.js";
 
@@ -58,68 +54,6 @@ const ACCEPTED_FORMATS = new Set(["jpeg", "png", "webp", "gif"]);
  */
 function warn(message) {
   console.warn(`[${PLUGIN_NAME}] ${message}`);
-}
-
-/**
- * Lists every HTML file in the built site.
- *
- * Args:
- *     folder: The build folder, or a folder inside it.
- *
- * Returns:
- *     A promise of absolute paths of .html files.
- */
-export async function htmlFiles(folder) {
-  const entries = await fs.readdir(folder, { withFileTypes: true });
-  const nested = await Promise.all(
-    entries.map((entry) => {
-      const full = path.join(folder, entry.name);
-      if (entry.isDirectory()) return htmlFiles(full);
-      return entry.name.endsWith(".html") ? [full] : [];
-    })
-  );
-  return nested.flat();
-}
-
-/**
- * Tells whether an element has a class.
- *
- * Args:
- *     element: An htmlparser2 element.
- *     name: A class name.
- *
- * Returns:
- *     True if the element's class list includes the name.
- */
-function hasClass(element, name) {
-  return String(element.attribs.class || "").split(/\s+/).includes(name);
-}
-
-/**
- * Finds the parts of a post's page this step needs.
- *
- * Args:
- *     html: A built page's HTML.
- *
- * Returns:
- *     { details, images, titled } for a post's own page: details is the
- *     hidden element the plugin's Container adds (data-crosspost-details),
- *     images are the <img> elements in the post's text, in page order, and
- *     titled says whether the post has a title (p-name). null for any other
- *     page.
- */
-export function findPostParts(html) {
-  const document = parseDocument(html, { withStartIndices: true, withEndIndices: true });
-  const entry = DomUtils.findOne((el) => hasClass(el, "h-entry"), document.children, true);
-  if (!entry) return null;
-  const details = DomUtils.findOne((el) => "data-crosspost-details" in el.attribs, [entry], true);
-  const content = DomUtils.findOne((el) => hasClass(el, "e-content"), [entry], true);
-  if (!details || !content) return null;
-  return {
-    details,
-    images: DomUtils.findAll((el) => el.name === "img", [content]),
-    titled: Boolean(DomUtils.findOne((el) => hasClass(el, "p-name"), [entry], true)),
-  };
 }
 
 /**
@@ -267,7 +201,8 @@ function sha256(data) {
  * Args:
  *     bytes: The image's file contents.
  *     info: sharp's metadata for it.
- *     limits: { maxBytes, maxSide } from the images setting.
+ *     limits: { maxFileSizeBytes, maxWidthOrHeightPixels } from the images
+ *         setting.
  *
  * Returns:
  *     True if it's small enough, in a format both networks accept.
@@ -275,37 +210,38 @@ function sha256(data) {
 function fitsAsIs(bytes, info, limits) {
   return (
     ACCEPTED_FORMATS.has(info.format) &&
-    bytes.length <= limits.maxBytes &&
-    Math.max(info.width || 0, info.height || 0) <= limits.maxSide
+    bytes.length <= limits.maxFileSizeBytes &&
+    Math.max(info.width || 0, info.height || 0) <= limits.maxWidthOrHeightPixels
   );
 }
 
 /**
  * Shrinks an image until it fits the limits.
  *
- * Fits it inside maxSide by maxSide pixels, then lowers the quality step by
- * step, then the size, until the file is at most maxBytes. Photos become
+ * Fits it inside a maxWidthOrHeightPixels square, then lowers the quality
+ * step by step, then the size, until the file is at most maxFileSizeBytes. Photos become
  * JPEG; images with transparency become WebP, which keeps it. Rotation from
  * camera data is applied, and other camera data (like location) is dropped.
  *
  * Args:
  *     bytes: The image's file contents.
  *     info: sharp's metadata for it.
- *     limits: { maxBytes, maxSide }.
+ *     limits: { maxFileSizeBytes, maxWidthOrHeightPixels }.
  *
  * Returns:
- *     A promise of { bytes, extension }.
+ *     A promise of { bytes, extension }. In the unlikely case nothing fits
+ *     even at 64 pixels, the smallest attempt.
  */
 export async function shrinkImage(bytes, info, limits) {
   const extension = info.hasAlpha ? "webp" : "jpg";
   let output;
   // Stops at 64 pixels, so a strange image can't loop forever; by then any
   // real image is far under the limit.
-  for (let side = limits.maxSide; side >= 64; side = Math.floor(side * 0.75)) {
+  for (let side = limits.maxWidthOrHeightPixels; side >= 64; side = Math.floor(side * 0.75)) {
     for (const quality of QUALITIES) {
       const image = sharp(bytes).rotate().resize(side, side, { fit: "inside", withoutEnlargement: true });
       output = await (extension === "webp" ? image.webp({ quality }) : image.jpeg({ quality, mozjpeg: true })).toBuffer();
-      if (output.length <= limits.maxBytes) return { bytes: output, extension };
+      if (output.length <= limits.maxFileSizeBytes) return { bytes: output, extension };
     }
   }
   return { bytes: output, extension };
@@ -316,7 +252,7 @@ export async function shrinkImage(bytes, info, limits) {
  *
  * Args:
  *     source: From imageSource.
- *     settings: The images setting: { resize, maxBytes, maxSide }.
+ *     settings: The images setting.
  *     context: { outDir, siteUrl, baseUrl, cacheDir }.
  *
  * Returns:
@@ -342,8 +278,8 @@ export async function socialImageUrl(source, settings, context) {
     const extension = info.format === "jpeg" ? "jpg" : info.format;
     return publishCopy(`${sha256(bytes)}.${extension}`, bytes, context);
   }
-  if (!settings.resize) {
-    warn(`${label} is too big for Bluesky and images.resize is off; left out.`);
+  if (!settings.shrinkLargeImages) {
+    warn(`${label} is too big for Bluesky and images.shrinkLargeImages is off; left out.`);
     return null;
   }
   if ((info.pages || 1) > 1) {
@@ -351,7 +287,7 @@ export async function socialImageUrl(source, settings, context) {
     return null;
   }
 
-  const name = `${sha256(bytes)}-${settings.maxSide}-${settings.maxBytes}`;
+  const name = `${sha256(bytes)}-${settings.maxWidthOrHeightPixels}-${settings.maxFileSizeBytes}`;
   const cached = await cachedShrink(name, context.cacheDir);
   const shrunk = cached || (await shrinkImage(bytes, info, settings));
   if (!cached) await saveShrink(name, shrunk, context.cacheDir);
@@ -410,112 +346,34 @@ async function saveShrink(name, shrunk, cacheDir) {
 }
 
 /**
- * Escapes text for an HTML attribute value in double quotes.
+ * Gets the images of one post ready for its social posts.
  *
  * Args:
- *     text: Any text.
- *
- * Returns:
- *     The text with &, " and < written as character references.
- */
-export function escapeAttribute(text) {
-  return String(text).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
-}
-
-/**
- * Builds the hidden images Bridgy attaches.
- *
- * Args:
- *     photos: { url, alt } for each image, in order.
- *
- * Returns:
- *     HTML for one <img class="u-photo"> per image.
- */
-export function photoMarkup(photos) {
-  return photos
-    .map(({ url, alt }) => `<img class="u-photo" loading="lazy" src="${escapeAttribute(url)}" alt="${escapeAttribute(alt)}">`)
-    .join("");
-}
-
-/**
- * Inserts HTML at the end of an element, changing nothing else.
- *
- * The page's other bytes are kept exactly as Docusaurus wrote them.
- *
- * Args:
- *     html: The page's HTML.
- *     element: An htmlparser2 element parsed from it, with end indices.
- *     insert: The HTML to add as the element's last children.
- *
- * Returns:
- *     The updated HTML.
- */
-export function insertAtEnd(html, element, insert) {
-  const closingTag = html.lastIndexOf("</", element.endIndex);
-  return html.slice(0, closingTag) + insert + html.slice(closingTag);
-}
-
-/**
- * Adds social images to one built page.
- *
- * Args:
- *     file: The page's path in the build folder.
+ *     images: The post's <img> elements, in page order, as parsed by
+ *         htmlparser2 (each has an "attribs" object).
+ *     pageUrl: The post's full address.
  *     settings: The images setting.
  *     context: { outDir, siteUrl, baseUrl, cacheDir }.
  *
  * Returns:
- *     A promise of the number of images added (0 for pages that aren't
- *     untitled posts with images).
+ *     A promise of { url, alt } for up to MAX_IMAGES usable images, in page
+ *     order. Images that can't be used are skipped with a warning, and the
+ *     next ones move up.
  */
-export async function addPhotosToPage(file, settings, context) {
-  const html = await fs.readFile(file, "utf8");
-  if (!html.includes("data-crosspost-details")) return 0;
-  const parts = findPostParts(html);
-  if (!parts || parts.titled || parts.images.length === 0) return 0;
-
-  const pagePath = path.relative(context.outDir, file).split(path.sep).join("/");
-  const pageUrl = new URL(pagePath, new URL(context.baseUrl, context.siteUrl)).href;
+export async function socialPhotos(images, pageUrl, settings, context) {
   const photos = [];
-  for (const img of parts.images) {
+  for (const img of images) {
     if (photos.length === MAX_IMAGES) {
-      warn(`${pagePath} has more than ${MAX_IMAGES} images; only the first ${MAX_IMAGES} are cross-posted.`);
+      warn(`${pageUrl} has more than ${MAX_IMAGES} usable images; only the first ${MAX_IMAGES} are cross-posted.`);
       break;
     }
     const src = img.attribs.src;
-    const source = src && imageSource(src, pageUrl, context.siteUrl, context.baseUrl, context.outDir);
+    const source = src ? imageSource(src, pageUrl, context.siteUrl, context.baseUrl, context.outDir) : null;
     if (!source) continue;
-    const isRemote = Boolean(source.url && !source.file);
-    if (isRemote && !settings.remote) continue;
+    const fromOtherSite = Boolean(source.url && !source.file);
+    if (fromOtherSite && !settings.includeImagesFromOtherSites) continue;
     const url = await socialImageUrl(source, settings, context);
     if (url) photos.push({ url, alt: socialAltText(img.attribs.alt, source.url || "an image written into the page") });
   }
-  if (!photos.length) return 0;
-  await fs.writeFile(file, insertAtEnd(html, parts.details, photoMarkup(photos)));
-  return photos.length;
-}
-
-/**
- * Adds social images to every post page in the built site.
- *
- * Called from the plugin's postBuild step.
- *
- * Args:
- *     settings: The images setting.
- *     context: { outDir, siteUrl, baseUrl, cacheDir }.
- *
- * Returns:
- *     A promise of { pages, images }: how many pages got images, and how
- *     many images in all.
- */
-export async function addSocialImages(settings, context) {
-  let pages = 0;
-  let images = 0;
-  for (const file of await htmlFiles(context.outDir)) {
-    const added = await addPhotosToPage(file, settings, context);
-    if (added) {
-      pages += 1;
-      images += added;
-    }
-  }
-  return { pages, images };
+  return photos;
 }

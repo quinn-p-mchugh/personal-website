@@ -4,7 +4,6 @@
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import remarkHashtags from "../src/remarkHashtags.js";
 import withCrosspost from "../src/withCrosspost.js";
 
 /**
@@ -23,16 +22,12 @@ function sampleConfig() {
   return { config, shared };
 }
 
-test("adds the hashtag step to every blog, with that blog's settings, and nowhere else", () => {
+test("leaves every blog's own settings alone", () => {
   const { config, shared } = sampleConfig();
+  const before = JSON.stringify({ presets: config.presets, plugins: config.plugins });
   withCrosspost(config, {});
-  const main = config.presets[0][1].blog.remarkPlugins;
-  const micro = config.plugins[0][1].remarkPlugins;
-  assert.equal(main.at(-1)[0], remarkHashtags);
-  assert.deepEqual(main.at(-1)[1].blogs, [{ path: "blog" }]);
-  assert.deepEqual(micro.at(-1)[1].blogs, [{ path: "blog-micro", tags: "../tags.yml" }]);
-  assert.deepEqual(shared, ["some-other-plugin"], "the shared list isn't changed");
-  assert.equal(config.presets[0][1].docs.remarkPlugins, shared, "docs are left alone");
+  assert.equal(JSON.stringify({ presets: config.presets, plugins: config.plugins.slice(0, -1) }), before);
+  assert.deepEqual(shared, ["some-other-plugin"]);
 });
 
 test("adds the plugin with the settings as written", () => {

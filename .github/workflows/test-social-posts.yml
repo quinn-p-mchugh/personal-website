@@ -1,12 +1,8 @@
-# Runs the tests for the cross-posting and hashtag code whenever it changes,
-# so a broken change shows a red X on the pull request before it reaches
-# main.
+# Runs the cross-posting plugin's tests whenever it changes, so a broken
+# change shows a red X on the pull request before it reaches main.
 #
-# What's tested (all with built-in test runners, no extra packages):
-#   - .github/scripts/send_new_posts_to_bridgy.py
-#       Python's unittest: .github/scripts/test_send_new_posts_to_bridgy.py
-#   - plugins/docusaurus-plugin-crosspost (the cross-posting plugin)
-#       Node's test runner: plugins/docusaurus-plugin-crosspost/test/*.test.js
+# What's tested: plugins/docusaurus-plugin-crosspost, with Node's built-in
+# test runner (plugins/docusaurus-plugin-crosspost/test/).
 # Run the same tests locally with: npm test
 #
 # GitHub Actions docs: https://docs.github.com/actions
@@ -17,16 +13,16 @@ on:
   pull_request:
     # Keep both lists the same.
     paths:
-      - ".github/scripts/**"
       - ".github/workflows/test-social-posts.yml"
+      - ".github/workflows/cross-post-to-social.yml"
       - "plugins/docusaurus-plugin-crosspost/**"
       - "package.json"
       - "package-lock.json"
   push:
     branches: [main]
     paths:
-      - ".github/scripts/**"
       - ".github/workflows/test-social-posts.yml"
+      - ".github/workflows/cross-post-to-social.yml"
       - "plugins/docusaurus-plugin-crosspost/**"
       - "package.json"
       - "package-lock.json"

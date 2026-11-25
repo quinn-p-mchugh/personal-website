@@ -49,7 +49,7 @@ test("addHashtagTags adds new tags once, skipping excepted and existing ones", (
 test("parseFrontMatter adds tags to blog posts only, when enabled", async () => {
   const parse = createParseFrontMatter({
     blogs: [{ path: "blog", tags: "../tags.yml" }],
-    hashtagsToTags: { enabled: true, except: [] },
+    hashtagsToTags: { enabled: true, excludedHashtags: [] },
     siteDir: site,
   });
   const params = (filePath) => ({
@@ -60,6 +60,6 @@ test("parseFrontMatter adds tags to blog posts only, when enabled", async () => 
   assert.deepEqual((await parse(params("blog/post.md"))).frontMatter.tags, ["pkm"]);
   assert.equal((await parse(params("docs/page.md"))).frontMatter.tags, undefined);
 
-  const off = createParseFrontMatter({ blogs: [{ path: "blog" }], hashtagsToTags: { enabled: false, except: [] }, siteDir: site });
+  const off = createParseFrontMatter({ blogs: [{ path: "blog" }], hashtagsToTags: { enabled: false, excludedHashtags: [] }, siteDir: site });
   assert.equal((await off(params("blog/post.md"))).frontMatter.tags, undefined);
 });

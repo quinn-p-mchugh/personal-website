@@ -10,14 +10,17 @@
  * What this file does, as a Docusaurus plugin:
  * - getThemePath: adds the theme components that mark posts up for Bridgy
  *   (src/theme/BlogPostItem) and show responses (src/components).
+ * - getPathsToWatch: reloads the site when a template file changes.
  * - injectHtmlTags: adds the webmention and rel="me" links to every page.
- * - contentLoaded: shares the settings with those components.
- * - postBuild: attaches images to social posts (src/images.js).
+ * - contentLoaded: shares the few settings those components need.
+ * - postBuild: adds each post's social text, hashtags and images, and
+ *   writes crosspost.json (src/postPages.js).
  * Plugin docs: https://docusaurus.io/docs/api/plugin-methods
  */
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { addSocialImages } from "./images.js";
+import { finishPostPages } from "./postPages.js";
+import { loadTemplateFiles, templateFilePaths } from "./templateFiles.js";
 import { PLUGIN_NAME } from "./shared/names.js";
 
 export { validateOptions } from "./options.js";
@@ -49,17 +52,19 @@ export function headTags(options) {
 /**
  * The settings the theme components need, shared with the browser.
  *
- * Only these are shared, so nothing else ends up in the site's JavaScript.
+ * Only these are shared: Docusaurus loads global data on every page, so
+ * it should stay small.
+ * Docs: https://docusaurus.io/docs/api/plugin-methods/lifecycle-apis#actions
  *
  * Args:
  *     options: The plugin's settings.
  *
  * Returns:
- *     { networks, showResponses, webmentionUsername, tagsToHashtags }.
+ *     { networks, showResponses, webmentionUsername }.
  */
 export function browserSettings(options) {
-  const { networks, showResponses, webmentionUsername, tagsToHashtags } = options;
-  return { networks, showResponses, webmentionUsername, tagsToHashtags };
+  const { networks, showResponses, webmentionUsername } = options;
+  return { networks, showResponses, webmentionUsername };
 }
 
 /**
@@ -73,8 +78,15 @@ export function browserSettings(options) {
  *     The plugin's lifecycle methods.
  */
 export default function crosspostPlugin(context, options) {
+  // Read template files now, so a missing one stops the build at the start.
+  const socialPostTemplates = loadTemplateFiles(options.socialPostTemplates, options.templatesPath, context.siteDir);
+
   return {
     name: PLUGIN_NAME,
+
+    getPathsToWatch() {
+      return templateFilePaths(options.socialPostTemplates, options.templatesPath, context.siteDir);
+    },
 
     getThemePath() {
       return fileURLToPath(new URL("./theme", import.meta.url));
@@ -88,15 +100,15 @@ export default function crosspostPlugin(context, options) {
       actions.setGlobalData(browserSettings(options));
     },
 
-    async postBuild({ outDir }) {
-      if (!options.images.enabled) return;
-      const { pages, images } = await addSocialImages(options.images, {
+    async postBuild({ outDir, siteConfig }) {
+      const { posts, images } = await finishPostPages({ ...options, socialPostTemplates }, {
         outDir,
-        siteUrl: context.siteConfig.url,
-        baseUrl: context.siteConfig.baseUrl,
+        siteConfig,
+        siteUrl: siteConfig.url,
+        baseUrl: siteConfig.baseUrl,
         cacheDir: path.join(context.siteDir, "node_modules", ".cache", PLUGIN_NAME),
       });
-      console.log(`[${PLUGIN_NAME}] Attached ${images} image(s) to the social posts of ${pages} post(s).`);
+      console.log(`[${PLUGIN_NAME}] Prepared ${posts} post(s) for cross-posting, with ${images} image(s).`);
     },
   };
 }

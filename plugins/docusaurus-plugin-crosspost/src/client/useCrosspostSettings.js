@@ -12,8 +12,9 @@ import { PLUGIN_NAME } from "../shared/names.js";
  * Reads the plugin's settings in a React component.
  *
  * Returns:
- *     The settings shared by the plugin: networks, showResponses,
- *     tagsToHashtags and webmentionUsername, with defaults filled in.
+ *     The settings shared by the plugin (browserSettings in
+ *     src/index.js): networks, showResponses and webmentionUsername,
+ *     with defaults filled in.
  */
 export default function useCrosspostSettings() {
   return usePluginData(PLUGIN_NAME);

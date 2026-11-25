@@ -1,8 +1,9 @@
 /**
- * Build-time helpers about the site's blogs: which folder a post belongs
- * to, and which tags its blog defines. Shared by src/remarkHashtags.js and
- * src/hashtagsToTags.js. Runs in Node only.
- * Tests: test/remarkHashtags.test.js and test/hashtagsToTags.test.js
+ * Build-time helpers about the site's blogs: where they are in the config,
+ * which folder a post belongs to, and which tags its blog defines. Used by
+ * src/withCrosspost.js, src/hashtagsToTags.js and src/postPages.js. Runs
+ * in Node only.
+ * Tests: test/blogs.test.js and test/hashtagsToTags.test.js
  */
 import path from "node:path";
 import { createRequire } from "node:module";

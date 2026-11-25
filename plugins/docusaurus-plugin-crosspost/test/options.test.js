@@ -10,24 +10,50 @@ import { normalizeOptions } from "../src/options.js";
 test("every setting has a default", () => {
   const options = normalizeOptions({});
   assert.deepEqual(options.networks, ["mastodon", "bluesky"]);
-  assert.deepEqual(options.tagsToHashtags, { enabled: true, except: [] });
-  assert.deepEqual(options.hashtagsToTags, { enabled: false, except: [] });
-  assert.deepEqual(options.images, { enabled: true, resize: true, remote: true, maxBytes: 1_900_000, maxSide: 2000 });
+  assert.deepEqual(options.tagsToHashtags, { enabled: true, excludedTags: [] });
+  assert.deepEqual(options.hashtagsToTags, { enabled: false, excludedHashtags: [] });
+  assert.deepEqual(options.images, {
+    enabled: true,
+    shrinkLargeImages: true,
+    includeImagesFromOtherSites: true,
+    maxFileSizeBytes: 1_900_000,
+    maxWidthOrHeightPixels: 2000,
+  });
+  assert.deepEqual(options.socialPostTemplates, []);
+  assert.equal(options.templatesPath, "crosspost-templates");
   assert.equal(options.showResponses, true);
 });
 
 test("partial settings keep the other defaults", () => {
-  const options = normalizeOptions({ images: { remote: false }, hashtagsToTags: { enabled: true } });
-  assert.equal(options.images.resize, true);
-  assert.equal(options.images.remote, false);
-  assert.deepEqual(options.hashtagsToTags, { enabled: true, except: [] });
+  const options = normalizeOptions({ images: { includeImagesFromOtherSites: false }, hashtagsToTags: { enabled: true } });
+  assert.equal(options.images.shrinkLargeImages, true);
+  assert.equal(options.images.includeImagesFromOtherSites, false);
+  assert.deepEqual(options.hashtagsToTags, { enabled: true, excludedHashtags: [] });
+});
+
+test("hashtags and tags may be listed with or without '#'", () => {
+  const options = normalizeOptions({ hashtagsToTags: { excludedHashtags: ["#TIL", "Quote"] } });
+  assert.deepEqual(options.hashtagsToTags.excludedHashtags, ["#TIL", "Quote"]);
+  assert.throws(() => normalizeOptions({ tagsToHashtags: { excludedTags: ["#"] } }), /no letters or digits/);
+});
+
+test("templates are checked: one text source, known placeholders, non-empty lists", () => {
+  assert.doesNotThrow(() => normalizeOptions({ socialPostTemplates: [{ appliesTo: { blogs: ["blog"] }, template: "{title}\n{content}" }] }));
+  assert.doesNotThrow(() => normalizeOptions({ socialPostTemplates: [{ templateFile: "notes.txt" }] }));
+  assert.throws(() => normalizeOptions({ socialPostTemplates: [{ appliesTo: {} }] }), /needs "template"/);
+  assert.throws(() => normalizeOptions({ socialPostTemplates: [{ template: "x", templateFile: "x.txt" }] }), /not both/);
+  assert.throws(() => normalizeOptions({ socialPostTemplates: [{ template: "{titel}" }] }), /unknown placeholder\(s\) \{titel\}/);
+  assert.throws(() => normalizeOptions({ socialPostTemplates: [{ appliesTo: { tags: [] }, template: "x" }] }), /tags/);
+  assert.throws(() => normalizeOptions({ socialPostTemplates: [{ when: {}, template: "x" }] }), /when/, "old name refused");
 });
 
 test("wrong settings are named in the error", () => {
   assert.throws(() => normalizeOptions({ networks: ["twitter"] }), /networks/);
-  assert.throws(() => normalizeOptions({ tagsToHashtags: { except: "Meta" } }), /except/);
-  assert.throws(() => normalizeOptions({ images: { maxBytes: 5_000_000 } }), /maxBytes/);
-  assert.throws(() => normalizeOptions({ excludedTags: [] }), /excludedTags/, "old setting names are refused");
+  assert.throws(() => normalizeOptions({ networks: [] }), /networks/);
+  assert.throws(() => normalizeOptions({ tagsToHashtags: { excludedTags: "Meta" } }), /excludedTags/);
+  assert.throws(() => normalizeOptions({ images: { maxFileSizeBytes: 5_000_000 } }), /maxFileSizeBytes/);
+  assert.throws(() => normalizeOptions({ images: { resize: true } }), /resize/, "old names are refused");
+  assert.throws(() => normalizeOptions({ relMe: ["javascript:alert(1)"] }), /relMe/);
 });
 
 test("headTags adds the webmention link only when a username is set", () => {
@@ -40,10 +66,5 @@ test("headTags adds the webmention link only when a username is set", () => {
 });
 
 test("browserSettings shares only what the theme components need", () => {
-  assert.deepEqual(Object.keys(browserSettings(normalizeOptions({}))).sort(), [
-    "networks",
-    "showResponses",
-    "tagsToHashtags",
-    "webmentionUsername",
-  ]);
+  assert.deepEqual(Object.keys(browserSettings(normalizeOptions({}))).sort(), ["networks", "showResponses", "webmentionUsername"]);
 });

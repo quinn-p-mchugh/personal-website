@@ -32,7 +32,7 @@ const darkCodeTheme = themes.dracula;
 /**
  * Cross-posting blog posts to Mastodon and Bluesky, through Bridgy, and
  * showing the responses under each post. Every setting is optional; the
- * values below that match the defaults are written out so they're easy to
+ * ones below that match the defaults are written out so they're easy to
  * change. Full explanations: plugins/docusaurus-plugin-crosspost/README.md
  */
 const crosspost = {
@@ -44,18 +44,27 @@ const crosspost = {
   showResponses: true,
 
   // A post's TAGS -> HASHTAGS in its Mastodon and Bluesky copies.
-  // "except": tags that never become hashtags there, e.g. ["Meta"].
-  tagsToHashtags: { enabled: true, except: [] },
+  // excludedTags: tags that never become hashtags, e.g. ["Meta"].
+  tagsToHashtags: { enabled: true, excludedTags: [] },
 
   // HASHTAGS written in a post -> TAGS on this website (tag pages).
-  // "except": hashtags that never become tags here, e.g. ["TIL"].
+  // excludedHashtags: hashtags that never become tags, e.g. ["TIL"].
   // Your files aren't changed; tags are added while the site builds.
-  hashtagsToTags: { enabled: false, except: [] },
+  hashtagsToTags: { enabled: false, excludedHashtags: [] },
 
   // A post's IMAGES -> pictures in its Mastodon and Bluesky copies (up to 4,
-  // with alt text). "resize" shrinks images too big for Bluesky; "remote"
-  // includes images hosted on other websites.
-  images: { enabled: true, resize: true, remote: true },
+  // with alt text).
+  images: {
+    enabled: true,
+    shrinkLargeImages: true, // shrink images too big for Bluesky
+    includeImagesFromOtherSites: true, // downloaded while building
+  },
+
+  // How each post's text is written on Mastodon and Bluesky. The first rule
+  // that matches a post wins; posts no rule matches keep the built-in text
+  // (untitled posts in full; titled posts as "Title: link"). Example:
+  //   { appliesTo: { hasTitle: true }, template: "{title}\n———\n{content}\n\n{hashtags}" },
+  socialPostTemplates: [],
 };
 
 const plugins = {
