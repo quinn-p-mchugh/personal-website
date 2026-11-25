@@ -7,6 +7,7 @@ hide_table_of_contents: true
 draft: false
 syndication:
   - https://mastodon.social/@quinnmchugh/117675306762906104
+  - https://bsky.app/profile/quinnmchugh.bsky.social/post/3n34ewsiopm2m
 ---
 This is a test of cross-posting from my site to Mastodon and Bluesky with #Bridgy. It has no title, so it should go out in full on Mastodon. Bluesky allows only 300 characters, so there it should be cut short with a link back to this page.
 
