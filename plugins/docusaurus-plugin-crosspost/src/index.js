@@ -8,6 +8,8 @@
  * README.md for what each part does and how to set up Bridgy.
  *
  * What this file does, as a Docusaurus plugin:
+ * - getClientModules: loads src/client/crosspost.css, the styles for the
+ *   responses section, before the site's own custom.css.
  * - getThemePath: adds the theme components that mark posts up for Bridgy
  *   (src/theme/BlogPostItem) and show responses (src/components).
  * - injectHtmlTags: adds the webmention and rel="me" links to every page.
@@ -107,6 +109,36 @@ export function buildWarnings(result) {
 }
 
 /**
+ * Tells "docusaurus swizzle" which of the plugin's components are safe to
+ * copy (eject) or wrap. The two display components are meant to be
+ * restyled or replaced; the BlogPostItem wrappers carry Bridgy's markup,
+ * so changing them can stop cross-posting.
+ * Docs: https://docusaurus.io/docs/swizzling#what-is-safe-to-swizzle
+ *
+ * Returns:
+ *     Docusaurus's swizzle config: { components }.
+ */
+export function getSwizzleConfig() {
+  const markup = "Adds Bridgy's markup to each post; changing it can stop cross-posting";
+  return {
+    components: {
+      CrosspostResponses: {
+        actions: { eject: "safe", wrap: "safe" },
+        description: "The responses section: likes, reposts, replies and reply buttons",
+      },
+      CrosspostSyndicationLinks: {
+        actions: { eject: "safe", wrap: "safe" },
+        description: 'The "Also on Mastodon, Bluesky" links',
+      },
+      "BlogPostItem/Container": { actions: { eject: "unsafe", wrap: "safe" }, description: markup },
+      "BlogPostItem/Content": { actions: { eject: "unsafe", wrap: "safe" }, description: markup },
+      "BlogPostItem/Header/Title": { actions: { eject: "unsafe", wrap: "safe" }, description: markup },
+      "BlogPostItem/Footer": { actions: { eject: "unsafe", wrap: "safe" }, description: "Adds the \"Also on\" links and the responses section" },
+    },
+  };
+}
+
+/**
  * The plugin itself, called by Docusaurus.
  *
  * Args:
@@ -125,6 +157,11 @@ export default function crosspostPlugin(context, options) {
 
     getThemePath() {
       return fileURLToPath(new URL("./theme", import.meta.url));
+    },
+
+    getClientModules() {
+      // The styles for the "Also on" links and the responses section.
+      return [fileURLToPath(new URL("./client/crosspost.css", import.meta.url))];
     },
 
     injectHtmlTags() {

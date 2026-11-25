@@ -236,16 +236,23 @@ export function initialOf(name) {
 }
 
 /**
- * Formats a response date for display.
+ * Formats a response date for display, in the site's language.
  *
  * Args:
  *     iso: An ISO 8601 date string, possibly empty.
+ *     locale: A BCP 47 language tag, e.g. the site's current locale
+ *         ("en" by default).
  *
  * Returns:
- *     A date like "Nov 24, 2026", or "" if the value isn't a valid date.
+ *     The date, e.g. "Nov 24, 2026" in English; "" if missing or invalid.
  */
-export function formatDate(iso) {
+export function formatDate(iso, locale = "en") {
   const date = new Date(iso);
   if (!iso || Number.isNaN(date.getTime())) return "";
-  return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+  try {
+    return date.toLocaleDateString(locale, { year: "numeric", month: "short", day: "numeric" });
+  } catch {
+    // An unknown language tag: fall back to English.
+    return date.toLocaleDateString("en", { year: "numeric", month: "short", day: "numeric" });
+  }
 }

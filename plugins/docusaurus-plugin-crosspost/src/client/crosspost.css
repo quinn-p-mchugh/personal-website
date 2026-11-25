@@ -1,0 +1,314 @@
+/*
+ * Styles for the plugin's parts of each post page: the "Also on" links
+ * (theme/CrosspostSyndicationLinks) and the responses section
+ * (theme/CrosspostResponses). Loaded on every page by the plugin's
+ * getClientModules.
+ * Docs: https://docusaurus.io/docs/api/plugin-methods/lifecycle-apis#getClientModules
+ *
+ * HOW TO CUSTOMIZE
+ * 1. Easiest: set any of the variables below in your src/css/custom.css.
+ *    The defaults here use :where(), which adds no specificity, so your
+ *    :root and [data-theme="dark"] values win even though this file loads
+ *    later. For example:
+ *        :root { --crosspost-face-size: 1.5rem; }
+ *        [data-theme="dark"] { --crosspost-mastodon-background: #858afa; }
+ * 2. For anything else, style the classes. Each part has a stable class
+ *    named "crosspost-<part>__<element>--<variant>" (BEM style), so your
+ *    rules keep working across updates. This file loads after your
+ *    custom.css (plugins' styles come after the theme's), so to override a
+ *    rule, make yours one step more specific, for example
+ *        .crosspost-responses .crosspost-reply-button { border-radius: 2rem; }
+ *    Rules here use one class where they can, two at most.
+ *    Docs: https://docusaurus.io/docs/styling-layout#global-styles
+ * 3. To change the markup itself, swizzle the component:
+ *        npm run swizzle docusaurus-plugin-crosspost CrosspostResponses -- --wrap
+ *    Docs: https://docusaurus.io/docs/swizzling
+ *
+ * Defaults use Docusaurus's Infima variables, so they follow your theme
+ * and light/dark mode. Docs: https://infima.dev/docs/getting-started/introduction
+ * Colors meet WCAG 2.2 AA contrast (4.5:1 for text, 3:1 for button edges
+ * against the page) in both modes. Docs: https://www.w3.org/TR/WCAG22/#contrast-minimum
+ */
+
+:where(:root) {
+  /* Sizes */
+  --crosspost-face-size: 2rem; /* avatars in the likes and reposts rows */
+  --crosspost-face-gap: 0.375rem;
+  --crosspost-reply-avatar-size: 2.5rem; /* avatar next to each reply */
+  --crosspost-section-gap: 1.5rem; /* space between the section's parts */
+  --crosspost-radius: var(--ifm-button-border-radius, 0.4rem);
+
+  /* Text */
+  --crosspost-muted-color: var(--ifm-color-emphasis-700);
+  --crosspost-small-font-size: 0.875rem;
+  --crosspost-border-color: var(--ifm-color-emphasis-300);
+  --crosspost-focus-color: var(--ifm-color-primary);
+
+  /* Reply buttons: Mastodon's and Bluesky's brand colors, darkened just
+     enough for white text to reach 4.5:1 (#563acc is Mastodon's darker
+     brand purple; #0560c9 is a darker shade of Bluesky's #1185fe). */
+  --crosspost-mastodon-background: #563acc;
+  --crosspost-mastodon-background-hover: #4a2fb8;
+  --crosspost-mastodon-color: #ffffff;
+  --crosspost-bluesky-background: #0560c9;
+  --crosspost-bluesky-background-hover: #0451ab;
+  --crosspost-bluesky-color: #ffffff;
+}
+
+/* Dark mode: the brand colors themselves, with dark text, so both the text
+   (4.8:1 and 5.8:1) and the button edges against the dark page pass. */
+/* :where() keeps this at the same (zero) specificity as the defaults
+   above, so it wins by coming later, and your own values still win. */
+:where([data-theme="dark"]) {
+  --crosspost-mastodon-background: #6364ff;
+  --crosspost-mastodon-background-hover: #7f80ff;
+  --crosspost-mastodon-color: #000000;
+  --crosspost-bluesky-background: #1185fe;
+  --crosspost-bluesky-background-hover: #3d9bfe;
+  --crosspost-bluesky-color: #000000;
+}
+
+/* Hidden on screen, still read by screen readers. */
+.crosspost-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- "Also on" links ---- */
+
+.crosspost-syndication {
+  margin: var(--ifm-spacing-vertical) 0 0;
+  font-size: var(--crosspost-small-font-size);
+  color: var(--crosspost-muted-color);
+}
+
+/* ---- Responses section ---- */
+
+.crosspost-responses {
+  display: flex;
+  flex-direction: column;
+  gap: var(--crosspost-section-gap);
+  margin-top: calc(var(--ifm-spacing-vertical) * 2);
+  padding-top: var(--ifm-spacing-vertical);
+  border-top: 1px solid var(--crosspost-border-color);
+}
+
+.crosspost-responses__heading {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.crosspost-responses__status {
+  margin: 0;
+  color: var(--crosspost-muted-color);
+}
+
+/* Takes no space when there's nothing to say, but stays in the page (not
+   display: none), so screen readers still announce what it says later. */
+.crosspost-responses__status:empty {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.crosspost-reactions__title,
+.crosspost-replies__title {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: var(--ifm-font-weight-semibold);
+}
+
+/* ---- Avatars ---- */
+
+/* Two classes, so site rules like "article img { width: 100% }" can't
+   stretch the avatars. */
+.crosspost-responses .crosspost-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--crosspost-face-size);
+  height: var(--crosspost-face-size);
+  max-width: none;
+  margin: 0;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--ifm-color-emphasis-200);
+  color: var(--ifm-color-emphasis-800);
+  font-size: calc(var(--crosspost-face-size) * 0.45);
+  font-weight: var(--ifm-font-weight-semibold);
+  line-height: 1;
+}
+
+.crosspost-reply .crosspost-avatar {
+  width: var(--crosspost-reply-avatar-size);
+  height: var(--crosspost-reply-avatar-size);
+  font-size: calc(var(--crosspost-reply-avatar-size) * 0.45);
+}
+
+/* ---- Likes and reposts ---- */
+
+.crosspost-reactions__faces {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--crosspost-face-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.crosspost-reactions__face {
+  display: flex;
+  margin: 0;
+}
+
+.crosspost-reactions__link {
+  display: flex;
+  border-radius: 50%;
+}
+
+.crosspost-reactions__link:hover .crosspost-avatar {
+  opacity: 0.85;
+}
+
+.crosspost-reactions__more {
+  margin: 0 0 0 0.25rem;
+  font-size: var(--crosspost-small-font-size);
+  color: var(--crosspost-muted-color);
+}
+
+/* ---- Replies ---- */
+
+.crosspost-replies__list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.crosspost-reply {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.crosspost-reply__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.crosspost-reply__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.5rem;
+  margin: 0 0 0.25rem;
+  line-height: 1.4;
+}
+
+.crosspost-reply__author {
+  font-weight: var(--ifm-font-weight-semibold);
+  color: var(--ifm-font-color-base);
+}
+
+/* At least 24 pixels tall, so the name and date links stay easy to tap
+   when they wrap onto two lines (WCAG 2.2 target size). */
+.crosspost-reply__author,
+.crosspost-reply__date {
+  display: inline-block;
+  min-height: 1.5rem;
+  line-height: 1.5rem;
+}
+
+.crosspost-reply__meta,
+.crosspost-reply__date {
+  font-size: var(--crosspost-small-font-size);
+  color: var(--crosspost-muted-color);
+}
+
+.crosspost-reply__text {
+  margin: 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+/* ---- Reply buttons ---- */
+
+.crosspost-reply-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.crosspost-reply-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--crosspost-radius);
+  font-size: var(--crosspost-small-font-size);
+  font-weight: var(--ifm-font-weight-semibold);
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background-color var(--ifm-transition-fast, 200ms) ease;
+}
+
+.crosspost-reply-button:hover {
+  text-decoration: none;
+}
+
+.crosspost-reply-button--mastodon {
+  background-color: var(--crosspost-mastodon-background);
+  color: var(--crosspost-mastodon-color);
+}
+
+.crosspost-reply-button--mastodon:hover {
+  background-color: var(--crosspost-mastodon-background-hover);
+  color: var(--crosspost-mastodon-color);
+}
+
+.crosspost-reply-button--bluesky {
+  background-color: var(--crosspost-bluesky-background);
+  color: var(--crosspost-bluesky-color);
+}
+
+.crosspost-reply-button--bluesky:hover {
+  background-color: var(--crosspost-bluesky-background-hover);
+  color: var(--crosspost-bluesky-color);
+}
+
+/* ---- Focus and motion ---- */
+
+.crosspost-responses a:focus-visible,
+.crosspost-syndication a:focus-visible {
+  outline: 2px solid var(--crosspost-focus-color);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crosspost-reply-button {
+    transition: none;
+  }
+}
+
+/* Windows High Contrast and other forced-color modes: keep button edges. */
+@media (forced-colors: active) {
+  .crosspost-reply-button {
+    border-color: ButtonText;
+  }
+}

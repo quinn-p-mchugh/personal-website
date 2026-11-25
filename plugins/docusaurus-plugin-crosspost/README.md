@@ -231,7 +231,69 @@ Untitled posts must say `title: ""`. Without a title line, Docusaurus uses the f
 
 ## Overriding parts
 
-The plugin wraps four theme components with [`@theme-init`](https://docusaurus.io/docs/advanced/client#theme-aliases): `BlogPostItem/Container`, `BlogPostItem/Content`, `BlogPostItem/Header/Title` and `BlogPostItem/Footer`. If your site has its own copy of one of these in `src/theme`, yours replaces the plugin's. Make yours a wrapper ([swizzle with `--wrap`](https://docusaurus.io/docs/swizzling#wrapping)), and it will wrap the plugin's version.
+The plugin wraps four theme components with [`@theme-init`](https://docusaurus.io/docs/advanced/client#theme-aliases): `BlogPostItem/Container`, `BlogPostItem/Content`, `BlogPostItem/Header/Title` and `BlogPostItem/Footer`. It also adds two of its own, `CrosspostResponses` and `CrosspostSyndicationLinks`; see "Styling the responses". If your site has its own copy of one of these in `src/theme`, yours replaces the plugin's. Make yours a wrapper ([swizzle with `--wrap`](https://docusaurus.io/docs/swizzling#wrapping)), and it will wrap the plugin's version.
+
+## Styling the responses
+
+The "Also on" links and the responses section are theme components, `CrosspostSyndicationLinks` and `CrosspostResponses`, styled by [`src/client/crosspost.css`](src/client/crosspost.css). That file loads after your `custom.css`, because Docusaurus loads plugins' styles after the theme's. There are three ways to change the look, from least to most work:
+
+**1. Set CSS variables** in `src/css/custom.css`. The defaults are set with `:where()`, which adds no specificity, so your values win even though the plugin's file loads later. Defaults follow your theme's Infima colors, in light and dark mode.
+
+```css
+:root {
+  --crosspost-face-size: 1.75rem;        /* avatars in the likes and reposts rows (2rem) */
+  --crosspost-reply-avatar-size: 2.25rem; /* avatar next to each reply (2.5rem) */
+}
+[data-theme="dark"] {
+  --crosspost-bluesky-background: #3d9bfe;
+}
+```
+
+| Variable | What it sets |
+|---|---|
+| `--crosspost-face-size`, `--crosspost-face-gap` | Avatar size and spacing in the likes and reposts rows |
+| `--crosspost-reply-avatar-size` | Avatar size next to replies |
+| `--crosspost-section-gap` | Space between the section's parts |
+| `--crosspost-radius` | Reply buttons' corner radius |
+| `--crosspost-muted-color`, `--crosspost-small-font-size` | Dates, counts and other secondary text |
+| `--crosspost-border-color` | The line above the section |
+| `--crosspost-focus-color` | The keyboard focus outline |
+| `--crosspost-mastodon-background`, `-background-hover`, `-color` | The "Reply on Mastodon" button |
+| `--crosspost-bluesky-background`, `-background-hover`, `-color` | The "Reply on Bluesky" button |
+
+The reply buttons use Mastodon's and Bluesky's colors. In light mode they're slightly darker shades, with white text. In dark mode they're the brand colors themselves, with black text. Each pairing reaches the 4.5:1 text contrast [WCAG 2.2 AA](https://www.w3.org/TR/WCAG22/#contrast-minimum) asks for. If you change them, check the contrast again.
+
+**2. Style the classes.** Every part has a stable class: `crosspost-<part>__<element>--<variant>`. Since the plugin's rules load later, make yours one step more specific to win, for example `.crosspost-responses .crosspost-reply-button { border-radius: 2rem; }`. The plugin's rules use one class where they can, two at most.
+
+| Class | Part |
+|---|---|
+| `crosspost-syndication`, `__label`, `__link`, `__link--mastodon`, `__link--bluesky` | "Also on" links |
+| `crosspost-responses`, `__heading`, `__status` | The section, its heading, and its loading / empty / error message |
+| `crosspost-reply-buttons`, `crosspost-reply-button`, `--mastodon`, `--bluesky` | Reply buttons |
+| `crosspost-reactions`, `--likes`, `--reposts`, `__title`, `__faces`, `__face`, `__link`, `__more` | Likes and reposts rows |
+| `crosspost-replies`, `__title`, `__list` | Replies |
+| `crosspost-reply`, `--mastodon`, `--bluesky`, `__body`, `__header`, `__author`, `__meta`, `__date`, `__network`, `__text` | One reply |
+| `crosspost-avatar`, `--initial` | A picture, or an initial for people without one |
+| `crosspost-visually-hidden` | Text only screen readers read |
+
+**3. Swizzle a component** to change its markup. Docusaurus marks both display components as safe to swizzle:
+
+```bash
+npm run swizzle docusaurus-plugin-crosspost CrosspostResponses -- --wrap
+```
+
+See [Swizzling](https://docusaurus.io/docs/swizzling). The four `BlogPostItem` components carry Bridgy's markup, so only wrap those.
+
+**Text and translation.** All text goes through Docusaurus's [i18n](https://docusaurus.io/docs/i18n/tutorial#translate-your-react-code), with ids starting `crosspost.responses.` (for example `crosspost.responses.heading`). Counts use Docusaurus's plural forms, and dates use the site's language.
+
+**Accessibility, built in:**
+- The section has its own heading, and each group of responses has a heading too.
+- Avatars and replies are lists; replies are ordered, oldest first, and each reply's date is a `<time>` element.
+- Avatars in the likes and reposts rows are links named by the person's name. A reply's avatar is skipped by screen readers, since the name is next to it.
+- Links that open a new tab say so to screen readers.
+- Loading and errors are announced through a status message.
+- Focus is always visible, every target is at least 24 by 24 pixels, and buttons keep their outline in forced-colors mode.
+- Checked with [axe-core](https://github.com/dequelabs/axe-core) against WCAG 2.2 AA in light, dark and mobile layouts.
 
 ## Supported Docusaurus setups
 

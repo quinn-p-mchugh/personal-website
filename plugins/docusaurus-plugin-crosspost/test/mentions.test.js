@@ -90,4 +90,6 @@ test("formatDate gives '' for missing or invalid dates", () => {
   assert.equal(formatDate("2026-11-24T12:00:00Z"), "Nov 24, 2026");
   assert.equal(formatDate(""), "");
   assert.equal(formatDate("nope"), "");
+  assert.equal(formatDate("2026-11-24T12:00:00Z", "fr"), "24 nov. 2026", "the site's language");
+  assert.equal(formatDate("2026-11-24T12:00:00Z", "not a tag!"), "Nov 24, 2026", "unknown tags fall back to English");
 });

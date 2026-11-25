@@ -26,3 +26,10 @@ test("head links: webmention only with a username; one rel=me per profile", () =
   assert.equal(tags[0].attributes.href, "https://webmention.io/example.com/webmention");
   assert.deepEqual(tags[1].attributes, { rel: "me", href: "https://github.com/me" });
 });
+
+test("swizzle: display components are safe; the markup wrappers are wrap-only", async () => {
+  const { getSwizzleConfig } = await import("../src/index.js");
+  const { components } = getSwizzleConfig();
+  assert.deepEqual(components.CrosspostResponses.actions, { eject: "safe", wrap: "safe" });
+  assert.deepEqual(components["BlogPostItem/Container"].actions, { eject: "unsafe", wrap: "safe" });
+});
