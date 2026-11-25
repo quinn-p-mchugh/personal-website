@@ -38,7 +38,7 @@ export default withCrosspost(config, {
 });
 ```
 
-A CommonJS config works the same way: `const { withCrosspost } = require("docusaurus-plugin-crosspost");` and `module.exports = withCrosspost(config, {...});`.
+A CommonJS config works the same way: `const { withCrosspost } = require("docusaurus-plugin-crosspost");` and `module.exports = withCrosspost(config, {...});`. So does a config written as a function or async function, which [Docusaurus also accepts](https://docusaurus.io/docs/api/docusaurus-config): `export default withCrosspost(async () => ({ ...your config }), {...})`.
 
 Why a wrapper instead of a plain `plugins: [...]` entry? Turning hashtags into tags means changing each post's tags before the blog plugins read them. A Docusaurus plugin can't do that for other plugins, but the site-wide [`markdown.parseFrontMatter`](https://docusaurus.io/docs/api/docusaurus-config#markdown) setting can, and the wrapper sets it for you. If you already have a `parseFrontMatter`, yours still runs first.
 
@@ -130,7 +130,7 @@ socialPostTemplates: [
 
 | Condition | Matches when |
 |---|---|
-| `blogs: ["blog", "blog-ideas"]` | the post is in **any** of these blog folders (each blog's `path` setting) |
+| `blogs: ["blog", "ideas"]` | the post is in **any** of these blogs, named by folder (each blog's `path` setting) or by plugin `id` |
 | `hashtags: ["TIL", "#Quote"]` | the post's text has **any** of these hashtags |
 | `tags: ["Climate"]` | the post has **any** of these tags (by key or label) |
 | `hasTitle: true` / `false` | the post has / doesn't have a title |
@@ -193,16 +193,17 @@ npx docusaurus-plugin-crosspost send --site-url https://example.com --dry-run
 | `--file PATH` | Send this file. Repeat for more. |
 | `--url URL` | Send this live post address. |
 | `--ignore GLOB` | Also skip files matching this pattern, relative to the blog folder. Repeatable. |
+| `--skip-undated` | Skip posts without a date in their file name or front matter, such as a blog's welcome page. |
 | `--save-syndication` | Save the new addresses into each post's front matter. |
 | `--dry-run` | Show what would be sent; send nothing. |
 | `--wait-minutes N` | How long to wait for posts to go live. Default 20. |
 | `--check-every-seconds N` | How often to check while waiting. Default 30. |
 
-Run it in your site's folder (the one with `docusaurus.config.js`); file paths are relative to it, which also works when the site is a subfolder of the repository. It sends a file only if it is a published post: inside a blog folder, not matched by that blog's [`exclude`](https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#exclude) patterns, dated (by its file name, like `2026-11-24-hello.md` or `2026/11/24/hello.md` ([formats](https://docusaurus.io/docs/blog#blog-post-date)), or by a `date` in its front matter), and not `draft: true` or `unlisted: true`. Each skipped file is listed with the reason.
+Run it in your site's folder (the one with `docusaurus.config.js`); file paths are relative to it, which also works when the site is a subfolder of the repository. It sends a file only if it is a published post: inside a blog folder, matched by that blog's [`include`](https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#include) patterns and not its [`exclude`](https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#exclude) patterns, and not `draft: true` or `unlisted: true`. Posts without a date are sent too, since Docusaurus [dates them](https://docusaurus.io/docs/blog#blog-post-date) by the file's creation time; add `--skip-undated` to leave them out. Each skipped post file is listed with the reason.
 
 ### How it knows what's live: `crosspost.json`
 
-Each build writes `crosspost.json` at the root of your site. It lists the networks, each blog's folder and `exclude` patterns, and every published post's source file and address. The command reads the live copy, so it never has to guess your URL scheme (slugs, dates, `routeBasePath`) and it knows a post is live when it appears there. It holds nothing that isn't already public on your site.
+Each build writes `crosspost.json` at the root of your site. It lists the networks, each blog's id, folder and `include` and `exclude` patterns (as Docusaurus loaded them, defaults included), and every published post's source file, address and date. The command reads the live copy, so it never has to guess your URL scheme (slugs, dates, `routeBasePath`) and it knows a post is live when it appears there. It holds nothing that isn't already public on your site.
 
 ## Setting up Bridgy and webmention.io
 
@@ -231,9 +232,32 @@ Untitled posts must say `title: ""`. Without a title line, Docusaurus uses the f
 
 The plugin wraps four theme components with [`@theme-init`](https://docusaurus.io/docs/advanced/client#theme-aliases): `BlogPostItem/Container`, `BlogPostItem/Content`, `BlogPostItem/Header/Title` and `BlogPostItem/Footer`. If your site has its own copy of one of these in `src/theme`, yours replaces the plugin's. Make yours a wrapper ([swizzle with `--wrap`](https://docusaurus.io/docs/swizzling#wrapping)), and it will wrap the plugin's version.
 
+## Supported Docusaurus setups
+
+After each build, Docusaurus gives the plugin the list of plugins it loaded, with their settings and posts ([`postBuild`](https://docusaurus.io/docs/api/plugin-methods/lifecycle-apis#postBuild)). The plugin reads your blogs from there rather than from your config file, so these all work without extra settings:
+
+- **Where the blog comes from:** the classic preset (with a `blog` option or without one, since the blog is on unless `blog: false`), any number of `@docusaurus/plugin-content-blog` entries, written by full name, by the [`content-blog` shorthand](https://docusaurus.io/docs/using-plugins#module-shorthands) or as a file path, and presets from other authors that include the blog.
+- **The config file:** `.js`, `.mjs`, `.cjs` or `.ts`, exporting an object, a function or an async function.
+- **Blog settings:** any `path` (even outside the site folder), `routeBasePath` (including `/` for a blog-only site), `include` and `exclude`, `id`, `tags` (a file, `false` or `null`), `onInlineTags`, `processBlogPosts`, `truncateMarker`, feeds and sorting.
+- **Site settings:** any `baseUrl` and [`trailingSlash`](https://docusaurus.io/docs/api/docusaurus-config#trailingSlash) setting (addresses get a trailing slash exactly as Docusaurus's own feeds do), and `markdown.format` of `mdx`, `md` or `detect`.
+- **Posts:** dated or not, any `slug`, Markdown or MDX, images from Markdown, HTML, MDX `require()` or other sites, inline tags or tags-file keys.
+- **Building from another folder:** `docusaurus build website` from the repository root works; hashtags → tags finds the site from the nearest `docusaurus.config.*`.
+
+Some setups have limits:
+
+| Setup | What happens |
+|---|---|
+| [`future.experimental_router: "hash"`](https://docusaurus.io/docs/api/docusaurus-config#future) | The site has no page per post for Bridgy to read, so nothing is prepared; the build says so. |
+| A `BlogPostItem` or `BlogPostItem/Container` in `src/theme` that doesn't wrap the original, or a custom [`blogPostComponent`](https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#blogPostComponent) that doesn't use `BlogPostItem` | Those posts get no markup. The build lists them; wrap the original instead. |
+| [i18n](https://docusaurus.io/docs/i18n/introduction) | Every language is built with its own `crosspost.json` (for example `/fr/crosspost.json`). The workflow sends your default language only, so each post goes out once. Hashtags → tags covers translated posts too. |
+| `onInlineTags: "throw"` with a tags file, and `hashtagsToTags` on | Only hashtags that match a tag in the tags file become tags, so a new hashtag can't stop the build. |
+| A blog `path` outside the site folder | Pages are prepared, but the command finds new posts with git from the site folder, so it can't see them. Send them with `--url` or `--file`. |
+| A custom `markdown.parseFrontMatter` that sets `draft` or `unlisted`, or a `processBlogPosts` that removes posts | The command reads front matter the standard way, so it may wait for a post that never goes live and then fail. Leave such files out with `--ignore`. |
+| Hashtags → tags with blogs added by other presets or by plugin functions | Hashtags → tags has to find blogs before plugins load, so it only sees the classic preset and blog plugin entries; the build warns when it finds none. Everything else still works. |
+
 ## Requirements
 
-- Docusaurus 3.6 or newer (tested with 3.10), with the classic theme's blog
+- Docusaurus 3.6 or newer (tested with 3.10), with the classic theme (`@docusaurus/theme-classic`) and at least one blog
 - Node 20 or newer to build; Node 22 to run the tests
 
 ## Development

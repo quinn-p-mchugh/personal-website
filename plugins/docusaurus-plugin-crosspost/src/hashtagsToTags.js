@@ -16,11 +16,18 @@
  * - Hashtags in hashtagsToTags.excludedHashtags never become tags.
  * - Hashtags in code, links, HTML and MDX code are ignored.
  * - Tags already in the front matter aren't repeated.
+ * - On a blog with onInlineTags: "throw" and a tags file, only hashtags
+ *   that match a tag in that file are added, since any other tag would stop
+ *   the build. Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#onInlineTags
+ * - Translated posts (in i18n/<locale>/docusaurus-plugin-content-blog...)
+ *   count as part of their blog.
  *
  * You don't add this yourself: withCrosspost (src/withCrosspost.js) sets it
  * up, and keeps any parseFrontMatter function the site already had.
  * Tests: test/hashtagsToTags.test.js
  */
+import fs from "node:fs";
+import path from "node:path";
 import { blogOf, frontMatterTags, readTagLabels } from "./blogs.js";
 import { comparisonForm, hashtagsIn, nameSet } from "./shared/hashtags.js";
 
@@ -81,12 +88,13 @@ export function tagsForHashtags(hashtags, tagLabels) {
  *     hashtags: Hashtag names found in the post.
  *     tagLabels: Map of the blog's tag keys to labels.
  *     excludedHashtags: The hashtagsToTags.excludedHashtags setting.
+ *     onlyKnownTags: If true, skip hashtags that match no tag in tagLabels.
  *
  * Returns:
  *     The new "tags" list, or the original value unchanged when nothing is
  *     added or when "tags" isn't a list (Docusaurus reports that itself).
  */
-export function addHashtagTags(tags, hashtags, tagLabels, excludedHashtags) {
+export function addHashtagTags(tags, hashtags, tagLabels, excludedHashtags, onlyKnownTags = false) {
   if (tags !== undefined && !Array.isArray(tags)) return tags;
   const existing = frontMatterTags({ tags: tags || [] }, tagLabels);
   const taken = new Set(existing.flatMap((tag) => [tag.key, tag.label]).filter(Boolean).map(comparisonForm));
@@ -96,35 +104,82 @@ export function addHashtagTags(tags, hashtags, tagLabels, excludedHashtags) {
   for (const [i, tag] of tagsForHashtags(hashtags, tagLabels).entries()) {
     const forms = [comparisonForm(hashtags[i]), comparisonForm(tag)];
     if (forms.some((form) => excluded.has(form) || taken.has(form))) continue;
+    if (onlyKnownTags && !tagLabels.has(tag)) continue;
     forms.forEach((form) => taken.add(form));
     added.push(tag);
   }
   return added.length ? [...(tags || []), ...added] : tags;
 }
 
+/** Names Docusaurus looks for when it finds a site's config file
+ * (findConfig in @docusaurus/core). */
+const CONFIG_FILE_NAMES = [".ts", ".mts", ".cts", ".js", ".mjs", ".cjs"].map((extension) => `docusaurus.config${extension}`);
+
+/**
+ * Finds the site folder a file belongs to: the nearest folder above it
+ * holding a Docusaurus config file. This works however the build was
+ * started, e.g. "docusaurus build website" from the repository root.
+ *
+ * Args:
+ *     filePath: A Markdown file's absolute path.
+ *     cache: A Map of folders already checked to their site folder.
+ *
+ * Returns:
+ *     The site folder, or null if no folder above holds a config file.
+ */
+export function siteDirOf(filePath, cache = new Map()) {
+  const checked = [];
+  let folder = path.dirname(filePath);
+  for (;;) {
+    if (cache.has(folder)) {
+      const found = cache.get(folder);
+      checked.forEach((dir) => cache.set(dir, found));
+      return found;
+    }
+    checked.push(folder);
+    if (CONFIG_FILE_NAMES.some((name) => fs.existsSync(path.join(folder, name)))) {
+      checked.forEach((dir) => cache.set(dir, folder));
+      return folder;
+    }
+    const parent = path.dirname(folder);
+    if (parent === folder) {
+      checked.forEach((dir) => cache.set(dir, null));
+      return null;
+    }
+    folder = parent;
+  }
+}
+
 /**
  * Builds the markdown.parseFrontMatter function for the site config.
  *
  * Args:
- *     args.blogs: { path, tags } for each blog, from blogSummary.
+ *     args.blogs: { path, tags, id, onInlineTags } for each blog, from
+ *         blogSummary.
  *     args.hashtagsToTags: { enabled, excludedHashtags }, from the settings.
- *     args.siteDir: The website's root folder.
+ *     args.i18nPath: The site's i18n.path setting ("i18n" by default).
+ *     args.siteDir: The website's root folder; found from each file's
+ *         location when not given.
  *     args.previous: The site's own parseFrontMatter, if it had one; it
  *         still runs first.
  *
  * Returns:
  *     An async function Docusaurus calls for every Markdown file.
  */
-export function createParseFrontMatter({ blogs, hashtagsToTags, siteDir = process.cwd(), previous }) {
+export function createParseFrontMatter({ blogs, hashtagsToTags, i18nPath = "i18n", siteDir, previous }) {
+  const siteDirs = new Map();
   return async function parseFrontMatter(params) {
     const result = previous ? await previous(params) : await params.defaultParseFrontMatter(params);
-    if (!hashtagsToTags.enabled) return result;
-    const blog = blogOf(params.filePath, blogs, siteDir);
+    if (!hashtagsToTags.enabled || !params.filePath) return result;
+    const root = siteDir ?? siteDirOf(params.filePath, siteDirs) ?? process.cwd();
+    const blog = blogOf(params.filePath, blogs, root, i18nPath);
     if (!blog) return result;
 
     const hashtags = proseHashtags(result.content);
     if (!hashtags.length) return result;
-    const tags = addHashtagTags(result.frontMatter.tags, hashtags, await readTagLabels(blog), hashtagsToTags.excludedHashtags);
+    const tagLabels = await readTagLabels(blog);
+    const onlyKnownTags = blog.options.onInlineTags === "throw" && tagLabels.size > 0;
+    const tags = addHashtagTags(result.frontMatter.tags, hashtags, tagLabels, hashtagsToTags.excludedHashtags, onlyKnownTags);
     if (tags === result.frontMatter.tags) return result;
     return { ...result, frontMatter: { ...result.frontMatter, tags } };
   };

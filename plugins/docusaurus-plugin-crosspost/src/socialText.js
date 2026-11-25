@@ -76,7 +76,8 @@ export const BUILT_IN_TEMPLATES = {
  * Tells whether a socialPostTemplates rule applies to a post.
  *
  * Within each list, ANY item is enough; the post must match ALL the lists
- * the rule gives. Names compare loosely (case, spaces and punctuation don't
+ * the rule gives. A blog is named by its content folder (its "path"
+ * setting) or by its plugin "id". Names compare loosely (case, spaces and punctuation don't
  * matter), the same way as the excluded tag and hashtag lists.
  *
  * Args:
@@ -87,7 +88,7 @@ export const BUILT_IN_TEMPLATES = {
  *     True if the rule applies (also when appliesTo is empty).
  */
 export function ruleAppliesTo(appliesTo, post) {
-  if (appliesTo.blogs && !appliesTo.blogs.some((blog) => sameFolder(blog, post.blogFolder))) return false;
+  if (appliesTo.blogs && !appliesTo.blogs.some((blog) => blog === post.blogId || sameFolder(blog, post.blogFolder))) return false;
   if (appliesTo.hashtags && !hasAnyName(post.textHashtags, appliesTo.hashtags)) return false;
   if (appliesTo.tags && !post.tags.some((tag) => isTagInSet(tag, nameSet(appliesTo.tags)))) return false;
   if (appliesTo.hasTitle !== undefined && appliesTo.hasTitle !== (post.title !== "")) return false;

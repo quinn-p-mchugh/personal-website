@@ -30,6 +30,7 @@ Options:
   --save-syndication         save the new Mastodon and Bluesky addresses into each post's front matter
   --dry-run                  show what would be sent; send nothing
   --ignore GLOB              also skip posts matching this pattern inside a blog folder (repeatable)
+  --skip-undated             skip posts without a date in their file name or front matter
   --wait-minutes N           how long to wait for new posts to go live (default 20)
   --check-every-seconds N    how often to check while waiting (default 30)
   --help                     show this text`;
@@ -44,6 +45,7 @@ const OPTION_SPEC = {
   ignore: { type: "string", multiple: true, default: [] },
   "save-syndication": { type: "boolean", default: false },
   "dry-run": { type: "boolean", default: false },
+  "skip-undated": { type: "boolean", default: false },
   "wait-minutes": { type: "string", default: "20" },
   "check-every-seconds": { type: "string", default: "30" },
   help: { type: "boolean", default: false },
@@ -107,6 +109,7 @@ export function parseCommandLine(argv) {
       files: values.file,
       url: values.url || "",
       ignore: values.ignore,
+      skipUndated: values["skip-undated"],
       saveSyndication: values["save-syndication"],
       dryRun: values["dry-run"],
       waitMinutes: wholeNumber(values["wait-minutes"], "wait-minutes", 0),

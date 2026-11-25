@@ -42,17 +42,31 @@ test("matchesAny matches the way Docusaurus's exclude does", () => {
   assert.equal(matchesAny("2026/a.md", DEFAULT_EXCLUDE), false);
 });
 
-test("posts to send: dated, listed, not drafts", async () => {
+test("posts to send: dated or not, listed, not drafts", async () => {
   write("blog/2026-11-24-dated.md", "---\ntitle: x\n---\n");
   write("blog/2026/11/24/nested.md", "---\n---\n");
   write("blog/front-matter-date.md", "---\ndate: 2026-11-24\n---\n");
-  for (const file of ["blog/2026-11-24-dated.md", "blog/2026/11/24/nested.md", "blog/front-matter-date.md"]) {
-    assert.equal(await skipReason(file, blogs, [], root), null, file);
+  write("blog/Undated.md", "---\ntitle: Undated\n---\n");
+  for (const file of ["blog/2026-11-24-dated.md", "blog/2026/11/24/nested.md", "blog/front-matter-date.md", "blog/Undated.md"]) {
+    assert.equal(await skipReason(file, blogs, {}, root), null, file);
   }
 });
 
+test("--skip-undated leaves out posts without a date", async () => {
+  assert.match(await skipReason("blog/Undated.md", blogs, { skipUndated: true }, root), /no date.*--skip-undated/);
+  assert.equal(await skipReason("blog/front-matter-date.md", blogs, { skipUndated: true }, root), null);
+  assert.equal(await skipReason("blog/2026-11-24-dated.md", blogs, { skipUndated: true }, root), null);
+});
+
+test("a blog's include patterns decide what counts as a post", async () => {
+  const onlyPosts = [{ path: "blog", include: ["posts/**/*.md"], exclude: [] }];
+  write("blog/posts/a.md", "---\n---\n");
+  write("blog/notes/b.md", "---\n---\n");
+  assert.equal(await skipReason("blog/posts/a.md", onlyPosts, {}, root), null);
+  assert.equal(await skipReason("blog/notes/b.md", onlyPosts, {}, root), "", "not a post: nothing to report");
+});
+
 test("everything else is skipped, with a reason for blog files", async () => {
-  write("blog/Welcome.md", "---\ntitle: Welcome\n---\n");
   write("blog/2026-11-24-draft.md", "---\ndraft: true\n---\n");
   write("blog/2026-11-24-unlisted.md", "---\nunlisted: true\n---\n");
   write("blog/_template.md", "---\n---\n");
@@ -62,7 +76,6 @@ test("everything else is skipped, with a reason for blog files", async () => {
     "README.md": "",
     "docs/a.md": "",
     "blog/image.png": "",
-    "blog/Welcome.md": "no date",
     "blog/2026-11-24-draft.md": "draft: true",
     "blog/2026-11-24-unlisted.md": "unlisted: true",
     "blog/_template.md": "exclude",
@@ -71,7 +84,7 @@ test("everything else is skipped, with a reason for blog files", async () => {
     "blog/2026-11-24-ignored.md": "--ignore",
   };
   for (const [file, reason] of Object.entries(cases)) {
-    const actual = await skipReason(file, blogs, ["**/*-ignored.md"], root);
+    const actual = await skipReason(file, blogs, { ignore: ["**/*-ignored.md"] }, root);
     if (reason === "") assert.equal(actual, "", file);
     else assert.match(actual, new RegExp(reason.replace(/[-]/g, "\\$&")), file);
   }

@@ -4,42 +4,34 @@
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { hasTitle, postDescription, postTags } from "../src/shared/posts.js";
+import { hasTitle, postAddress, tagsWithKeys } from "../src/shared/posts.js";
 
-test("hasTitle is false only for missing or blank titles", () => {
-  assert.equal(hasTitle("A post"), true);
+test("hasTitle: only real text counts", () => {
+  assert.equal(hasTitle("A"), true);
   assert.equal(hasTitle("  "), false);
   assert.equal(hasTitle(""), false);
   assert.equal(hasTitle(undefined), false);
 });
 
-test("postTags pairs Docusaurus's tags with how they were written", () => {
-  const metadata = { tags: [{ label: "Personal Knowledge Management" }, { label: "Meta" }] };
-  assert.deepEqual(postTags(metadata, { tags: ["pkm", { label: "Meta", permalink: "/meta" }] }), [
-    { key: "pkm", label: "Personal Knowledge Management" },
-    { key: null, label: "Meta" },
-  ]);
-  assert.deepEqual(postTags({ tags: [] }, undefined), []);
+test("postAddress applies trailingSlash like Docusaurus, keeping the baseUrl", () => {
+  const site = { url: "https://example.com", baseUrl: "/site/" };
+  assert.equal(postAddress("/site/blog/a", { ...site, trailingSlash: true }), "https://example.com/site/blog/a/");
+  assert.equal(postAddress("/site/blog/a/", { ...site, trailingSlash: false }), "https://example.com/site/blog/a");
+  assert.equal(postAddress("/site/blog/a", { ...site, trailingSlash: undefined }), "https://example.com/site/blog/a");
+  assert.equal(postAddress("/site/", { ...site, trailingSlash: false }), "https://example.com/site/", "the base itself keeps its slash");
 });
 
-test("postDescription keeps only what the build steps need", () => {
-  const metadata = {
-    title: " A title ",
-    source: "@site/blog/2026-11-24-a.md",
-    permalink: "/blog/2026/11/24/a",
-    date: "2026-11-24T00:00:00.000Z",
-    unlisted: false,
-    description: "Docusaurus's made-up excerpt",
-    tags: [],
-  };
-  assert.deepEqual(postDescription(metadata, { description: " Mine " }), {
-    title: "A title",
-    description: "Mine",
-    source: "@site/blog/2026-11-24-a.md",
-    permalink: "/blog/2026/11/24/a",
-    date: "2026-11-24T00:00:00.000Z",
-    unlisted: false,
-    tags: [],
-  });
-  assert.equal(postDescription({ ...metadata, title: "" }, {}).description, "", "Docusaurus's excerpt isn't used");
+test("tagsWithKeys matches by label, not position", () => {
+  const labels = new Map([["pkm", "Personal Knowledge Management"]]);
+  const tags = tagsWithKeys(
+    [{ label: "Climate" }, { label: "Personal Knowledge Management" }, { label: "Inline object" }],
+    ["Climate", "Climate", "pkm", { label: "Inline object", permalink: "/x" }],
+    labels
+  );
+  assert.deepEqual(tags, [
+    { key: "Climate", label: "Climate" },
+    { key: "pkm", label: "Personal Knowledge Management" },
+    { key: null, label: "Inline object" },
+  ]);
+  assert.deepEqual(tagsWithKeys(undefined, undefined), []);
 });

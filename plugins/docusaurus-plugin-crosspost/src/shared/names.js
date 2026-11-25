@@ -6,6 +6,10 @@
 /** The name Docusaurus knows this plugin by, used for its shared data. */
 export const PLUGIN_NAME = "docusaurus-plugin-crosspost";
 
+/** The name Docusaurus's blog plugin gives itself, whatever name or path
+ * loaded it (PluginName in @docusaurus/plugin-content-blog). */
+export const BLOG_PLUGIN_NAME = "docusaurus-plugin-content-blog";
+
 /**
  * Networks Bridgy can publish to that this plugin supports, with each one's
  * Bridgy Publish address. Docs: https://brid.gy/about#publish

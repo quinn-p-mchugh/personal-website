@@ -1,36 +1,51 @@
 /**
  * Finishes each blog post page after Docusaurus has built the site.
  *
- * The theme's Container (src/theme/BlogPostItem/Container) leaves a hidden
- * element on every post page, holding the post's details as JSON
- * (data-crosspost-post). For each such page, this step adds inside that
- * element:
+ * Docusaurus gives every plugin's postBuild step the list of loaded plugins
+ * ("plugins"), with each one's settings (defaults filled in) and content.
+ * This step reads every blog from there, whatever way it was configured:
+ * the classic preset (with or without a "blog" option), any number of
+ * blog plugins, shorthand names or file paths, a preset from another
+ * author, or a config file that exports a function. The posts, their
+ * permalinks, tags and front matter come from the blog plugin's own data.
+ * Docs: https://docusaurus.io/docs/api/plugin-methods/lifecycle-apis#postBuild
+ *
+ * Each post's page is found the way Docusaurus's own blog feed finds it
+ * (readOutputHTMLFile in @docusaurus/utils), so every trailingSlash setting
+ * works. On each page, the theme's Container (src/theme/BlogPostItem/
+ * Container) has left a hidden element marked data-crosspost-details. This
+ * step adds inside it:
  * - the post's social text for Bridgy (src/socialText.js), when it has one;
  * - the post's images, as hidden u-photo copies (src/images.js), for
  *   untitled posts and posts written with a socialPostTemplates rule. Titled
  *   posts with the built-in "Title: link" text get none, so the networks
- *   show the link's preview card, as before;
+ *   show the link's preview card;
  * - every hashtag, as a hidden "p-category". Mastodon makes "#Tag" in the
  *   text clickable by itself; Bluesky only does so for hashtags Bridgy
  *   finds listed this way. Docs: https://microformats.org/wiki/h-entry
- * It also writes crosspost.json at the site's root (see manifestFor),
+ * It also writes crosspost.json at the root of the build (see manifestFor),
  * which the "send" command reads to know when a new post is live and where
- * it is (src/cli/send.js).
+ * it is (src/cli/send.js). With i18n, each language is built separately,
+ * so each gets its own crosspost.json under its own baseUrl.
  *
  * Only the inserted parts change; the rest of each page is kept byte for
- * byte. Runs in Docusaurus's postBuild step, so only in production builds.
- * Docs: https://docusaurus.io/docs/api/plugin-methods/lifecycle-apis#postBuild
+ * byte, and each page is replaced in one step (src/shared/files.js), since
+ * the blog plugin reads pages for its feeds at the same time.
  * Tests: test/postPages.test.js
  */
 import fs from "node:fs/promises";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { DomUtils, parseDocument } from "htmlparser2";
-import { blogOptionObjects } from "./blogs.js";
+import { readTagLabels } from "./blogs.js";
 import { socialPhotos } from "./images.js";
+import { writeFileSafely } from "./shared/files.js";
 import { hashtagNamesFromTags, hashtagsIn, newHashtagNames } from "./shared/hashtags.js";
-import { PLUGIN_NAME } from "./shared/names.js";
+import { BLOG_PLUGIN_NAME, PLUGIN_NAME } from "./shared/names.js";
+import { hasTitle, postAddress, tagsWithKeys } from "./shared/posts.js";
 import { chooseTemplate, escapeHtml, renderTemplate } from "./socialText.js";
+
+const require = createRequire(import.meta.url);
 
 /** File name of the list of published posts, at the site's root. */
 export const MANIFEST_FILE = "crosspost.json";
@@ -38,29 +53,11 @@ export const MANIFEST_FILE = "crosspost.json";
 /** Version of crosspost.json's layout; raised if it ever changes. */
 export const MANIFEST_VERSION = 1;
 
+/** Docusaurus's default "include" for a blog: every Markdown and MDX file. */
+export const DEFAULT_BLOG_INCLUDE = ["**/*.{md,mdx}"];
+
 /** Elements whose text is never searched for hashtags. */
 const NOT_PROSE = new Set(["code", "pre", "kbd", "samp", "a", "script", "style", "svg"]);
-
-/**
- * Lists every HTML file in the built site.
- *
- * Args:
- *     folder: The build folder, or a folder inside it.
- *
- * Returns:
- *     A promise of absolute paths of .html files.
- */
-export async function htmlFiles(folder) {
-  const entries = await fs.readdir(folder, { withFileTypes: true });
-  const nested = await Promise.all(
-    entries.map((entry) => {
-      const full = path.join(folder, entry.name);
-      if (entry.isDirectory()) return htmlFiles(full);
-      return entry.name.endsWith(".html") ? [full] : [];
-    })
-  );
-  return nested.flat();
-}
 
 /**
  * Tells whether an element has a class.
@@ -74,31 +71,6 @@ export async function htmlFiles(folder) {
  */
 function hasClass(element, name) {
   return String(element.attribs.class || "").split(/\s+/).includes(name);
-}
-
-/**
- * Finds the parts of a post page this step needs.
- *
- * Args:
- *     html: A built page's HTML.
- *
- * Returns:
- *     { details, content, post } for a post's own page: the hidden details
- *     element, the post's text element (e-content), and the post's details
- *     parsed from JSON. null for any other page, or if the JSON is broken.
- */
-export function findPostPage(html) {
-  const document = parseDocument(html, { withStartIndices: true, withEndIndices: true });
-  const entry = DomUtils.findOne((el) => hasClass(el, "h-entry"), document.children, true);
-  if (!entry) return null;
-  const details = DomUtils.findOne((el) => "data-crosspost-post" in el.attribs, [entry], true);
-  const content = DomUtils.findOne((el) => hasClass(el, "e-content"), [entry], true);
-  if (!details || !content) return null;
-  try {
-    return { details, content, post: JSON.parse(details.attribs["data-crosspost-post"]) };
-  } catch {
-    return null;
-  }
 }
 
 /**
@@ -162,63 +134,6 @@ export function insertAtEnd(html, element, insert) {
 }
 
 /**
- * Finds which blog a post's Markdown file belongs to.
- *
- * Args:
- *     source: The post's source, as Docusaurus gives it, e.g.
- *         "@site/blog-ideas/2026/my-post.md".
- *     blogFolders: Each blog's "path" setting, e.g. ["blog", "blog-ideas"].
- *
- * Returns:
- *     The blog's folder as written in its "path" setting, or null. If blog
- *     folders are nested, the innermost one wins.
- */
-export function blogFolderOf(source, blogFolders) {
-  const file = String(source || "").replace(/^@site\//, "");
-  const tidy = (folder) => String(folder).replace(/^\.\//, "").replace(/\/+$/, "");
-  return (
-    blogFolders
-      .filter((folder) => file.startsWith(`${tidy(folder)}/`))
-      .sort((a, b) => tidy(b).length - tidy(a).length)[0] ?? null
-  );
-}
-
-/**
- * Collects everything the social text needs to know about a post.
- *
- * Args:
- *     page: From findPostPage.
- *     pageUrl: The post's full address.
- *     blogFolders: Each blog's "path" setting.
- *     tagsToHashtags: The tagsToHashtags setting.
- *
- * Returns:
- *     { title, description, url, blogFolder, tags, contentHtml,
- *     contentText, textHashtags, tagHashtags }: textHashtags are the
- *     hashtags written in the post; tagHashtags are its tags as hashtags,
- *     without excluded tags or ones already in the text.
- */
-export function describePost(page, pageUrl, blogFolders, tagsToHashtags) {
-  const { post, content } = page;
-  const tags = Array.isArray(post.tags) ? post.tags : [];
-  const textHashtags = newHashtagNames(hashtagsIn(proseText(content)));
-  const tagHashtags = tagsToHashtags.enabled
-    ? newHashtagNames(hashtagNamesFromTags(tags, tagsToHashtags.excludedTags), textHashtags)
-    : [];
-  return {
-    title: String(post.title || ""),
-    description: String(post.description || ""),
-    url: pageUrl,
-    blogFolder: blogFolderOf(post.source, blogFolders),
-    tags,
-    contentHtml: socialContentHtml(content),
-    contentText: proseText(content).replace(/\s+/g, " ").trim(),
-    textHashtags,
-    tagHashtags,
-  };
-}
-
-/**
  * Builds the hidden markup added to one post page.
  *
  * Args:
@@ -241,59 +156,188 @@ export function addedMarkup(socialText, networks, photos, hashtags) {
   return text + images + categories;
 }
 
+
 /**
- * Finishes one built page, if it's a post page.
+ * Finds the parts of a post page this step needs.
  *
  * Args:
- *     file: The page's path in the build folder.
- *     options: The plugin's settings.
- *     context: { outDir, siteUrl, baseUrl, cacheDir, blogFolders }.
+ *     html: A built page's HTML.
  *
  * Returns:
- *     A promise of the post's crosspost.json entry ({ source, url, date }),
- *     with the number of images attached; null for other pages and for
- *     unlisted posts (which still get their markup).
+ *     { details, content }: the hidden details element and the post's text
+ *     element (e-content), both inside the page's h-entry; null when the
+ *     page has no such markup (for example, when a component in src/theme
+ *     replaces the plugin's BlogPostItem/Container).
  */
-export async function finishPostPage(file, options, context) {
-  const html = await fs.readFile(file, "utf8");
-  if (!html.includes("data-crosspost-post")) return null;
-  const page = findPostPage(html);
-  if (!page) return null;
+export function findPostPage(html) {
+  const document = parseDocument(html, { withStartIndices: true, withEndIndices: true });
+  const entry = DomUtils.findOne((el) => hasClass(el, "h-entry"), document.children, true);
+  if (!entry) return null;
+  const details = DomUtils.findOne((el) => "data-crosspost-details" in el.attribs, [entry], true);
+  const content = DomUtils.findOne((el) => hasClass(el, "e-content"), [entry], true);
+  return details && content ? { details, content } : null;
+}
 
-  const pageUrl = new URL(page.post.permalink, context.siteUrl).href;
-  const post = describePost(page, pageUrl, context.blogFolders, options.tagsToHashtags);
+/**
+ * Turns a path into one with forward slashes, as crosspost.json uses.
+ *
+ * Args:
+ *     filePath: A relative path.
+ *
+ * Returns:
+ *     The same path with "/" between folders.
+ */
+function posixPath(filePath) {
+  return filePath.split(path.sep).join("/");
+}
+
+/**
+ * Lists the site's blogs, as Docusaurus loaded them.
+ *
+ * Args:
+ *     plugins: The loaded plugins, from postBuild's "plugins".
+ *     siteDir: The site folder.
+ *     localizationDir: This language's translations folder, from postBuild
+ *         (e.g. "<site>/i18n/fr"); may be undefined.
+ *
+ * Returns:
+ *     For each blog: { id, path, folder, localizedFolder, include, exclude,
+ *     tags, posts }. path is the content folder relative to the site
+ *     folder, with "/"; folder and localizedFolder are absolute (where
+ *     Docusaurus reads posts and their translations); include, exclude and
+ *     tags are the blog's settings with Docusaurus's defaults; posts are the
+ *     blog plugin's posts for this build (drafts are already left out).
+ *     Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#configuration
+ */
+export function loadedBlogs(plugins, siteDir, localizationDir) {
+  const { GlobExcludeDefault, getPluginI18nPath } = require("@docusaurus/utils");
+  return (plugins || [])
+    .filter((plugin) => plugin && plugin.name === BLOG_PLUGIN_NAME)
+    .map((plugin) => {
+      const options = plugin.options || {};
+      const id = options.id ?? "default";
+      const folder = path.resolve(siteDir, options.path ?? "blog");
+      const localizedFolder = localizationDir
+        ? getPluginI18nPath({ localizationDir, pluginName: BLOG_PLUGIN_NAME, pluginId: id })
+        : folder;
+      return {
+        id,
+        path: posixPath(path.relative(siteDir, folder)) || ".",
+        folder,
+        localizedFolder,
+        include: options.include ?? DEFAULT_BLOG_INCLUDE,
+        exclude: options.exclude ?? GlobExcludeDefault,
+        tags: options.tags,
+        posts: (plugin.content && plugin.content.blogPosts) || [],
+      };
+    });
+}
+
+/**
+ * Finds the built HTML file of a page, the way Docusaurus's blog feed does
+ * (readOutputHTMLFile in @docusaurus/utils): "<path>/index.html" unless
+ * trailingSlash is false, "<path>.html" unless trailingSlash is true.
+ *
+ * Args:
+ *     permalink: The page's permalink, including the baseUrl.
+ *     site: { outDir, baseUrl, trailingSlash }.
+ *
+ * Returns:
+ *     A promise of the file's path, or null if neither file exists.
+ */
+export async function postPageFile(permalink, site) {
+  const relative = permalink.startsWith(site.baseUrl) ? permalink.slice(site.baseUrl.length) : permalink;
+  const withSlash = path.join(site.outDir, relative, "index.html");
+  const base = path.join(site.outDir, relative.replace(/\/$/, ""));
+  const withoutSlash = /\.html?$/i.test(base) ? base : `${base}.html`;
+  const candidates = [site.trailingSlash !== false && withSlash, site.trailingSlash !== true && withoutSlash].filter(Boolean);
+  for (const candidate of candidates) {
+    try {
+      await fs.access(candidate);
+      return candidate;
+    } catch {
+      // Not this one; try the next.
+    }
+  }
+  return null;
+}
+
+/**
+ * Collects everything the social text needs to know about a post.
+ *
+ * Args:
+ *     metadata: The post's metadata from the blog plugin.
+ *     content: The post's e-content element on its page.
+ *     blog: The post's blog, from loadedBlogs.
+ *     address: The post's full public address.
+ *     tagLabels: Map of the blog's tags-file keys to labels.
+ *     tagsToHashtags: The tagsToHashtags setting.
+ *
+ * Returns:
+ *     { title, description, url, blogFolder, blogId, tags, contentHtml,
+ *     contentText, textHashtags, tagHashtags }: textHashtags are the
+ *     hashtags written in the post; tagHashtags are its tags as hashtags,
+ *     without excluded tags or ones already in the text.
+ */
+export function describePost(metadata, content, blog, address, tagLabels, tagsToHashtags) {
+  const frontMatter = metadata.frontMatter || {};
+  const tags = tagsWithKeys(metadata.tags, frontMatter.tags, tagLabels);
+  const textHashtags = newHashtagNames(hashtagsIn(proseText(content)));
+  const tagHashtags = tagsToHashtags.enabled
+    ? newHashtagNames(hashtagNamesFromTags(tags, tagsToHashtags.excludedTags), textHashtags)
+    : [];
+  return {
+    title: hasTitle(metadata.title) ? metadata.title.trim() : "",
+    description: typeof frontMatter.description === "string" ? frontMatter.description.trim() : "",
+    url: address,
+    blogFolder: blog.path,
+    blogId: blog.id,
+    tags,
+    contentHtml: socialContentHtml(content),
+    contentText: proseText(content).replace(/\s+/g, " ").trim(),
+    textHashtags,
+    tagHashtags,
+  };
+}
+
+/**
+ * Finishes one post's page.
+ *
+ * Args:
+ *     metadata: The post's metadata from the blog plugin.
+ *     blog: The post's blog, from loadedBlogs.
+ *     tagLabels: Map of the blog's tags-file keys to labels.
+ *     options: The plugin's settings, with template files read.
+ *     context: { outDir, siteUrl, baseUrl, trailingSlash, cacheDir }.
+ *
+ * Returns:
+ *     A promise of { entry, images, problem }: entry is the post's
+ *     crosspost.json entry ({ source, url, date }), or null for unlisted
+ *     posts (which still get their markup); images is how many images
+ *     were attached; problem is "no page" or "no markup" when the page
+ *     couldn't be finished, else null.
+ */
+export async function finishPostPage(metadata, blog, tagLabels, options, context) {
+  const file = await postPageFile(metadata.permalink, context);
+  if (!file) return { entry: null, images: 0, problem: "no page" };
+  const html = await fs.readFile(file, "utf8");
+  const page = findPostPage(html);
+  if (!page) return { entry: null, images: 0, problem: "no markup" };
+
+  const address = postAddress(metadata.permalink, { url: context.siteUrl, baseUrl: context.baseUrl, trailingSlash: context.trailingSlash });
+  const post = describePost(metadata, page.content, blog, address, tagLabels, options.tagsToHashtags);
   const { template, fromSettings } = chooseTemplate(options.socialPostTemplates, post);
   const socialText = template ? renderTemplate(template, post) : "";
   const attachImages = options.images.enabled && (post.title === "" || (fromSettings && socialText !== ""));
 
   const images = DomUtils.findAll((el) => el.name === "img", [page.content]);
-  const photos = attachImages ? await socialPhotos(images, pageUrl, options.images, context) : [];
+  const photos = attachImages ? await socialPhotos(images, address, options.images, context) : [];
   const hashtags = [...post.textHashtags, ...post.tagHashtags];
 
-  await fs.writeFile(file, insertAtEnd(html, page.details, addedMarkup(socialText, options.networks, photos, hashtags)));
-  if (page.post.unlisted) return null;
-  const source = String(page.post.source || "").replace(/^@site\//, "");
-  return { source, url: pageUrl, date: page.post.date, images: photos.length };
-}
-
-/**
- * Describes each blog for crosspost.json.
- *
- * Args:
- *     siteConfig: The Docusaurus config object.
- *
- * Returns:
- *     { path, exclude } for each blog: its content folder and the glob
- *     patterns of files it leaves out, both as Docusaurus uses them
- *     (with Docusaurus's defaults when not set).
- *     Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#configuration
- */
-export function blogDescriptions(siteConfig) {
-  const { GlobExcludeDefault } = createRequire(import.meta.url)("@docusaurus/utils");
-  return blogOptionObjects(siteConfig).map((options) => ({
-    path: options.path ?? "blog",
-    exclude: options.exclude ?? GlobExcludeDefault,
-  }));
+  await writeFileSafely(file, insertAtEnd(html, page.details, addedMarkup(socialText, options.networks, photos, hashtags)));
+  if (metadata.unlisted) return { entry: null, images: photos.length, problem: null };
+  const source = String(metadata.source || "").replace(/^@site\//, "");
+  return { entry: { source, url: address, date: new Date(metadata.date).toISOString() }, images: photos.length, problem: null };
 }
 
 /**
@@ -301,47 +345,56 @@ export function blogDescriptions(siteConfig) {
  *
  * Args:
  *     options: The plugin's settings.
- *     blogs: From blogDescriptions.
+ *     blogs: From loadedBlogs.
  *     entries: { source, url, date } for each published post.
  *
  * Returns:
- *     { generator, version, networks, blogs, posts }, with posts sorted by
- *     source file.
+ *     { generator, version, networks, blogs, posts }: blogs gives each
+ *     blog's id, content folder and include and exclude patterns; posts are
+ *     sorted by source file.
  */
 export function manifestFor(options, blogs, entries) {
   return {
     generator: PLUGIN_NAME,
     version: MANIFEST_VERSION,
     networks: options.networks,
-    blogs,
-    posts: entries
-      .map(({ source, url, date }) => ({ source, url, date }))
-      .sort((a, b) => a.source.localeCompare(b.source)),
+    blogs: blogs.map(({ id, path: folder, include, exclude }) => ({ id, path: folder, include, exclude })),
+    posts: [...entries].sort((a, b) => a.source.localeCompare(b.source)),
   };
 }
 
 /**
  * Finishes every post page and writes crosspost.json.
  *
- * Called from the plugin's postBuild step.
+ * Called from the plugin's postBuild step, once per language.
  *
  * Args:
  *     options: The plugin's settings, with template files read.
- *     context: { outDir, siteUrl, baseUrl, cacheDir, siteConfig }.
+ *     context: { plugins, siteDir, localizationDir, outDir, siteUrl,
+ *         baseUrl, trailingSlash, cacheDir }, mostly from postBuild.
  *
  * Returns:
- *     A promise of { posts, images }: how many published posts were
- *     finished, and how many images were attached to them.
+ *     A promise of { posts, images, withoutPage, withoutMarkup }: how many
+ *     published posts were finished, how many images were attached, and
+ *     the source files of posts whose page wasn't found or had no markup.
  */
 export async function finishPostPages(options, context) {
-  const blogs = blogDescriptions(context.siteConfig);
-  const blogFolders = blogs.map((blog) => blog.path);
+  const blogs = loadedBlogs(context.plugins, context.siteDir, context.localizationDir);
   const entries = [];
-  for (const file of await htmlFiles(context.outDir)) {
-    const entry = await finishPostPage(file, options, { ...context, blogFolders });
-    if (entry) entries.push(entry);
+  const withoutPage = [];
+  const withoutMarkup = [];
+  let images = 0;
+  for (const blog of blogs) {
+    const tagLabels = await readTagLabels({ folder: blog.folder, localizedFolder: blog.localizedFolder, options: { tags: blog.tags } });
+    for (const { metadata } of blog.posts) {
+      const result = await finishPostPage(metadata, blog, tagLabels, options, context);
+      if (result.problem === "no page") withoutPage.push(metadata.source);
+      if (result.problem === "no markup") withoutMarkup.push(metadata.source);
+      if (result.entry) entries.push(result.entry);
+      images += result.images;
+    }
   }
   const manifest = manifestFor(options, blogs, entries);
-  await fs.writeFile(path.join(context.outDir, MANIFEST_FILE), `${JSON.stringify(manifest, null, 2)}\n`);
-  return { posts: entries.length, images: entries.reduce((sum, entry) => sum + entry.images, 0) };
+  await writeFileSafely(path.join(context.outDir, MANIFEST_FILE), `${JSON.stringify(manifest, null, 2)}\n`);
+  return { posts: entries.length, images, withoutPage, withoutMarkup };
 }

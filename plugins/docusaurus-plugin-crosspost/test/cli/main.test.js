@@ -14,6 +14,8 @@ test("send's options are read and defaulted", () => {
   assert.equal(options.saveSyndication, false);
   assert.equal(options.waitMinutes, 20);
   assert.equal(options.checkEverySeconds, 30);
+  assert.equal(options.skipUndated, false, "undated posts are sent by default");
+  assert.equal(parseCommandLine(["send", "--site-url", "https://x.org", "--skip-undated"]).options.skipUndated, true);
 });
 
 test("--help and no command show the usage", () => {
