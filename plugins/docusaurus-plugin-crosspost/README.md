@@ -261,6 +261,7 @@ The "Also on" links and the responses section are theme components, `CrosspostSy
 | `--crosspost-action-color` | Each reply's "Reply on" link (the muted text color by default, so it passes contrast whatever your link color) |
 | `--crosspost-mastodon-background`, `-background-hover`, `-color` | The "Reply on Mastodon" button |
 | `--crosspost-bluesky-background`, `-background-hover`, `-color` | The "Reply on Bluesky" button |
+| `--crosspost-mastodon-text-color`, `--crosspost-bluesky-text-color` | Each reply's "Reply on" link on hover and keyboard focus |
 
 The reply buttons use Mastodon's and Bluesky's colors. In light mode they're slightly darker shades, with white text. In dark mode they're the brand colors themselves, with black text. Each pairing reaches the 4.5:1 text contrast [WCAG 2.2 AA](https://www.w3.org/TR/WCAG22/#contrast-minimum) asks for. If you change them, check the contrast again.
 

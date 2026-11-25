@@ -56,6 +56,11 @@
   --crosspost-bluesky-background: #0560c9;
   --crosspost-bluesky-background-hover: #0451ab;
   --crosspost-bluesky-color: #ffffff;
+
+  /* Each reply's "Reply on" link turns its network's color on hover and
+     keyboard focus (7.3:1 and 6.0:1 on white). */
+  --crosspost-mastodon-text-color: #563acc;
+  --crosspost-bluesky-text-color: #0560c9;
 }
 
 /* Dark mode: the brand colors themselves, with dark text, so both the text
@@ -69,6 +74,9 @@
   --crosspost-bluesky-background: #1185fe;
   --crosspost-bluesky-background-hover: #3d9bfe;
   --crosspost-bluesky-color: #000000;
+  /* Lighter in dark mode, for small text (6.0:1 and 4.8:1). */
+  --crosspost-mastodon-text-color: #8c8dff;
+  --crosspost-bluesky-text-color: #1185fe;
 }
 
 /* Hidden on screen, still read by screen readers. */
@@ -412,9 +420,20 @@ a.crosspost-reply__date:hover {
   color: var(--crosspost-action-color);
 }
 
-.crosspost-reply__action:hover {
+.crosspost-reply__action:hover,
+.crosspost-reply__action:focus-visible {
   color: var(--ifm-font-color-base);
   text-decoration: underline;
+}
+
+.crosspost-reply--mastodon .crosspost-reply__action:hover,
+.crosspost-reply--mastodon .crosspost-reply__action:focus-visible {
+  color: var(--crosspost-mastodon-text-color);
+}
+
+.crosspost-reply--bluesky .crosspost-reply__action:hover,
+.crosspost-reply--bluesky .crosspost-reply__action:focus-visible {
+  color: var(--crosspost-bluesky-text-color);
 }
 
 .crosspost-reply__text {
