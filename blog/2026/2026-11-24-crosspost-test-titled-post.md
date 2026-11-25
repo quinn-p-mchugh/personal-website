@@ -6,6 +6,9 @@ tags: ["Crosspost Test", "IndieWeb"]
 authors: qmchugh
 hide_table_of_contents: true
 draft: false
+syndication:
+  - https://mastodon.social/@quinnmchugh/117675306859247865
+  - https://bsky.app/profile/quinnmchugh.bsky.social/post/3n34ewtyb6n2g
 ---
 This post has a title, a description and tags, and no template applies to it. It should go out as its title and link, then its description, then its tags as hashtags. Its image below should not be attached, so the networks can show the link's preview instead.
 
