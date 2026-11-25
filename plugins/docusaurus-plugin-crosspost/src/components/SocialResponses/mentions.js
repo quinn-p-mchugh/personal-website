@@ -135,6 +135,32 @@ export function authorOf(author) {
 }
 
 /**
+ * Works out a person's handle from their profile address, to show under
+ * their name. webmention.io doesn't send handles, but the profile address
+ * holds one on both networks.
+ *
+ * Args:
+ *     profileUrl: A profile address, e.g. "https://mastodon.social/@quinn"
+ *         or "https://bsky.app/profile/quinn.bsky.social"; may be null.
+ *
+ * Returns:
+ *     "@quinn@mastodon.social" or "@quinn.bsky.social"; for other
+ *     addresses, the host and path (e.g. "example.com/me"); "" if none.
+ */
+export function handleOf(profileUrl) {
+  const safe = safeUrl(profileUrl);
+  if (!safe) return "";
+  const url = new URL(safe);
+  const parts = url.pathname.split("/").filter(Boolean).map((part) => decodeURIComponent(part));
+  if ((url.hostname === "bsky.app" || url.hostname.endsWith(".bsky.app")) && parts[0] === "profile" && parts[1]) {
+    return `@${parts[1]}`;
+  }
+  // Mastodon and most other fediverse servers: https://server/@user
+  if (parts.length === 1 && /^@[^@]+$/.test(parts[0])) return `${parts[0]}@${url.hostname}`;
+  return `${url.hostname}${url.pathname.replace(/\/$/, "")}`;
+}
+
+/**
  * Gets the value that identifies a response, for spotting repeats.
  *
  * Args:

@@ -20,8 +20,14 @@
  * - Lists for avatars and replies; replies are an ordered list, oldest
  *   first. Each reply's date is a <time> element.
  * - Avatars in the likes and reposts rows are links named by the person's
- *   name (their alt text). A reply's avatar is decorative, since the name
- *   is next to it, so it isn't read twice or tabbed to twice.
+ *   name (their alt text). A reply's avatar links to the same profile as
+ *   the name next to it, so it is hidden from screen readers and skipped
+ *   by the Tab key: the name is read, and tabbed to, once.
+ * - "Show all" opens the full list in a native modal <dialog>, which keeps
+ *   focus inside, closes with Esc, and returns focus to the button.
+ *   Docs: https://developer.mozilla.org/docs/Web/HTML/Element/dialog
+ * - Each reply's Reply and View links name the person for screen readers
+ *   ("Reply to Quinn on Mastodon"), so a list of links still makes sense.
  * - Links that open a new tab say so to screen readers.
  * - Loading and error messages are announced through a status region.
  * - Colors meet WCAG 2.2 AA contrast in light and dark mode; focus is
@@ -37,11 +43,11 @@
  * "npm run swizzle docusaurus-plugin-crosspost CrosspostResponses".
  * Docs: https://docusaurus.io/docs/swizzling
  */
-import React, { useEffect, useId, useState } from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
 import { translate } from "@docusaurus/Translate";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { usePluralForm } from "@docusaurus/theme-common";
-import { formatDate, groupMentions, initialOf, mentionsApiUrl, networkName } from "../../components/SocialResponses/mentions.js";
+import { formatDate, groupMentions, handleOf, initialOf, mentionsApiUrl, networkName } from "../../components/SocialResponses/mentions.js";
 import { NEW_TAB_NOTE } from "../CrosspostSyndicationLinks/index.js";
 
 /** Link attributes for addresses written by other people. */
@@ -138,7 +144,85 @@ function Avatar({ author, decorative }) {
 }
 
 /**
- * The likes or reposts row: a heading with the count, and avatars.
+ * A dialog listing everyone who liked or reposted: picture, name and
+ * handle, each linked to their profile.
+ *
+ * Uses the browser's own modal <dialog> (showModal), which keeps keyboard
+ * focus inside, closes with Esc, and puts focus back on the button that
+ * opened it. The list is only built while the dialog is open, and the
+ * pictures load as they scroll into view, so long lists stay quick.
+ *
+ * Args:
+ *     props.title: The dialog's heading, e.g. "34 likes".
+ *     props.entries: The responses to list.
+ *     props.onClose: Called when the dialog closes.
+ *
+ * Returns:
+ *     The dialog.
+ */
+function PeopleDialog({ title, entries, onClose }) {
+  const dialogRef = useRef(null);
+  const headingId = useId();
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (dialog && !dialog.open) dialog.showModal();
+  }, []);
+  const close = () => dialogRef.current && dialogRef.current.close();
+  return (
+    <dialog
+      ref={dialogRef}
+      className="crosspost-people-dialog"
+      aria-labelledby={headingId}
+      onClose={onClose}
+      onClick={(event) => {
+        // A click on the backdrop lands on the <dialog> itself: close.
+        if (event.target === dialogRef.current) close();
+      }}>
+      <div className="crosspost-people-dialog__header">
+        <h2 className="crosspost-people-dialog__title" id={headingId}>
+          {title}
+        </h2>
+        <button
+          type="button"
+          className="crosspost-people-dialog__close"
+          onClick={close}
+          aria-label={translate({ id: "crosspost.responses.close", message: "Close" })}>
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <ul className="crosspost-people-dialog__list">
+        {entries.map((entry) => {
+          const handle = handleOf(entry.author.url);
+          const person = (
+            <>
+              <Avatar author={entry.author} decorative />
+              <span className="crosspost-people-dialog__names">
+                <span className="crosspost-people-dialog__name">{entry.author.name}</span>
+                {handle && <span className="crosspost-people-dialog__handle">{handle}</span>}
+              </span>
+            </>
+          );
+          return (
+            <li key={entry.id} className="crosspost-people-dialog__person">
+              {entry.author.url ? (
+                <a className="crosspost-people-dialog__link" href={entry.author.url} {...EXTERNAL_LINK}>
+                  {person}
+                  <NewTabNote />
+                </a>
+              ) : (
+                <span className="crosspost-people-dialog__link">{person}</span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </dialog>
+  );
+}
+
+/**
+ * The likes or reposts row: a heading with the count, avatars, and a
+ * "Show all" button that lists everyone with their names.
  *
  * Args:
  *     props.kind: "likes" or "reposts" (also the CSS modifier).
@@ -150,6 +234,7 @@ function Avatar({ author, decorative }) {
  */
 function Reactions({ kind, title, entries }) {
   const headingId = useId();
+  const [showingAll, setShowingAll] = useState(false);
   if (!entries.length) return null;
   const shown = entries.slice(0, MAX_FACES);
   const hidden = entries.length - shown.length;
@@ -173,17 +258,27 @@ function Reactions({ kind, title, entries }) {
           </li>
         ))}
         {hidden > 0 && (
-          <li className="crosspost-reactions__more">
+          <li className="crosspost-reactions__more" aria-hidden="true">
             {translate({ id: "crosspost.responses.more", message: "+{count} more" }, { count: hidden })}
           </li>
         )}
       </ul>
+      <button
+        type="button"
+        className="crosspost-reactions__show-all"
+        aria-haspopup="dialog"
+        onClick={() => setShowingAll(true)}>
+        {translate({ id: "crosspost.responses.showAll", message: "Show all" })}
+        <span className="crosspost-visually-hidden"> {title}</span>
+      </button>
+      {showingAll && <PeopleDialog title={title} entries={entries} onClose={() => setShowingAll(false)} />}
     </div>
   );
 }
 
 /**
- * One reply: avatar, name, network and date, then the text.
+ * One reply: avatar, name and handle, date, the text, then links to reply
+ * to it and to view it on its network.
  *
  * Args:
  *     props.reply: A reply from groupMentions.
@@ -195,40 +290,60 @@ function Reactions({ kind, title, entries }) {
 function Reply({ reply, locale }) {
   const date = formatDate(reply.published, locale);
   const network = reply.url ? networkName(reply.url) : "";
-  const time = date && <time dateTime={reply.published}>{date}</time>;
+  const handle = handleOf(reply.author.url);
+  const name = reply.author.name;
   return (
     <li className={`crosspost-reply${network ? ` crosspost-reply--${network.toLowerCase()}` : ""}`}>
-      <Avatar author={reply.author} decorative />
+      {reply.author.url ? (
+        // Same destination as the name link: hidden from screen readers and
+        // the Tab key, so each person is read and tabbed to once.
+        <a className="crosspost-reply__avatar-link" href={reply.author.url} aria-hidden="true" tabIndex={-1} {...EXTERNAL_LINK}>
+          <Avatar author={reply.author} decorative />
+        </a>
+      ) : (
+        <Avatar author={reply.author} decorative />
+      )}
       <div className="crosspost-reply__body">
         <p className="crosspost-reply__header">
           {reply.author.url ? (
             <a className="crosspost-reply__author" href={reply.author.url} {...EXTERNAL_LINK}>
-              {reply.author.name}
+              {name}
               <NewTabNote />
             </a>
           ) : (
-            <span className="crosspost-reply__author">{reply.author.name}</span>
+            <span className="crosspost-reply__author">{name}</span>
           )}
-          {time && (
-            <span className="crosspost-reply__meta">
-              {reply.url ? (
-                <a className="crosspost-reply__date" href={reply.url} {...EXTERNAL_LINK}>
-                  {time}
-                  {network && (
-                    <span className="crosspost-reply__network">
-                      {" "}
-                      {translate({ id: "crosspost.responses.onNetwork", message: "on {network}" }, { network })}
-                    </span>
-                  )}
-                  <NewTabNote />
-                </a>
-              ) : (
-                <span className="crosspost-reply__date">{time}</span>
-              )}
+          {handle && <span className="crosspost-reply__handle">{handle}</span>}
+          {date && (
+            <span className="crosspost-reply__date">
+              <time dateTime={reply.published}>{date}</time>
             </span>
           )}
         </p>
         <p className="crosspost-reply__text">{reply.text}</p>
+        {reply.url && (
+          <p className="crosspost-reply__actions">
+            {/* Replying happens on the reply's own page; there, Mastodon offers to
+                continue on the reader's own server, and Bluesky has no link that
+                opens a reply directly. */}
+            <a className="crosspost-reply__action crosspost-reply__action--reply" href={reply.url} {...EXTERNAL_LINK}>
+              {translate({ id: "crosspost.responses.replyToReply", message: "Reply" })}
+              <span className="crosspost-visually-hidden">
+                {" "}
+                {translate({ id: "crosspost.responses.replyToReplyFull", message: "to {name} on {network}" }, { name, network })}
+              </span>
+              <NewTabNote />
+            </a>
+            <a className="crosspost-reply__action crosspost-reply__action--view" href={reply.url} {...EXTERNAL_LINK}>
+              {translate({ id: "crosspost.responses.viewOn", message: "View on {network}" }, { network })}
+              <span className="crosspost-visually-hidden">
+                {" "}
+                {translate({ id: "crosspost.responses.viewOnFull", message: "(reply from {name})" }, { name })}
+              </span>
+              <NewTabNote />
+            </a>
+          </p>
+        )}
       </div>
     </li>
   );

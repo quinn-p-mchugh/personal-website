@@ -258,6 +258,7 @@ The "Also on" links and the responses section are theme components, `CrosspostSy
 | `--crosspost-muted-color`, `--crosspost-small-font-size` | Dates, counts and other secondary text |
 | `--crosspost-border-color` | The line above the section |
 | `--crosspost-focus-color` | The keyboard focus outline |
+| `--crosspost-action-color` | "Show all", "Reply" and "View on" links (near-black, or near-white in dark mode, so they pass contrast whatever your link color) |
 | `--crosspost-mastodon-background`, `-background-hover`, `-color` | The "Reply on Mastodon" button |
 | `--crosspost-bluesky-background`, `-background-hover`, `-color` | The "Reply on Bluesky" button |
 
@@ -270,9 +271,10 @@ The reply buttons use Mastodon's and Bluesky's colors. In light mode they're sli
 | `crosspost-syndication`, `__label`, `__link`, `__link--mastodon`, `__link--bluesky` | "Also on" links |
 | `crosspost-responses`, `__heading`, `__status` | The section, its heading, and its loading / empty / error message |
 | `crosspost-reply-buttons`, `crosspost-reply-button`, `--mastodon`, `--bluesky` | Reply buttons |
-| `crosspost-reactions`, `--likes`, `--reposts`, `__title`, `__faces`, `__face`, `__link`, `__more` | Likes and reposts rows |
+| `crosspost-reactions`, `--likes`, `--reposts`, `__title`, `__faces`, `__face`, `__link`, `__more`, `__show-all` | Likes and reposts rows |
+| `crosspost-people-dialog`, `__header`, `__title`, `__close`, `__list`, `__person`, `__link`, `__names`, `__name`, `__handle` | The "Show all" dialog |
 | `crosspost-replies`, `__title`, `__list` | Replies |
-| `crosspost-reply`, `--mastodon`, `--bluesky`, `__body`, `__header`, `__author`, `__meta`, `__date`, `__network`, `__text` | One reply |
+| `crosspost-reply`, `--mastodon`, `--bluesky`, `__avatar-link`, `__body`, `__header`, `__author`, `__handle`, `__date`, `__text`, `__actions`, `__action`, `__action--reply`, `__action--view` | One reply |
 | `crosspost-avatar`, `--initial` | A picture, or an initial for people without one |
 | `crosspost-visually-hidden` | Text only screen readers read |
 
@@ -289,11 +291,14 @@ See [Swizzling](https://docusaurus.io/docs/swizzling). The four `BlogPostItem` c
 **Accessibility, built in:**
 - The section has its own heading, and each group of responses has a heading too.
 - Avatars and replies are lists; replies are ordered, oldest first, and each reply's date is a `<time>` element.
-- Avatars in the likes and reposts rows are links named by the person's name. A reply's avatar is skipped by screen readers, since the name is next to it.
+- Avatars in the likes and reposts rows are links named by the person's name.
+- A reply's avatar links to the same profile as the name next to it. Screen readers and the Tab key skip the avatar, so each person is read and reached once.
+- "Show all" opens the browser's own modal dialog. Focus starts on the Close button and stays inside the dialog. Esc or a click outside closes it, and focus goes back to "Show all".
+- Each reply's "Reply" and "View on" links name the person for screen readers, for example "Reply to Quinn on Mastodon".
 - Links that open a new tab say so to screen readers.
 - Loading and errors are announced through a status message.
 - Focus is always visible, every target is at least 24 by 24 pixels, and buttons keep their outline in forced-colors mode.
-- Checked with [axe-core](https://github.com/dequelabs/axe-core) against WCAG 2.2 AA in light, dark and mobile layouts.
+- Checked with [axe-core](https://github.com/dequelabs/axe-core) against WCAG 2.2 AA in light, dark and mobile layouts, with the dialog open and closed.
 
 ## Supported Docusaurus setups
 
