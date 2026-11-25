@@ -17,6 +17,7 @@
  */
 import fs from "node:fs/promises";
 import { say } from "./log.js";
+import { writeFileSafely } from "../shared/files.js";
 
 /** A top-level "syndication:" line, and a YAML list item ("  - value"). */
 const SYNDICATION_KEY = /^syndication\s*:(.*)$/;
@@ -134,7 +135,7 @@ export async function saveSyndication(file, urls) {
   }
   if (updated === parts.frontMatter) return false;
   try {
-    await fs.writeFile(file, bom + parts.opening + updated + parts.rest);
+    await writeFileSafely(file, bom + parts.opening + updated + parts.rest);
   } catch (error) {
     say(`  note    couldn't write ${file} (${error.code}); not saved: ${urls.join(", ")}`);
     return false;

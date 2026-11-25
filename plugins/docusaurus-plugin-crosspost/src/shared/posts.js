@@ -3,6 +3,12 @@
  * so they all agree. Runs both in Node and in the browser.
  * Tests: test/posts.test.js
  */
+import * as utilsCommon from "@docusaurus/utils-common";
+
+// The same helper Docusaurus's own links and feeds use. The package is
+// CommonJS: Node puts its functions on "default", while webpack and the
+// loader Docusaurus uses for config files put them on the module itself.
+const applyTrailingSlash = utilsCommon.applyTrailingSlash ?? utilsCommon.default.applyTrailingSlash;
 
 /**
  * Tells whether a post has a visible title.
@@ -21,50 +27,54 @@ export function hasTitle(title) {
 }
 
 /**
- * Pairs each of a post's tags with the way it was written in front matter.
+ * Works out a post's full public address, the way Docusaurus does.
  *
- * Docusaurus builds metadata.tags from front matter tags one for one, in the
- * same order, so the same position gives the same tag. The key is what lets
- * tagsToHashtags.excludedTags match a tags-file key as well as a label.
+ * Docusaurus's permalinks have no trailing slash; the site's trailingSlash
+ * setting decides whether the live address has one. Docusaurus's own blog
+ * feed applies it the same way (applyTrailingSlash), so Bridgy, the feed
+ * and the "send" command all see one address per post.
+ * Docs: https://docusaurus.io/docs/api/docusaurus-config#trailingSlash
  *
  * Args:
- *     metadata: The post's Docusaurus metadata.
- *     frontMatter: The post's front matter.
+ *     permalink: The post's permalink, e.g. "/blog/my-post" (includes the
+ *         baseUrl).
+ *     site: { url, baseUrl, trailingSlash } from the Docusaurus config
+ *         (baseUrl as for the current language).
  *
  * Returns:
- *     { key, label } for each tag: key is the front matter string, or null
- *     for a tag written as an object; label is what the site shows.
+ *     The address, e.g. "https://example.com/blog/my-post/".
  */
-export function postTags(metadata, frontMatter) {
-  const written = (frontMatter && Array.isArray(frontMatter.tags) && frontMatter.tags) || [];
-  return (metadata.tags || []).map((tag, i) => ({
-    key: typeof written[i] === "string" ? written[i] : null,
-    label: tag.label,
-  }));
+export function postAddress(permalink, site) {
+  const path = applyTrailingSlash(permalink, { trailingSlash: site.trailingSlash, baseUrl: site.baseUrl });
+  return new URL(path, site.url).href;
 }
 
 /**
- * Describes a post for the steps that run after the build.
+ * Pairs each of a post's tags with the way it was written in front matter.
+ *
+ * A front matter tag is either a key from the blog's tags file (shown with
+ * that file's label) or a label written inline. Matching by label, not by
+ * position, stays right when Docusaurus drops a repeated tag. The key is
+ * what lets tagsToHashtags.excludedTags match a tags-file key as well as
+ * a label.
  *
  * Args:
- *     metadata: The post's Docusaurus metadata.
- *     frontMatter: The post's front matter.
+ *     metadataTags: The post's tags from Docusaurus metadata ({ label }).
+ *     frontMatterTags: The post's front matter "tags", as written.
+ *     tagLabels: Map of tags-file keys to labels (see readTagLabels).
  *
  * Returns:
- *     A plain object: title ("" when untitled), the front matter
- *     description ("" when not set; Docusaurus's own made-up description is
- *     not used), the Markdown source path, the permalink, the date, whether
- *     the post is unlisted, and its tags.
+ *     { key, label } for each tag: key is the front matter string that
+ *     produced the tag, or null for a tag written as an object.
  */
-export function postDescription(metadata, frontMatter) {
-  const description = frontMatter && typeof frontMatter.description === "string" ? frontMatter.description : "";
-  return {
-    title: hasTitle(metadata.title) ? metadata.title.trim() : "",
-    description: description.trim(),
-    source: metadata.source,
-    permalink: metadata.permalink,
-    date: metadata.date,
-    unlisted: Boolean(metadata.unlisted),
-    tags: postTags(metadata, frontMatter),
-  };
+export function tagsWithKeys(metadataTags, frontMatterTags, tagLabels = new Map()) {
+  const keyForLabel = new Map();
+  for (const written of Array.isArray(frontMatterTags) ? frontMatterTags : []) {
+    if (typeof written !== "string") continue;
+    const label = tagLabels.get(written) ?? written;
+    if (!keyForLabel.has(label)) keyForLabel.set(label, written);
+  }
+  return (metadataTags || [])
+    .filter((tag) => tag && typeof tag.label === "string")
+    .map((tag) => ({ key: keyForLabel.get(tag.label) ?? null, label: tag.label }));
 }

@@ -61,3 +61,19 @@ test("adds parseFrontMatter only when hashtagsToTags is on, keeping the site's o
 test("wrong settings stop the build with a clear message", () => {
   assert.throws(() => withCrosspost(sampleConfig().config, { images: { enabled: "yes" } }), /images\.enabled/);
 });
+
+test("a config written as a function, async function or promise works too", async () => {
+  const isSetUp = (config) => config.plugins.some((entry) => Array.isArray(entry) && /crosspost[\\/]src[\\/]index\.js$/.test(entry[0]));
+  const fromFunction = withCrosspost(() => sampleConfig().config, {});
+  assert.equal(typeof fromFunction, "function");
+  assert.equal(isSetUp(await fromFunction()), true);
+  const fromAsync = withCrosspost(async () => sampleConfig().config, {});
+  assert.equal(isSetUp(await fromAsync()), true);
+  assert.equal(isSetUp(await withCrosspost(Promise.resolve(sampleConfig().config), {})), true);
+  assert.throws(() => withCrosspost(async () => ({}), { networks: ["myspace"] }), /networks/, "settings are checked straight away");
+});
+
+test("a site with no plugins or presets listed still gets the plugin", () => {
+  const config = withCrosspost({}, {});
+  assert.equal(config.plugins.length, 1);
+});

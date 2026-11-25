@@ -13,7 +13,8 @@
  * - injectHtmlTags: adds the webmention and rel="me" links to every page.
  * - contentLoaded: shares the few settings those components need.
  * - postBuild: adds each post's social text, hashtags and images, and
- *   writes crosspost.json (src/postPages.js).
+ *   writes crosspost.json (src/postPages.js), using the blogs and posts
+ *   Docusaurus loaded.
  * Plugin docs: https://docusaurus.io/docs/api/plugin-methods
  */
 import path from "node:path";
@@ -67,6 +68,45 @@ export function browserSettings(options) {
 }
 
 /**
+ * Tells whether the site uses Docusaurus's hash router, which builds one
+ * page for the whole site instead of a page per post.
+ * Docs: https://docusaurus.io/docs/api/docusaurus-config#future
+ *
+ * Args:
+ *     siteConfig: The Docusaurus config.
+ *
+ * Returns:
+ *     True when future.experimental_router is "hash".
+ */
+export function usesHashRouter(siteConfig) {
+  return Boolean(siteConfig.future && siteConfig.future.experimental_router === "hash");
+}
+
+/**
+ * Explains posts the build step couldn't finish.
+ *
+ * Args:
+ *     result: From finishPostPages.
+ *
+ * Returns:
+ *     Warning messages; empty when every post was finished.
+ */
+export function buildWarnings(result) {
+  const messages = [];
+  const list = (sources) => sources.slice(0, 5).join(", ") + (sources.length > 5 ? `, and ${sources.length - 5} more` : "");
+  if (result.withoutMarkup.length) {
+    messages.push(
+      `${result.withoutMarkup.length} post page(s) have no cross-posting markup, so they won't be cross-posted: ${list(result.withoutMarkup)}. ` +
+        "A BlogPostItem or BlogPostItem/Container component in src/theme that doesn't wrap the original, or a custom blogPostComponent setting, can cause this; see the README's \"Supported Docusaurus setups\"."
+    );
+  }
+  if (result.withoutPage.length) {
+    messages.push(`Couldn't find the built page of ${result.withoutPage.length} post(s), so they won't be cross-posted: ${list(result.withoutPage)}.`);
+  }
+  return messages;
+}
+
+/**
  * The plugin itself, called by Docusaurus.
  *
  * Args:
@@ -95,15 +135,29 @@ export default function crosspostPlugin(context, options) {
       actions.setGlobalData(browserSettings(options));
     },
 
-    async postBuild({ outDir, siteConfig }) {
-      const { posts, images } = await finishPostPages({ ...options, socialPostTemplates }, {
-        outDir,
-        siteConfig,
-        siteUrl: siteConfig.url,
-        baseUrl: siteConfig.baseUrl,
-        cacheDir: path.join(context.siteDir, "node_modules", ".cache", PLUGIN_NAME),
-      });
-      console.log(`[${PLUGIN_NAME}] Prepared ${posts} post(s) for cross-posting, with ${images} image(s).`);
+    async postBuild({ outDir, siteConfig, siteDir, baseUrl, plugins, localizationDir }) {
+      if (usesHashRouter(siteConfig)) {
+        console.warn(
+          `[${PLUGIN_NAME}] future.experimental_router is "hash", so the site has no page per post for Bridgy to read. Nothing was prepared for cross-posting.`
+        );
+        return;
+      }
+      const result = await finishPostPages(
+        { ...options, socialPostTemplates },
+        {
+          plugins,
+          siteDir,
+          localizationDir,
+          outDir,
+          siteUrl: siteConfig.url,
+          // The baseUrl of the language being built (with i18n, "/fr/" etc.).
+          baseUrl: baseUrl ?? siteConfig.baseUrl,
+          trailingSlash: siteConfig.trailingSlash,
+          cacheDir: path.join(siteDir, "node_modules", ".cache", PLUGIN_NAME),
+        }
+      );
+      for (const message of buildWarnings(result)) console.warn(`[${PLUGIN_NAME}] ${message}`);
+      console.log(`[${PLUGIN_NAME}] Prepared ${result.posts} post(s) for cross-posting, with ${result.images} image(s).`);
     },
   };
 }

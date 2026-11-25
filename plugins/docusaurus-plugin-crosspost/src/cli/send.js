@@ -63,16 +63,16 @@ export function candidateFiles(options) {
  * Args:
  *     files: Added files.
  *     blogs: { path, exclude } for each blog, from crosspost.json.
- *     ignore: The --ignore patterns.
+ *     choices: { ignore, skipUndated }, from the command's options.
  *
  * Returns:
  *     A promise of the files to send. Skipped blog files are printed with
  *     the reason.
  */
-export async function postsToSend(files, blogs, ignore) {
+export async function postsToSend(files, blogs, choices) {
   const posts = [];
   for (const file of files) {
-    const reason = await skipReason(file, blogs, ignore);
+    const reason = await skipReason(file, blogs, choices);
     if (reason === null) posts.push(file);
     else if (reason) say(`  skip    ${file}: ${reason}`);
   }
@@ -104,7 +104,8 @@ export async function sendPost(file, url, networks, options, tools) {
  *
  * Args:
  *     options: { siteUrl, files, addedSince, addedInLastDays, url, ignore,
- *         dryRun, saveSyndication, waitMinutes, checkEverySeconds }.
+ *         skipUndated, dryRun, saveSyndication, waitMinutes,
+ *         checkEverySeconds }.
  *     tools: { request, sleep }; real ones by default.
  *
  * Returns:
@@ -135,7 +136,7 @@ export async function send(options, tools = defaultTools()) {
       reportError(`Can't read the site's crosspost.json after ${options.waitMinutes} minutes (${problem}). Is the site built with docusaurus-plugin-crosspost, and did the deploy finish?`);
       return 1;
     }
-    const posts = await postsToSend(files, manifest.blogs, options.ignore);
+    const posts = await postsToSend(files, manifest.blogs, { ignore: options.ignore, skipUndated: options.skipUndated });
     if (!posts.length) {
       say("No new posts to send.");
       return 0;

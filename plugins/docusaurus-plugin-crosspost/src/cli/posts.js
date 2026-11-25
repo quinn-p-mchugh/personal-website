@@ -1,13 +1,13 @@
 /**
  * Decides which added files are blog posts to cross-post.
  *
- * A file is cross-posted when it is a Markdown file in one of the site's
- * blogs (as listed in the live site's crosspost.json), isn't left out by
- * that blog's "exclude" patterns or the --ignore option, isn't a draft or
- * unlisted, and has a date: in its front matter, or in its path like
- * "2026-11-24-my-post.md". Undated pages, like a blog's welcome page, are
- * never cross-posted, because Docusaurus would date them by their last
- * change.
+ * A file is cross-posted when it is in one of the site's blogs (as listed
+ * in the live site's crosspost.json), matches that blog's "include"
+ * patterns and not its "exclude" patterns (exactly as Docusaurus decides
+ * which files are posts), doesn't match the --ignore option, and isn't a
+ * draft or unlisted. Posts without a date in their path or front matter
+ * are sent too, since Docusaurus dates them by the file's creation time;
+ * --skip-undated leaves them out (for example, a blog's welcome page).
  * Docs: https://docusaurus.io/docs/blog#blog-post-date
  *       https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#configuration
  * Tests: test/cli/posts.test.js
@@ -25,6 +25,24 @@ const require = createRequire(import.meta.url);
  * @docusaurus/plugin-content-blog/lib/blogUtils.js (3.10).
  */
 const DATE_IN_PATH = /^(?<folder>.*)(?<date>\d{4}[-/]\d{1,2}[-/]\d{1,2})[-/]?(?<text>.*?)(?:\/index)?.mdx?$/;
+
+/** Docusaurus's default "include" for a blog, for an older crosspost.json
+ * that doesn't list it. */
+const DEFAULT_INCLUDE = ["**/*.{md,mdx}"];
+
+/**
+ * Tells whether a post's path, inside its blog folder, carries a date the
+ * way Docusaurus reads one.
+ *
+ * Args:
+ *     relative: The path inside the blog folder, with "/".
+ *
+ * Returns:
+ *     True for paths like "2026-11-24-my-post.md" or "2026/11/24/my-post.md".
+ */
+export function hasDateInPath(relative) {
+  return DATE_IN_PATH.test(relative);
+}
 
 /**
  * Finds which blog a file is in.
@@ -87,18 +105,22 @@ export async function readFrontMatter(file) {
  * Args:
  *     file: A path relative to the site folder, with "/".
  *     blogs: { path, exclude } for each blog, from crosspost.json.
- *     ignore: Extra glob patterns from --ignore, matched against the path
- *         inside the blog folder.
+ *     choices: { ignore, skipUndated }: ignore holds extra glob patterns
+ *         from --ignore, matched against the path inside the blog folder;
+ *         skipUndated leaves out posts without a date in their path or
+ *         front matter.
  *     root: The site folder.
  *
  * Returns:
  *     A promise of the reason, or null when the file is a post to send.
  *     "" means "not a blog post at all" (nothing worth printing).
  */
-export async function skipReason(file, blogs, ignore, root = process.cwd()) {
-  if (!/\.mdx?$/.test(file)) return "";
+export async function skipReason(file, blogs, choices, root = process.cwd()) {
+  const { ignore = [], skipUndated = false } = choices;
   const located = blogOfFile(file, blogs);
   if (!located) return "";
+  // Images and other files in a blog folder aren't posts: say nothing.
+  if (!matchesAny(located.relative, located.blog.include || DEFAULT_INCLUDE)) return "";
   if (matchesAny(located.relative, located.blog.exclude || [])) return "left out by the blog's exclude setting";
   if (ignore.length && matchesAny(located.relative, ignore)) return "matches --ignore";
   const fullPath = path.join(root, file);
@@ -110,6 +132,6 @@ export async function skipReason(file, blogs, ignore, root = process.cwd()) {
   const frontMatter = await readFrontMatter(fullPath);
   if (frontMatter.draft === true) return "draft: true";
   if (frontMatter.unlisted === true) return "unlisted: true";
-  if (!frontMatter.date && !DATE_IN_PATH.test(located.relative)) return "no date (pages without one aren't cross-posted)";
+  if (skipUndated && !frontMatter.date && !hasDateInPath(located.relative)) return "no date in its file name or front matter (--skip-undated)";
   return null;
 }

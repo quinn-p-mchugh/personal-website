@@ -15,6 +15,7 @@ import { useBlogPost } from "@docusaurus/plugin-content-blog/client";
 import useCrosspostSettings from "../../../client/useCrosspostSettings.js";
 import SocialResponses, { SyndicationLinks } from "../../../components/SocialResponses/index.js";
 import { syndicationUrls } from "../../../components/SocialResponses/mentions.js";
+import { postAddress } from "../../../shared/posts.js";
 
 /**
  * The post footer, followed by cross-post links and responses.
@@ -35,7 +36,8 @@ export default function FooterWrapper(props) {
 
   const showResponses = settings.showResponses && settings.webmentionUsername !== "";
   const syndication = syndicationUrls(frontMatter && frontMatter.syndication);
-  const pageUrl = new URL(metadata.permalink, siteConfig.url).href;
+  // The same address the rest of the plugin uses (trailingSlash applied).
+  const pageUrl = postAddress(metadata.permalink, siteConfig);
   return (
     <>
       <Footer {...props} />

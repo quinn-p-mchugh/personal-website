@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { addHashtagTags, createParseFrontMatter, proseHashtags, tagsForHashtags } from "../src/hashtagsToTags.js";
+import { addHashtagTags, createParseFrontMatter, proseHashtags, siteDirOf, tagsForHashtags } from "../src/hashtagsToTags.js";
 
 const site = fs.mkdtempSync(path.join(os.tmpdir(), "hashtags-to-tags-"));
 fs.mkdirSync(path.join(site, "blog"));
@@ -62,4 +62,44 @@ test("parseFrontMatter adds tags to blog posts only, when enabled", async () => 
 
   const off = createParseFrontMatter({ blogs: [{ path: "blog" }], hashtagsToTags: { enabled: false, excludedHashtags: [] }, siteDir: site });
   assert.equal((await off(params("blog/post.md"))).frontMatter.tags, undefined);
+});
+
+test("with onInlineTags: \"throw\", only hashtags in the tags file become tags", async () => {
+  const parse = createParseFrontMatter({
+    blogs: [{ path: "blog", tags: "../tags.yml", onInlineTags: "throw" }],
+    hashtagsToTags: { enabled: true, excludedHashtags: [] },
+    siteDir: site,
+  });
+  const result = await parse({
+    filePath: path.join(site, "blog/post.md"),
+    fileContent: "",
+    defaultParseFrontMatter: async () => ({ frontMatter: {}, content: "About #PKM and #Brand_New" }),
+  });
+  assert.deepEqual(result.frontMatter.tags, ["pkm"]);
+});
+
+test("the site folder is found from the file, wherever the build started", async () => {
+  fs.writeFileSync(path.join(site, "docusaurus.config.mjs"), "export default {};\n");
+  const cache = new Map();
+  assert.equal(siteDirOf(path.join(site, "blog", "deep", "post.md"), cache), site);
+  assert.equal(cache.get(path.join(site, "blog", "deep")), site, "remembered for next time");
+  assert.equal(siteDirOf(path.join(os.tmpdir(), "no-site-here-x", "a.md")), null);
+
+  const parse = createParseFrontMatter({ blogs: [{ path: "blog", tags: "../tags.yml" }], hashtagsToTags: { enabled: true, excludedHashtags: [] } });
+  const result = await parse({
+    filePath: path.join(site, "blog/post.md"),
+    fileContent: "",
+    defaultParseFrontMatter: async () => ({ frontMatter: {}, content: "#PKM" }),
+  });
+  assert.deepEqual(result.frontMatter.tags, ["pkm"]);
+});
+
+test("translated posts get tags too", async () => {
+  const parse = createParseFrontMatter({ blogs: [{ path: "blog" }], hashtagsToTags: { enabled: true, excludedHashtags: [] }, siteDir: site });
+  const result = await parse({
+    filePath: path.join(site, "i18n/fr/docusaurus-plugin-content-blog/post.md"),
+    fileContent: "",
+    defaultParseFrontMatter: async () => ({ frontMatter: {}, content: "#Climat" }),
+  });
+  assert.deepEqual(result.frontMatter.tags, ["Climat"]);
 });

@@ -74,7 +74,7 @@ const folderList = Joi.array().items(Joi.string().min(1)).min(1).messages(needsO
  */
 const templateRule = Joi.object({
   appliesTo: Joi.object({
-    // Blogs, by content folder as in each blog's "path" setting.
+    // Blogs, by content folder (each blog's "path" setting) or plugin "id".
     blogs: folderList,
     // Hashtags written in the post's text (not ones made from its tags).
     hashtags: conditionList,
