@@ -6,7 +6,8 @@
  * 1. Find the files added since a commit, in the last few days, or given
  *    by name (src/cli/addedFiles.js).
  * 2. Keep the ones that are posts to publish (src/cli/posts.js), using the
- *    blogs listed in the live site's crosspost.json.
+ *    blogs listed in the live site's crosspost.json (waiting for that
+ *    file, in case the first deploy with the plugin isn't live yet).
  * 3. Wait until each is live, by its entry in crosspost.json
  *    (src/cli/liveSite.js), which also gives its exact address.
  * 4. Send each to Bridgy (src/cli/bridgy.js), to the networks the site's
@@ -20,7 +21,7 @@
  */
 import { filesAddedInLastDays, filesAddedSince } from "./addedFiles.js";
 import { defaultTools, sendToBridgy } from "./bridgy.js";
-import { fetchManifest, waitForPosts } from "./liveSite.js";
+import { waitForManifest, waitForPosts } from "./liveSite.js";
 import { reportError, say } from "./log.js";
 import { skipReason } from "./posts.js";
 import { saveSyndication } from "./syndication.js";
@@ -114,7 +115,7 @@ export async function send(options, tools = defaultTools()) {
   const timing = { waitMinutes: options.waitMinutes, checkEverySeconds: options.checkEverySeconds };
 
   if (options.url) {
-    const { manifest, problem } = await fetchManifest(options.siteUrl, tools.request);
+    const { manifest, problem } = await waitForManifest(options.siteUrl, timing, tools);
     if (!manifest) {
       reportError(`Can't read the site's crosspost.json (${problem}).`);
       return 1;
@@ -129,9 +130,9 @@ export async function send(options, tools = defaultTools()) {
     const markdown = files.filter((file) => /\.mdx?$/i.test(file));
     say(`Added files: ${files.length}, of which Markdown: ${markdown.length ? markdown.join(", ") : "none"}`);
     if (!files.length) return 0;
-    const { manifest, problem } = await fetchManifest(options.siteUrl, tools.request);
+    const { manifest, problem } = await waitForManifest(options.siteUrl, timing, tools);
     if (!manifest) {
-      reportError(`Can't read the site's crosspost.json (${problem}). Is the site built with docusaurus-plugin-crosspost?`);
+      reportError(`Can't read the site's crosspost.json after ${options.waitMinutes} minutes (${problem}). Is the site built with docusaurus-plugin-crosspost, and did the deploy finish?`);
       return 1;
     }
     const posts = await postsToSend(files, manifest.blogs, options.ignore);
