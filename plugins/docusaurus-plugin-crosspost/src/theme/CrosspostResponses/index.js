@@ -1,18 +1,23 @@
 /**
- * The responses to a blog post on Mastodon and Bluesky: likes, reposts and
- * replies, with buttons to reply on each network.
+ * The responses to a blog post on Mastodon and Bluesky: likes, reposts,
+ * replies and Bluesky quotes, with buttons to reply on each network.
  *
  * Responses are fetched in the reader's browser from webmention.io, where
  * Bridgy delivers them, so new ones appear without rebuilding the site. If
  * webmention.io can't be reached, the section says so and the reply
  * buttons still show.
  *
- * Privacy: the reader's browser contacts webmention.io and loads avatars
- * from the responders' Mastodon and Bluesky servers.
+ * Bluesky quotes come from Bluesky's public API (Bridgy doesn't send them);
+ * Mastodon's quotes API needs a login, so Mastodon quotes can't be shown.
+ *
+ * Privacy: the reader's browser contacts webmention.io, Bluesky's public
+ * API (for quotes, when the post has a Bluesky copy) and loads avatars from
+ * the responders' Mastodon and Bluesky servers. Answers are reused for a few
+ * minutes (src/shared/responseCache.js); no cookies are used.
  *
  * Safety: response text is shown as plain text, never as HTML, and every
  * link is checked to be a normal web address, because the data comes from
- * strangers (src/components/SocialResponses/mentions.js).
+ * strangers (src/shared/responses.js).
  *
  * Accessibility:
  * - A labelled <section> with its own heading, and a heading for each kind
@@ -51,7 +56,20 @@ import React, { useEffect, useId, useRef, useState } from "react";
 import { translate } from "@docusaurus/Translate";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { usePluralForm } from "@docusaurus/theme-common";
-import { formatDate, groupMentions, handleOf, initialOf, mentionsApiUrl, networkName } from "../../components/SocialResponses/mentions.js";
+import { responseCache } from "../../shared/responseCache.js";
+import {
+  blueskyPostRef,
+  formatDate,
+  groupMentions,
+  handleOf,
+  initialOf,
+  mentionsApiUrl,
+  networkName,
+  quoteEntries,
+  quotesApiUrl,
+  resolveHandleUrl,
+  withoutQuotes,
+} from "../../shared/responses.js";
 import { NEW_TAB_NOTE } from "../CrosspostSyndicationLinks/index.js";
 
 /** Link attributes for addresses written by other people. */
@@ -66,8 +84,10 @@ const DEFAULT_SETTINGS = {
   maxAvatarsShown: 20,
   maxRepliesShown: null,
   replyOrder: "oldest",
+  showQuotes: true,
   showReplyButtons: true,
   headingLevel: 2,
+  cacheMinutes: 5,
 };
 
 /**
@@ -89,36 +109,106 @@ export function headingTags(level) {
 const LOADING = { status: "loading", groups: null };
 
 /**
- * Loads a page's responses from webmention.io.
+ * Fetches JSON, failing on any answer that isn't 2xx.
+ *
+ * Args:
+ *     url: The address.
+ *     signal: An AbortSignal, to cancel when the page changes.
+ *
+ * Returns:
+ *     A promise of the parsed JSON.
+ */
+async function fetchJson(url, signal) {
+  const res = await fetch(url, { signal });
+  if (!res.ok) throw new Error(`${new URL(url).host} answered HTTP ${res.status}`);
+  return res.json();
+}
+
+/**
+ * Loads the Bluesky posts quoting a post, from Bluesky's public API.
+ *
+ * Args:
+ *     blueskyUrl: The post's Bluesky copy, e.g. "https://bsky.app/profile/me.bsky.social/post/3n34".
+ *     signal: An AbortSignal.
+ *
+ * Returns:
+ *     A promise of quote entries (quoteEntries), oldest first.
+ */
+async function loadQuotes(blueskyUrl, signal) {
+  const ref = blueskyPostRef(blueskyUrl);
+  if (!ref) return [];
+  const did = ref.actor.startsWith("did:") ? ref.actor : (await fetchJson(resolveHandleUrl(ref.actor), signal)).did;
+  if (typeof did !== "string" || !did.startsWith("did:")) return [];
+  const data = await fetchJson(quotesApiUrl(did, ref.postId), signal);
+  return quoteEntries(data && data.posts);
+}
+
+/**
+ * Loads a page's responses: likes, reposts and replies from webmention.io,
+ * and quotes from Bluesky. Each is kept for cacheMinutes (see
+ * src/shared/responseCache.js), so going back to a post doesn't ask again.
  *
  * Starts again from "loading" when the page changes, so one post never
- * shows another post's responses while the new ones load.
+ * shows another post's responses while the new ones load. If quotes can't
+ * be loaded, the rest still shows.
  *
  * Args:
  *     pageUrl: The post's full address.
+ *     options.blueskyUrl: The post's Bluesky copy, or undefined (no quotes).
+ *     options.cacheMinutes: How long answers are reused; 0 never reuses.
  *
  * Returns:
  *     { status, groups }: status is "loading", "ready" or "error"; groups is
- *     { likes, reposts, replies } once ready.
+ *     { likes, reposts, replies, quotes } once ready.
  */
-function useResponses(pageUrl) {
+function useResponses(pageUrl, { blueskyUrl, cacheMinutes }) {
   const [state, setState] = useState(LOADING);
   useEffect(() => {
+    const cache = responseCache();
+    const maxAgeMs = cacheMinutes * 60_000;
+    const responsesKey = `responses:${pageUrl}`;
+    const quotesKey = `quotes:${blueskyUrl}`;
+    const cachedGroups = cache.get(responsesKey, maxAgeMs);
+    const cachedQuotes = blueskyUrl ? cache.get(quotesKey, maxAgeMs) : [];
+    const ready = (groups, quotes) =>
+      setState({ status: "ready", groups: { ...groups, replies: withoutQuotes(groups.replies, quotes), quotes } });
+
+    if (cachedGroups !== undefined && cachedQuotes !== undefined) {
+      ready(cachedGroups, cachedQuotes);
+      return undefined;
+    }
+
     setState(LOADING);
     const controller = new AbortController();
-    fetch(mentionsApiUrl(pageUrl), { signal: controller.signal })
-      .then((res) => {
-        if (!res.ok) throw new Error(`webmention.io answered HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((data) => setState({ status: "ready", groups: groupMentions(data && data.children) }))
+    const groupsPromise =
+      cachedGroups ??
+      fetchJson(mentionsApiUrl(pageUrl), controller.signal).then((data) => {
+        const groups = groupMentions(data && data.children);
+        cache.set(responsesKey, groups);
+        return groups;
+      });
+    const quotesPromise =
+      cachedQuotes ??
+      loadQuotes(blueskyUrl, controller.signal)
+        .then((quotes) => {
+          cache.set(quotesKey, quotes);
+          return quotes;
+        })
+        .catch((error) => {
+          if (error.name === "AbortError") throw error;
+          console.warn("[CrosspostResponses] Could not load Bluesky quotes:", error.message);
+          return [];
+        });
+
+    Promise.all([groupsPromise, quotesPromise])
+      .then(([groups, quotes]) => ready(groups, quotes))
       .catch((error) => {
         if (error.name === "AbortError") return;
         console.warn("[CrosspostResponses] Could not load responses:", error.message);
         setState({ status: "error", groups: null });
       });
     return () => controller.abort();
-  }, [pageUrl]);
+  }, [pageUrl, blueskyUrl, cacheMinutes]);
   return state;
 }
 
@@ -430,7 +520,8 @@ function Reply({ reply, locale, focusRef }) {
  *         copies; the reply buttons link to these.
  *     props.settings: The plugin's "responses" settings (showLikes,
  *         showReposts, showReplies, maxAvatarsShown, maxRepliesShown,
- *         replyOrder, showReplyButtons, headingLevel);
+ *         replyOrder, showQuotes, showReplyButtons, headingLevel,
+ *         cacheMinutes);
  *         missing ones use DEFAULT_SETTINGS.
  *
  * Returns:
@@ -440,13 +531,15 @@ function Reply({ reply, locale, focusRef }) {
 export default function CrosspostResponses({ pageUrl, syndication, settings: given }) {
   const settings = { ...DEFAULT_SETTINGS, ...given };
   const { Heading, Subheading } = headingTags(settings.headingLevel);
-  const { status, groups } = useResponses(pageUrl);
+  const blueskyUrl = settings.showQuotes ? syndication.find((url) => blueskyPostRef(url)) : undefined;
+  const { status, groups } = useResponses(pageUrl, { blueskyUrl, cacheMinutes: settings.cacheMinutes });
   const [showingAllReplies, setShowingAllReplies] = useState(false);
   const firstNewReplyRef = useRef(null);
   const { i18n } = useDocusaurusContext();
   const { selectMessage } = usePluralForm();
   const headingId = useId();
   const repliesHeadingId = useId();
+  const quotesHeadingId = useId();
 
   // Hidden kinds count as none, so "No responses yet" stays accurate.
   const counts = groups
@@ -454,11 +547,14 @@ export default function CrosspostResponses({ pageUrl, syndication, settings: giv
         likes: settings.showLikes ? groups.likes.length : 0,
         reposts: settings.showReposts ? groups.reposts.length : 0,
         replies: settings.showReplies ? groups.replies.length : 0,
+        quotes: settings.showQuotes ? groups.quotes.length : 0,
       }
     : null;
   const replyLimit = settings.maxRepliesShown;
   // webmention.io returns them oldest first (mentionsApiUrl asks for that).
-  const orderedReplies = groups ? (settings.replyOrder === "newest" ? [...groups.replies].reverse() : groups.replies) : [];
+  const inOrder = (entries) => (settings.replyOrder === "newest" ? [...entries].reverse() : entries);
+  const orderedReplies = groups ? inOrder(groups.replies) : [];
+  const orderedQuotes = groups ? inOrder(groups.quotes) : [];
   const shownReplies = replyLimit != null && !showingAllReplies ? orderedReplies.slice(0, replyLimit) : orderedReplies;
   const hiddenReplies = counts && counts.replies ? counts.replies - shownReplies.length : 0;
 
@@ -467,7 +563,7 @@ export default function CrosspostResponses({ pageUrl, syndication, settings: giv
   useEffect(() => {
     if (showingAllReplies && firstNewReplyRef.current) firstNewReplyRef.current.focus();
   }, [showingAllReplies]);
-  const hasResponses = Boolean(counts) && counts.likes + counts.reposts + counts.replies > 0;
+  const hasResponses = Boolean(counts) && counts.likes + counts.reposts + counts.replies + counts.quotes > 0;
   if (!hasResponses && !(settings.showReplyButtons && syndication.length)) return null;
 
   // usePluralForm picks the right form for the site's language from "one|other".
@@ -552,6 +648,18 @@ export default function CrosspostResponses({ pageUrl, syndication, settings: giv
                   {plural("crosspost.responses.moreReplies", "Show {count} more reply|Show {count} more replies", hiddenReplies)}
                 </button>
               )}
+            </div>
+          )}
+          {counts.quotes > 0 && (
+            <div className="crosspost-quotes">
+              <Subheading className="crosspost-quotes__title" id={quotesHeadingId}>
+                {plural("crosspost.responses.quotes", "{count} quote|{count} quotes", counts.quotes)}
+              </Subheading>
+              <ol className="crosspost-quotes__list" aria-labelledby={quotesHeadingId}>
+                {orderedQuotes.map((quote) => (
+                  <Reply key={quote.id} reply={quote} locale={i18n.currentLocale} />
+                ))}
+              </ol>
             </div>
           )}
         </>

@@ -138,7 +138,8 @@
   clip: rect(0 0 0 0);
 }
 
-.crosspost-replies__title {
+.crosspost-replies__title,
+.crosspost-quotes__title {
   margin: 0 0 0.75rem;
   font-size: 1rem;
   font-weight: var(--ifm-font-weight-semibold);
@@ -360,7 +361,8 @@ a.crosspost-people-dialog__link:hover {
   border-radius: var(--crosspost-radius);
 }
 
-.crosspost-replies__list {
+.crosspost-replies__list,
+.crosspost-quotes__list {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;

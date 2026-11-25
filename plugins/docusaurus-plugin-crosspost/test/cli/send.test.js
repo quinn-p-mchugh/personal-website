@@ -1,7 +1,7 @@
 /**
  * Tests for src/cli/send.js: whole runs, with the live site and Bridgy
  * replaced by stand-ins.
- * Run with: npm test   (Node 22 or newer; Node's built-in test runner)
+ * Run with: npm test   (Node's built-in test runner)
  */
 import { after, test } from "node:test";
 import assert from "node:assert/strict";

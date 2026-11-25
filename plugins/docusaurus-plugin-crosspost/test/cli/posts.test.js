@@ -1,6 +1,6 @@
 /**
  * Tests for src/cli/posts.js.
- * Run with: npm test   (Node 22 or newer; Node's built-in test runner. Needs
+ * Run with: npm test   (Node's built-in test runner. Needs
  * the npm packages installed, as for a build.)
  */
 import { after, test } from "node:test";

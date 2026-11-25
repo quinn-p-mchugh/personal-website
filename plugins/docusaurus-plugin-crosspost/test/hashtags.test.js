@@ -1,6 +1,6 @@
 /**
  * Tests for src/shared/hashtags.js.
- * Run with: npm test   (Node 22 or newer; Node's built-in test runner)
+ * Run with: npm test   (Node's built-in test runner)
  * Docs: https://nodejs.org/api/test.html
  */
 import { test } from "node:test";

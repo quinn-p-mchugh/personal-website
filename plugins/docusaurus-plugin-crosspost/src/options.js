@@ -138,6 +138,13 @@ export const OPTIONS_SCHEMA = Joi.object({
     replyOrder: Joi.string().valid("oldest", "newest").default("oldest"),
     // Replies shown before a "Show N more replies" button; null shows all.
     maxRepliesShown: Joi.number().integer().min(1).allow(null).default(null),
+    // Show posts quoting this one on Bluesky, read from Bluesky's public API
+    // (Bridgy doesn't send quotes; Mastodon's quotes API needs a login).
+    showQuotes: Joi.boolean().default(true),
+    // Minutes a reader's browser reuses responses before asking again; 0
+    // asks on every visit. Kept in sessionStorage, or in memory when the
+    // browser blocks storage. No cookies.
+    cacheMinutes: Joi.number().min(0).max(1440).default(5),
     // The "Reply on Mastodon" and "Reply on Bluesky" buttons at the top.
     showReplyButtons: Joi.boolean().default(true),
     // Level of the "Responses" heading, so it fits the page's outline; the

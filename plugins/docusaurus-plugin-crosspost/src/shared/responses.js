@@ -8,7 +8,7 @@
  * comes back. They have no React or browser code, so they can be tested with
  * plain Node.
  * Docs: https://brid.gy/about and https://github.com/aaronpk/webmention.io
- * Tests: test/mentions.test.js
+ * Tests: test/responses.test.js
  */
 
 /** webmention.io's public API for one page's responses. Docs: README above. */
@@ -281,4 +281,119 @@ export function formatDate(iso, locale = "en") {
     // An unknown language tag: fall back to English.
     return date.toLocaleDateString("en", { year: "numeric", month: "short", day: "numeric" });
   }
+}
+
+/*
+ * Bluesky quote posts.
+ *
+ * Bridgy doesn't send quotes to webmention.io, so they're read straight
+ * from Bluesky's public API, which needs no login:
+ * app.bsky.feed.getQuotes lists the posts quoting a post. It takes the
+ * post's AT-URI ("at://<did>/app.bsky.feed.post/<id>"), so a post address
+ * holding a handle first needs com.atproto.identity.resolveHandle.
+ * Docs: https://github.com/bluesky-social/atproto/blob/main/lexicons/app/bsky/feed/getQuotes.json
+ * Mastodon has a quotes API too, but it requires a logged-in user, so
+ * Mastodon quotes can't be shown.
+ * Docs: https://docs.joinmastodon.org/client/quotes/
+ */
+
+/** Bluesky's public API, for requests that need no login. */
+export const BLUESKY_PUBLIC_API = "https://public.api.bsky.app/xrpc";
+
+/** Most quotes asked for (getQuotes allows up to 100 per request). */
+export const MAX_QUOTES = 100;
+
+/**
+ * Reads the account and post id from a Bluesky post address.
+ *
+ * Args:
+ *     url: e.g. "https://bsky.app/profile/me.bsky.social/post/3n34ewtyb6n2g".
+ *
+ * Returns:
+ *     { actor, postId }: actor is a handle or a DID; null for other
+ *     addresses.
+ */
+export function blueskyPostRef(url) {
+  const safe = safeUrl(url);
+  if (!safe) return null;
+  const parsed = new URL(safe);
+  if (parsed.hostname !== "bsky.app" && !parsed.hostname.endsWith(".bsky.app")) return null;
+  const [profile, actor, post, postId] = parsed.pathname.split("/").filter(Boolean).map((part) => decodeURIComponent(part));
+  if (profile !== "profile" || post !== "post" || !actor || !postId) return null;
+  return { actor, postId };
+}
+
+/**
+ * Builds the request that turns a Bluesky handle into its DID.
+ *
+ * Args:
+ *     handle: e.g. "me.bsky.social".
+ *
+ * Returns:
+ *     The API URL.
+ */
+export function resolveHandleUrl(handle) {
+  return `${BLUESKY_PUBLIC_API}/com.atproto.identity.resolveHandle?${new URLSearchParams({ handle })}`;
+}
+
+/**
+ * Builds the request for the posts quoting a Bluesky post.
+ *
+ * Args:
+ *     did: The post author's DID, e.g. "did:plc:abc".
+ *     postId: The post's id (the last part of its address).
+ *
+ * Returns:
+ *     The API URL.
+ */
+export function quotesApiUrl(did, postId) {
+  const uri = `at://${did}/app.bsky.feed.post/${postId}`;
+  return `${BLUESKY_PUBLIC_API}/app.bsky.feed.getQuotes?${new URLSearchParams({ uri, limit: String(MAX_QUOTES) })}`;
+}
+
+/**
+ * Turns getQuotes' posts into entries shaped like replies (responseEntry).
+ *
+ * Args:
+ *     posts: The "posts" list from app.bsky.feed.getQuotes; may be missing.
+ *
+ * Returns:
+ *     { id, url, author, text, published } for each quote, oldest first;
+ *     url is the quote's bsky.app address.
+ */
+export function quoteEntries(posts) {
+  const entries = [];
+  for (const post of Array.isArray(posts) ? posts : []) {
+    if (!post || typeof post !== "object" || !post.author || typeof post.uri !== "string") continue;
+    const postId = post.uri.split("/").pop();
+    const handle = typeof post.author.handle === "string" ? post.author.handle : post.author.did;
+    if (!postId || !handle) continue;
+    const profileUrl = `https://bsky.app/profile/${encodeURIComponent(handle)}`;
+    const record = post.record && typeof post.record === "object" ? post.record : {};
+    entries.push({
+      id: post.uri,
+      url: `${profileUrl}/post/${encodeURIComponent(postId)}`,
+      author: authorOf({ name: post.author.displayName || `@${handle}`, url: profileUrl, photo: post.author.avatar }),
+      text: typeof record.text === "string" ? record.text.trim() : "",
+      published: [record.createdAt, post.indexedAt].find((date) => typeof date === "string") || "",
+    });
+  }
+  return entries.sort((a, b) => String(a.published).localeCompare(String(b.published)));
+}
+
+/**
+ * Leaves out replies that are really quotes, so nothing shows twice if a
+ * quote also reached webmention.io as a mention.
+ *
+ * Args:
+ *     replies: Replies from groupMentions.
+ *     quotes: Entries from quoteEntries.
+ *
+ * Returns:
+ *     The replies whose Bluesky post id isn't one of the quotes'.
+ */
+export function withoutQuotes(replies, quotes) {
+  const quoteIds = new Set(quotes.map((quote) => (blueskyPostRef(quote.url) || {}).postId).filter(Boolean));
+  if (!quoteIds.size) return replies;
+  return replies.filter((reply) => !quoteIds.has((blueskyPostRef(reply.url) || {}).postId));
 }

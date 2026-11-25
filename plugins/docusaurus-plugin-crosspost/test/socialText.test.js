@@ -1,6 +1,6 @@
 /**
  * Tests for src/socialText.js.
- * Run with: npm test   (Node 22 or newer; Node's built-in test runner)
+ * Run with: npm test   (Node's built-in test runner)
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";

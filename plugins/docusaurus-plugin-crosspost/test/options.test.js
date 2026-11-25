@@ -1,6 +1,6 @@
 /**
  * Tests for src/options.js and the small helpers in src/index.js.
- * Run with: npm test   (Node 22 or newer; Node's built-in test runner)
+ * Run with: npm test   (Node's built-in test runner)
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -29,6 +29,8 @@ test("every setting has a default", () => {
     maxAvatarsShown: 20,
     maxRepliesShown: null,
     replyOrder: "oldest",
+    showQuotes: true,
+    cacheMinutes: 5,
     showReplyButtons: true,
     headingLevel: 2,
   });

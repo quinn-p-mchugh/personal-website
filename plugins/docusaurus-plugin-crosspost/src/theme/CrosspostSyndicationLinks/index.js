@@ -13,7 +13,7 @@
  * Docs: https://docusaurus.io/docs/swizzling
  */
 import React from "react";
-import { networkName } from "../../components/SocialResponses/mentions.js";
+import { networkName } from "../../shared/responses.js";
 
 /** Read by screen readers after links that open a new tab. */
 export const NEW_TAB_NOTE = "(opens in a new tab)";
