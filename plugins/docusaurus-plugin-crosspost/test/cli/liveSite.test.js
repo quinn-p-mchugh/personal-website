@@ -4,7 +4,7 @@
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { fetchManifest, manifestUrl, waitForPosts } from "../../src/cli/liveSite.js";
+import { fetchManifest, manifestUrl, waitForManifest, waitForPosts } from "../../src/cli/liveSite.js";
 
 const manifest = (posts) => JSON.stringify({ version: 1, networks: ["mastodon"], blogs: [{ path: "blog", exclude: [] }], posts });
 
@@ -44,6 +44,17 @@ test("waitForPosts waits until posts appear, then gives their addresses", async 
   assert.deepEqual([...result.found], [["blog/a.md", "https://x.org/a"]]);
   assert.deepEqual(result.missing, []);
   assert.equal(sleeps, 2);
+});
+
+test("waitForManifest waits for a deploy that adds crosspost.json", async () => {
+  const answers = [{ status: 404, body: "", location: "" }, { status: 200, body: manifest([]), location: "" }];
+  let sleeps = 0;
+  const tools = { request: async () => answers.shift(), sleep: async () => (sleeps += 1) };
+  const result = await quietly(() => waitForManifest("https://x.org", { waitMinutes: 5, checkEverySeconds: 1 }, tools));
+  assert.equal(result.manifest.version, 1);
+  assert.equal(sleeps, 1);
+  const never = { request: async () => ({ status: 404, body: "", location: "" }), sleep: async () => {} };
+  assert.match((await quietly(() => waitForManifest("https://x.org", { waitMinutes: 0, checkEverySeconds: 1 }, never))).problem, /404/);
 });
 
 test("waitForPosts gives up when time runs out", async () => {

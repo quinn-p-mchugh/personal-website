@@ -51,6 +51,32 @@ export async function fetchManifest(siteUrl, request) {
 }
 
 /**
+ * Waits until the live site has a usable crosspost.json.
+ *
+ * Right after the first deploy with this plugin, the old site (without
+ * crosspost.json) may still be live for a few minutes, so a missing file
+ * is waited for, like a missing post.
+ *
+ * Args:
+ *     siteUrl: The site's address.
+ *     timing: { waitMinutes, checkEverySeconds }.
+ *     tools: { request, sleep }.
+ *
+ * Returns:
+ *     A promise of { manifest, problem }, as from fetchManifest: the last
+ *     answer when time ran out.
+ */
+export async function waitForManifest(siteUrl, timing, tools) {
+  const deadline = Date.now() + timing.waitMinutes * 60_000;
+  for (;;) {
+    const result = await fetchManifest(siteUrl, tools.request);
+    if (result.manifest || Date.now() >= deadline) return result;
+    say(`  waiting for ${manifestUrl(siteUrl)} (${result.problem})...`);
+    await tools.sleep(timing.checkEverySeconds * 1000);
+  }
+}
+
+/**
  * Waits until the live site lists some post files.
  *
  * Args:
