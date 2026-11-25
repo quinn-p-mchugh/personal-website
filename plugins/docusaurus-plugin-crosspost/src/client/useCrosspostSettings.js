@@ -13,7 +13,7 @@ import { PLUGIN_NAME } from "../shared/names.js";
  *
  * Returns:
  *     The settings shared by the plugin (browserSettings in
- *     src/index.js): networks, showResponses and webmentionUsername,
+ *     src/index.js): networks, responses and webmentionUsername,
  *     with defaults filled in.
  */
 export default function useCrosspostSettings() {

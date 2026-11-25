@@ -57,10 +57,14 @@
   --crosspost-bluesky-background-hover: #0451ab;
   --crosspost-bluesky-color: #ffffff;
 
-  /* Each reply's "Reply on" link turns its network's color on hover and
-     keyboard focus (7.3:1 and 6.0:1 on white). */
-  --crosspost-mastodon-text-color: #563acc;
-  --crosspost-bluesky-text-color: #0560c9;
+  /* Each reply's "Reply on" link: a muted, darker shade of its network's
+     color, lighting up to the brand color on hover and keyboard focus.
+     Mastodon's #6364ff and Bluesky's #1185fe are too light for small text
+     on white (4.4:1 and 3.6:1), so hover uses the closest shades that pass. */
+  --crosspost-mastodon-reply-link-color: #5a5480; /* 7.0:1 */
+  --crosspost-mastodon-reply-link-hover-color: #563acc; /* 7.3:1 */
+  --crosspost-bluesky-reply-link-color: #47607a; /* 6.5:1 */
+  --crosspost-bluesky-reply-link-hover-color: #0560c9; /* 6.0:1 */
 }
 
 /* Dark mode: the brand colors themselves, with dark text, so both the text
@@ -74,9 +78,12 @@
   --crosspost-bluesky-background: #1185fe;
   --crosspost-bluesky-background-hover: #3d9bfe;
   --crosspost-bluesky-color: #000000;
-  /* Lighter in dark mode, for small text (6.0:1 and 4.8:1). */
-  --crosspost-mastodon-text-color: #8c8dff;
-  --crosspost-bluesky-text-color: #1185fe;
+  /* Dark mode: muted light shades; on hover a lighter Mastodon purple
+     (#6364ff is 3.9:1 here) and Bluesky's own blue. */
+  --crosspost-mastodon-reply-link-color: #a8a5cc; /* 7.3:1 */
+  --crosspost-mastodon-reply-link-hover-color: #8c8dff; /* 6.0:1 */
+  --crosspost-bluesky-reply-link-color: #9bb0c8; /* 7.7:1 */
+  --crosspost-bluesky-reply-link-hover-color: #1185fe; /* 4.8:1 */
 }
 
 /* Hidden on screen, still read by screen readers. */
@@ -209,7 +216,8 @@
 
 /* "+14 more": a quiet text button after the avatars, opening the full list.
    At least 24 pixels tall (WCAG 2.2 target size). */
-.crosspost-reactions__more {
+.crosspost-reactions__more,
+.crosspost-replies__more {
   appearance: none;
   min-height: 1.5rem;
   margin-left: 0.25rem;
@@ -225,7 +233,8 @@
   cursor: pointer;
 }
 
-.crosspost-reactions__more:hover {
+.crosspost-reactions__more:hover,
+.crosspost-replies__more:hover {
   color: var(--ifm-font-color-base);
   text-decoration: underline;
 }
@@ -340,6 +349,17 @@ a.crosspost-people-dialog__link:hover {
 
 /* ---- Replies ---- */
 
+.crosspost-replies__more {
+  margin: 1rem 0 0 calc(var(--crosspost-reply-avatar-size) + 0.75rem);
+}
+
+/* The first reply revealed by "Show N more replies" receives focus. */
+.crosspost-reply:focus-visible {
+  outline: 2px solid var(--crosspost-focus-color);
+  outline-offset: 4px;
+  border-radius: var(--crosspost-radius);
+}
+
 .crosspost-replies__list {
   display: flex;
   flex-direction: column;
@@ -412,6 +432,7 @@ a.crosspost-reply__date:hover {
 /* "Reply on Mastodon": quiet until hovered. */
 .crosspost-reply__action {
   display: inline-block;
+  transition: color var(--ifm-transition-fast, 200ms) ease;
   min-height: 1.5rem;
   margin-top: 0.25rem;
   line-height: 1.5rem;
@@ -426,14 +447,22 @@ a.crosspost-reply__date:hover {
   text-decoration: underline;
 }
 
+.crosspost-reply--mastodon .crosspost-reply__action {
+  color: var(--crosspost-mastodon-reply-link-color);
+}
+
 .crosspost-reply--mastodon .crosspost-reply__action:hover,
 .crosspost-reply--mastodon .crosspost-reply__action:focus-visible {
-  color: var(--crosspost-mastodon-text-color);
+  color: var(--crosspost-mastodon-reply-link-hover-color);
+}
+
+.crosspost-reply--bluesky .crosspost-reply__action {
+  color: var(--crosspost-bluesky-reply-link-color);
 }
 
 .crosspost-reply--bluesky .crosspost-reply__action:hover,
 .crosspost-reply--bluesky .crosspost-reply__action:focus-visible {
-  color: var(--crosspost-bluesky-text-color);
+  color: var(--crosspost-bluesky-reply-link-hover-color);
 }
 
 .crosspost-reply__text {
@@ -498,7 +527,8 @@ a.crosspost-reply__date:hover {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .crosspost-reply-button {
+  .crosspost-reply-button,
+  .crosspost-reply__action {
     transition: none;
   }
 }

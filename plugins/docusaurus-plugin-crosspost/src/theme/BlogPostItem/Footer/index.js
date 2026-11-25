@@ -3,7 +3,8 @@
  * - "Also on Mastodon · Bluesky" links to the post's cross-posted copies
  *   (always, because Bridgy needs them to match replies back to the post);
  * - the responses from those networks (likes, reposts, replies), when the
- *   plugin's showResponses setting is on and webmentionUsername is set.
+ *   plugin's responses.enabled setting is on, webmentionUsername is set,
+ *   and the post's front matter doesn't say "crosspost_responses: false".
  * Both are theme components (src/theme/CrosspostSyndicationLinks and
  * src/theme/CrosspostResponses), so a site can restyle or swizzle them.
  *
@@ -36,7 +37,8 @@ export default function FooterWrapper(props) {
 
   if (!isBlogPostPage) return <Footer {...props} />;
 
-  const showResponses = settings.showResponses && settings.webmentionUsername !== "";
+  const showResponses =
+    settings.responses.enabled && settings.webmentionUsername !== "" && !(frontMatter && frontMatter.crosspost_responses === false);
   const syndication = syndicationUrls(frontMatter && frontMatter.syndication);
   // The same address the rest of the plugin uses (trailingSlash applied).
   const pageUrl = postAddress(metadata.permalink, siteConfig);
@@ -44,7 +46,7 @@ export default function FooterWrapper(props) {
     <>
       <Footer {...props} />
       <CrosspostSyndicationLinks urls={syndication} />
-      {showResponses && <CrosspostResponses pageUrl={pageUrl} syndication={syndication} />}
+      {showResponses && <CrosspostResponses pageUrl={pageUrl} syndication={syndication} settings={settings.responses} />}
     </>
   );
 }

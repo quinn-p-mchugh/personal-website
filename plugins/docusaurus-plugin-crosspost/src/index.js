@@ -62,11 +62,11 @@ export function headTags(options) {
  *     options: The plugin's settings.
  *
  * Returns:
- *     { networks, showResponses, webmentionUsername }.
+ *     { networks, responses, webmentionUsername }.
  */
 export function browserSettings(options) {
-  const { networks, showResponses, webmentionUsername } = options;
-  return { networks, showResponses, webmentionUsername };
+  const { networks, responses, webmentionUsername } = options;
+  return { networks, responses, webmentionUsername };
 }
 
 /**

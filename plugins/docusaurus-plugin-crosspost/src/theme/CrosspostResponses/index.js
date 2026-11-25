@@ -56,10 +56,16 @@ import { NEW_TAB_NOTE } from "../CrosspostSyndicationLinks/index.js";
 /** Link attributes for addresses written by other people. */
 const EXTERNAL_LINK = { target: "_blank", rel: "nofollow ugc noopener noreferrer" };
 
-/** Most avatars shown in a likes or reposts row. Up to this many, the row
- * grows with the count, so a popular post looks it; past it (about two
- * lines on a phone), a "+N more" button opens the full list. */
-export const MAX_FACES = 20;
+/** Settings used when the component is given none (e.g. when swizzled
+ * and rendered on its own); the plugin passes its "responses" settings. */
+const DEFAULT_SETTINGS = {
+  showLikes: true,
+  showReposts: true,
+  showReplies: true,
+  maxAvatarsShown: 20,
+  maxRepliesShown: null,
+  showReplyButtons: true,
+};
 
 /** The responses state before webmention.io has answered. */
 const LOADING = { status: "loading", groups: null };
@@ -226,59 +232,88 @@ function PeopleDialog({ title, entries, onClose }) {
 }
 
 /**
- * The likes or reposts row: the count, up to MAX_FACES avatars, and a
+ * The button that opens the full list of likes or reposts.
+ *
+ * Args:
+ *     props.visible: Its visible text, e.g. "+14 more".
+ *     props.title: The row's count, e.g. "34 likes", added for screen
+ *         readers after the visible text ("+14 more, show all 34 likes"),
+ *         so the visible words start its name (WCAG 2.5.3, label in name).
+ *     props.onClick: Opens the list.
+ *     props.countsOnly: True when no avatars are shown; then the name is
+ *         "Show all 34 likes".
+ *
+ * Returns:
+ *     The button.
+ */
+function ShowAllButton({ visible, title, onClick, countsOnly = false }) {
+  return (
+    <button type="button" className="crosspost-reactions__more" aria-haspopup="dialog" onClick={onClick}>
+      {visible}
+      <span className="crosspost-visually-hidden">
+        {countsOnly
+          ? ` ${title}`
+          : translate({ id: "crosspost.responses.showAll", message: ", show all {title}" }, { title })}
+      </span>
+    </button>
+  );
+}
+
+/**
+ * The likes or reposts row: the count, up to maxAvatars avatars, and a
  * "+N more" button that lists everyone with their names when there are more.
  *
  * Args:
  *     props.kind: "likes" or "reposts" (also the CSS modifier).
  *     props.title: The heading text, e.g. "3 likes".
  *     props.entries: Responses of that kind.
+ *     props.maxAvatars: Most avatars to show (the maxAvatarsShown setting);
+ *         with 0, only the count and a "Show all" button.
  *
  * Returns:
  *     The row, or nothing if there are no entries.
  */
-function Reactions({ kind, title, entries }) {
+function Reactions({ kind, title, entries, maxAvatars }) {
   const headingId = useId();
   const [showingAll, setShowingAll] = useState(false);
   if (!entries.length) return null;
-  const shown = entries.slice(0, MAX_FACES);
+  const shown = entries.slice(0, maxAvatars);
   const hidden = entries.length - shown.length;
   return (
     <div className={`crosspost-reactions crosspost-reactions--${kind}`}>
       <h3 className="crosspost-reactions__title" id={headingId}>
         {title}
       </h3>
-      <ul className="crosspost-reactions__faces" aria-labelledby={headingId}>
-        {shown.map((entry) => (
-          <li key={entry.id} className="crosspost-reactions__face">
-            {entry.author.url ? (
-              <a className="crosspost-reactions__link" href={entry.author.url} title={entry.author.name} {...EXTERNAL_LINK}>
-                <Avatar author={entry.author} />
-              </a>
-            ) : (
-              <span title={entry.author.name}>
-                <Avatar author={entry.author} />
-              </span>
-            )}
-          </li>
-        ))}
-        {hidden > 0 && (
-          <li className="crosspost-reactions__face">
-            <button
-              type="button"
-              className="crosspost-reactions__more"
-              aria-haspopup="dialog"
-              onClick={() => setShowingAll(true)}>
-              {/* The visible "+12 more" starts the button's name, so people using
-                  voice control can say what they see (WCAG 2.5.3, label in name). */}
-              {translate({ id: "crosspost.responses.more", message: "+{count} more" }, { count: hidden })}
-              <span className="crosspost-visually-hidden">
-                {translate({ id: "crosspost.responses.showAll", message: ", show all {title}" }, { title })}
-              </span>
-            </button>
-          </li>
-        )}
-      </ul>
+      {shown.length > 0 ? (
+        <ul className="crosspost-reactions__faces" aria-labelledby={headingId}>
+          {shown.map((entry) => (
+            <li key={entry.id} className="crosspost-reactions__face">
+              {entry.author.url ? (
+                <a className="crosspost-reactions__link" href={entry.author.url} title={entry.author.name} {...EXTERNAL_LINK}>
+                  <Avatar author={entry.author} />
+                </a>
+              ) : (
+                <span title={entry.author.name}>
+                  <Avatar author={entry.author} />
+                </span>
+              )}
+            </li>
+          ))}
+          {hidden > 0 && (
+            <li className="crosspost-reactions__face">
+              <ShowAllButton visible={translate({ id: "crosspost.responses.more", message: "+{count} more" }, { count: hidden })} title={title} onClick={() => setShowingAll(true)} />
+            </li>
+          )}
+        </ul>
+      ) : (
+        // maxAvatarsShown: 0, counts only.
+        <ShowAllButton
+          visible={translate({ id: "crosspost.responses.showAllShort", message: "Show all" })}
+          title={title}
+          countsOnly
+          onClick={() => setShowingAll(true)}
+        />
+      )}
       {showingAll && <PeopleDialog title={title} entries={entries} onClose={() => setShowingAll(false)} />}
     </div>
   );
@@ -291,16 +326,22 @@ function Reactions({ kind, title, entries }) {
  * Args:
  *     props.reply: A reply from groupMentions.
  *     props.locale: The site's current language, for the date.
+ *     props.focusRef: A ref to receive focus, for the first reply revealed
+ *         by "Show N more replies"; usually undefined.
  *
  * Returns:
  *     The reply as a list item.
  */
-function Reply({ reply, locale }) {
+function Reply({ reply, locale, focusRef }) {
   const date = formatDate(reply.published, locale);
   const network = reply.url ? networkName(reply.url) : "";
   const name = reply.author.name;
   return (
-    <li className={`crosspost-reply${network ? ` crosspost-reply--${network.toLowerCase()}` : ""}`}>
+    // tabIndex -1: focusable from code only, for "Show N more replies".
+    <li
+      className={`crosspost-reply${network ? ` crosspost-reply--${network.toLowerCase()}` : ""}`}
+      ref={focusRef}
+      tabIndex={focusRef ? -1 : undefined}>
       {reply.author.url ? (
         // Same destination as the name link: hidden from screen readers and
         // the Tab key, so each person is read and tabbed to once.
@@ -368,21 +409,45 @@ function Reply({ reply, locale }) {
  *     props.pageUrl: The post's full address.
  *     props.syndication: Safe addresses of the post's Mastodon and Bluesky
  *         copies; the reply buttons link to these.
+ *     props.settings: The plugin's "responses" settings (showLikes,
+ *         showReposts, showReplies, maxAvatarsShown, maxRepliesShown,
+ *         showReplyButtons);
+ *         missing ones use DEFAULT_SETTINGS.
  *
  * Returns:
  *     The responses section, or nothing when there are no copies to reply
  *     on and no responses.
  */
-export default function CrosspostResponses({ pageUrl, syndication }) {
+export default function CrosspostResponses({ pageUrl, syndication, settings: given }) {
+  const settings = { ...DEFAULT_SETTINGS, ...given };
   const { status, groups } = useResponses(pageUrl);
+  const [showingAllReplies, setShowingAllReplies] = useState(false);
+  const firstNewReplyRef = useRef(null);
   const { i18n } = useDocusaurusContext();
   const { selectMessage } = usePluralForm();
   const headingId = useId();
   const repliesHeadingId = useId();
 
-  const counts = groups ? { likes: groups.likes.length, reposts: groups.reposts.length, replies: groups.replies.length } : null;
+  // Hidden kinds count as none, so "No responses yet" stays accurate.
+  const counts = groups
+    ? {
+        likes: settings.showLikes ? groups.likes.length : 0,
+        reposts: settings.showReposts ? groups.reposts.length : 0,
+        replies: settings.showReplies ? groups.replies.length : 0,
+      }
+    : null;
+  const replyLimit = settings.maxRepliesShown;
+  const shownReplies =
+    groups && replyLimit != null && !showingAllReplies ? groups.replies.slice(0, replyLimit) : groups ? groups.replies : [];
+  const hiddenReplies = counts && counts.replies ? counts.replies - shownReplies.length : 0;
+
+  // After "Show N more replies", move focus to the first reply it revealed,
+  // so keyboard and screen reader users continue where the button was.
+  useEffect(() => {
+    if (showingAllReplies && firstNewReplyRef.current) firstNewReplyRef.current.focus();
+  }, [showingAllReplies]);
   const hasResponses = Boolean(counts) && counts.likes + counts.reposts + counts.replies > 0;
-  if (!hasResponses && !syndication.length) return null;
+  if (!hasResponses && !(settings.showReplyButtons && syndication.length)) return null;
 
   // usePluralForm picks the right form for the site's language from "one|other".
   // Docs: https://docusaurus.io/docs/i18n/tutorial#pluralization
@@ -399,7 +464,7 @@ export default function CrosspostResponses({ pageUrl, syndication }) {
         {translate({ id: "crosspost.responses.heading", message: "Responses" })}
       </h2>
 
-      {syndication.length > 0 && (
+      {settings.showReplyButtons && syndication.length > 0 && (
         <div className="crosspost-reply-buttons">
           {syndication.map((url) => {
             const network = networkName(url);
@@ -426,8 +491,22 @@ export default function CrosspostResponses({ pageUrl, syndication }) {
         <>
           {counts.likes + counts.reposts > 0 && (
             <div className="crosspost-responses__reactions">
-              <Reactions kind="likes" title={plural("crosspost.responses.likes", "{count} like|{count} likes", counts.likes)} entries={groups.likes} />
-              <Reactions kind="reposts" title={plural("crosspost.responses.reposts", "{count} repost|{count} reposts", counts.reposts)} entries={groups.reposts} />
+              {settings.showLikes && (
+                <Reactions
+                  kind="likes"
+                  title={plural("crosspost.responses.likes", "{count} like|{count} likes", counts.likes)}
+                  entries={groups.likes}
+                  maxAvatars={settings.maxAvatarsShown}
+                />
+              )}
+              {settings.showReposts && (
+                <Reactions
+                  kind="reposts"
+                  title={plural("crosspost.responses.reposts", "{count} repost|{count} reposts", counts.reposts)}
+                  entries={groups.reposts}
+                  maxAvatars={settings.maxAvatarsShown}
+                />
+              )}
             </div>
           )}
           {counts.replies > 0 && (
@@ -436,10 +515,20 @@ export default function CrosspostResponses({ pageUrl, syndication }) {
                 {plural("crosspost.responses.replies", "{count} reply|{count} replies", counts.replies)}
               </h3>
               <ol className="crosspost-replies__list" aria-labelledby={repliesHeadingId}>
-                {groups.replies.map((reply) => (
-                  <Reply key={reply.id} reply={reply} locale={i18n.currentLocale} />
+                {shownReplies.map((reply, i) => (
+                  <Reply
+                    key={reply.id}
+                    reply={reply}
+                    locale={i18n.currentLocale}
+                    focusRef={showingAllReplies && replyLimit != null && i === replyLimit ? firstNewReplyRef : undefined}
+                  />
                 ))}
               </ol>
+              {hiddenReplies > 0 && (
+                <button type="button" className="crosspost-replies__more" onClick={() => setShowingAllReplies(true)}>
+                  {plural("crosspost.responses.moreReplies", "Show {count} more reply|Show {count} more replies", hiddenReplies)}
+                </button>
+              )}
             </div>
           )}
         </>

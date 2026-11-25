@@ -13,7 +13,7 @@ It uses [Bridgy Publish](https://brid.gy/about#publish), a free, open-source Ind
 | Tags → hashtags | A post's tags are added as hashtags to its Mastodon and Bluesky copies. | `tagsToHashtags` |
 | Hashtags → tags | Hashtags you write in a post become tags on your site. | `hashtagsToTags` |
 | Images | A post's images (up to 4, with alt text) are attached to its copies, shrunk if too big for Bluesky. | `images` |
-| Responses | Likes, reposts and replies from Mastodon and Bluesky show under each post, with "Reply on" buttons. | `showResponses`, `webmentionUsername` |
+| Responses | Likes, reposts and replies from Mastodon and Bluesky show under each post, with "Reply on" buttons. | `responses`, `webmentionUsername` |
 | Sender | A command (and a ready-to-copy GitHub Actions workflow) that tells Bridgy about new posts once they're live. | none |
 
 ## Install
@@ -58,8 +58,17 @@ Every setting is optional. These are the defaults:
   // Profile links that link back to your site, for signing in to webmention.io.
   relMe: [],
 
-  // Show likes, reposts and replies under each post.
-  showResponses: true,
+  // The responses section under each post: likes, reposts and replies.
+  // A post can hide it with "crosspost_responses: false" in its front matter.
+  responses: {
+    enabled: true,          // show the section (it also needs webmentionUsername)
+    showLikes: true,        // the likes row
+    showReposts: true,      // the reposts row
+    showReplies: true,      // the replies
+    maxAvatarsShown: 20,    // per likes or reposts row; the rest are behind "+N more". 0 shows counts only
+    maxRepliesShown: null,  // null shows every reply; a number shows that many, then "Show N more replies"
+    showReplyButtons: true, // the "Reply on Mastodon" and "Reply on Bluesky" buttons
+  },
 
   // A post's TAGS -> HASHTAGS in its Mastodon and Bluesky copies.
   tagsToHashtags: {
@@ -258,10 +267,10 @@ The "Also on" links and the responses section are theme components, `CrosspostSy
 | `--crosspost-muted-color`, `--crosspost-small-font-size` | Dates, counts and other secondary text |
 | `--crosspost-border-color` | The line above the section |
 | `--crosspost-focus-color` | The keyboard focus outline |
-| `--crosspost-action-color` | Each reply's "Reply on" link (the muted text color by default, so it passes contrast whatever your link color) |
+| `--crosspost-action-color` | "+N more", "Show N more replies", and "Reply on" links for other networks (the muted text color, so they pass contrast whatever your link color) |
 | `--crosspost-mastodon-background`, `-background-hover`, `-color` | The "Reply on Mastodon" button |
 | `--crosspost-bluesky-background`, `-background-hover`, `-color` | The "Reply on Bluesky" button |
-| `--crosspost-mastodon-text-color`, `--crosspost-bluesky-text-color` | Each reply's "Reply on" link on hover and keyboard focus |
+| `--crosspost-mastodon-reply-link-color`, `-hover-color`; `--crosspost-bluesky-reply-link-color`, `-hover-color` | Each reply's "Reply on" link: a muted shade of its network's color, brightening on hover and keyboard focus |
 
 The reply buttons use Mastodon's and Bluesky's colors. In light mode they're slightly darker shades, with white text. In dark mode they're the brand colors themselves, with black text. Each pairing reaches the 4.5:1 text contrast [WCAG 2.2 AA](https://www.w3.org/TR/WCAG22/#contrast-minimum) asks for. If you change them, check the contrast again.
 
