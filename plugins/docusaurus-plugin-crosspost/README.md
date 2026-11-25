@@ -13,7 +13,7 @@ It uses [Bridgy Publish](https://brid.gy/about#publish), a free, open-source Ind
 | Tags → hashtags | A post's tags are added as hashtags to its Mastodon and Bluesky copies. | `tagsToHashtags` |
 | Hashtags → tags | Hashtags you write in a post become tags on your site. | `hashtagsToTags` |
 | Images | A post's images (up to 4, with alt text) are attached to its copies, shrunk if too big for Bluesky. | `images` |
-| Responses | Likes, reposts and replies from Mastodon and Bluesky show under each post, with "Reply on" buttons. | `responses`, `webmentionUsername` |
+| Responses | Likes, reposts, replies and Bluesky quotes show under each post, with "Reply on" buttons. | `responses`, `webmentionUsername` |
 | Sender | A command (and a ready-to-copy GitHub Actions workflow) that tells Bridgy about new posts once they're live. | none |
 
 ## Install
@@ -72,7 +72,9 @@ Every setting is optional. These are the defaults:
     showReplies: true,      // the replies
     maxAvatarsShown: 20,    // per likes or reposts row; the rest are behind "+N more". 0 shows counts only
     maxRepliesShown: null,  // null shows every reply; a number shows that many, then "Show N more replies"
-    replyOrder: "oldest",   // "oldest" first (reads like a conversation) or "newest" first
+    replyOrder: "oldest",   // "oldest" first (reads like a conversation) or "newest" first; also orders quotes
+    showQuotes: true,       // Bluesky posts quoting this one, from Bluesky's public API (see below)
+    cacheMinutes: 5,        // minutes a reader's browser reuses responses before asking again; 0 = every visit
     showReplyButtons: true, // the "Reply on Mastodon" and "Reply on Bluesky" buttons
     headingLevel: 2,        // "Responses" is an <h2>; its likes, reposts and replies headings one level lower
   },
@@ -249,6 +251,14 @@ Untitled posts must say `title: ""`. Without a title line, Docusaurus uses the f
 
 The plugin wraps four theme components with [`@theme-init`](https://docusaurus.io/docs/advanced/client#theme-aliases): `BlogPostItem/Container`, `BlogPostItem/Content`, `BlogPostItem/Header/Title` and `BlogPostItem/Footer`. It also adds two of its own, `CrosspostResponses` and `CrosspostSyndicationLinks`; see "Styling the responses". If your site has its own copy of one of these in `src/theme`, yours replaces the plugin's. Make yours a wrapper ([swizzle with `--wrap`](https://docusaurus.io/docs/swizzling#wrapping)), and it will wrap the plugin's version.
 
+## Quotes, caching and privacy
+
+**Quotes.** Bridgy sends likes, reposts and replies, but not quote posts. So for posts with a Bluesky copy, the reader's browser asks Bluesky's public API, which needs no login, for the posts quoting it ([`app.bsky.feed.getQuotes`](https://github.com/bluesky-social/atproto/blob/main/lexicons/app/bsky/feed/getQuotes.json)). Mastodon has a quotes API too, but it [requires a logged-in user](https://docs.joinmastodon.org/client/quotes/), so Mastodon quotes can't be shown. If Bluesky can't be reached, the other responses still show. Turn quotes off with `showQuotes: false`.
+
+**Caching.** Each reader's browser reuses responses for `cacheMinutes` (5), so going back to a post doesn't ask again. They're kept in [sessionStorage](https://developer.mozilla.org/docs/Web/API/Window/sessionStorage): this tab only, cleared when it closes, and never sent anywhere. No cookies are used. Browsers that block cookies usually block storage too; for those readers, responses are kept in memory while they browse the site, and nothing is stored.
+
+**What readers' browsers contact:** webmention.io for responses, Bluesky's public API for quotes, and the responders' Mastodon and Bluesky servers for their pictures.
+
 ## Styling the responses
 
 The "Also on" links and the responses section are theme components, `CrosspostSyndicationLinks` and `CrosspostResponses`, styled by [`src/client/crosspost.css`](src/client/crosspost.css). That file loads after your `custom.css`, because Docusaurus loads plugins' styles after the theme's. There are three ways to change the look, from least to most work:
@@ -290,7 +300,8 @@ The reply buttons use Mastodon's and Bluesky's colors. In light mode they're sli
 | `crosspost-reply-buttons`, `crosspost-reply-button`, `--mastodon`, `--bluesky` | Reply buttons |
 | `crosspost-reactions`, `--likes`, `--reposts`, `__title`, `__faces`, `__face`, `__link`, `__more` (the "+N more" button) | Likes and reposts rows |
 | `crosspost-people-dialog`, `__header`, `__title`, `__close`, `__list`, `__person`, `__link`, `__names`, `__name`, `__handle` | The full list of likes or reposts |
-| `crosspost-replies`, `__title`, `__list` | Replies |
+| `crosspost-replies`, `__title`, `__list`, `__more` | Replies, and "Show N more replies" |
+| `crosspost-quotes`, `__title`, `__list` | Bluesky quotes (each quote uses the `crosspost-reply` classes) |
 | `crosspost-reply`, `--mastodon`, `--bluesky`, `__avatar-link`, `__body`, `__header`, `__author`, `__when`, `__date`, `__text`, `__action` | One reply |
 | `crosspost-avatar`, `--initial` | A picture, or an initial for people without one |
 | `crosspost-visually-hidden` | Text only screen readers read |
@@ -343,7 +354,7 @@ Some setups have limits:
 ## Requirements
 
 - Docusaurus 3.6 or newer (tested with 3.10), with the classic theme (`@docusaurus/theme-classic`) and at least one blog
-- Node 20 or newer to build; Node 22 to run the tests
+- Node 20 or newer, to build and to run the tests (the tests run on Node 20 and 22 in CI)
 
 ## Development
 
@@ -357,7 +368,7 @@ The package is marked `"private": true` so it can't be published by accident. To
 
 1. Remove `"private": true` from `package.json`, and add `repository`, `homepage` and `author` fields.
 2. Check the name is free with `npm view docusaurus-plugin-crosspost` (an error means it's free).
-3. Run `npm publish --dry-run` and check the file list: only `src/`, `workflows/` and this README should be in it.
+3. Run `npm publish --dry-run` and check the file list: only `src/`, `workflows/`, this README and `CHANGELOG.md` should be in it. Add the new version to the changelog first.
 4. Run `npm login`, then `npm publish`.
 5. In your site, replace the workspace with the published version: remove the `workspaces` entry, run `npm install docusaurus-plugin-crosspost`, and delete the `plugins/` copy.
 

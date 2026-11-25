@@ -38,6 +38,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # The oldest Node the plugin supports ("engines" in its package.json)
+    # and the one the workflows use.
+    # Docs: https://docs.github.com/actions/writing-workflows/choosing-what-your-workflow-does/running-variations-of-jobs-in-a-workflow
+    strategy:
+      matrix:
+        node-version: [20, 22]
     steps:
       # Actions are pinned to an exact commit, so a changed or compromised
       # tag can't alter what runs; the comment says which release it is.
@@ -48,7 +54,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
-          node-version: 22
+          node-version: ${{ matrix.node-version }}
           cache: npm
 
       # The hashtag tests read tags files with Docusaurus's own code, so the

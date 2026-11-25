@@ -18,7 +18,7 @@ import { useBlogPost } from "@docusaurus/plugin-content-blog/client";
 import useCrosspostSettings from "../../../client/useCrosspostSettings.js";
 import CrosspostResponses from "@theme/CrosspostResponses";
 import CrosspostSyndicationLinks from "@theme/CrosspostSyndicationLinks";
-import { syndicationUrls } from "../../../components/SocialResponses/mentions.js";
+import { syndicationUrls } from "../../../shared/responses.js";
 import { postAddress } from "../../../shared/posts.js";
 
 /**

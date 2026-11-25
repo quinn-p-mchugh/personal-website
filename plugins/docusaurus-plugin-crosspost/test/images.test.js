@@ -1,6 +1,6 @@
 /**
  * Tests for src/images.js.
- * Run with: npm test   (Node 22 or newer; Node's built-in test runner. Uses
+ * Run with: npm test   (Node's built-in test runner. Uses
  * sharp, so the npm packages must be installed. Images "from other sites"
  * come from a small web server on this computer, so no internet is needed.)
  */

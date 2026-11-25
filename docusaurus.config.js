@@ -50,6 +50,8 @@ const crosspost = {
     maxAvatarsShown: 20,
     maxRepliesShown: null, // null: show every reply
     replyOrder: "oldest", // or "newest"
+    showQuotes: true, // Bluesky quote posts, from Bluesky's public API
+    cacheMinutes: 5, // readers' browsers reuse responses this long; no cookies
     showReplyButtons: true,
     headingLevel: 2,
   },

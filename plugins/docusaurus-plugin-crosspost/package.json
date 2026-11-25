@@ -1,6 +1,6 @@
 {
   "name": "docusaurus-plugin-crosspost",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Cross-post Docusaurus blog posts to Mastodon and Bluesky with Bridgy, and show the replies, likes and reposts under each post.",
   "keywords": [
@@ -26,10 +26,11 @@
   "files": [
     "src",
     "workflows",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "scripts": {
-    "test": "node --test \"test/**/*.test.js\""
+    "test": "node --test"
   },
   "engines": {
     "node": ">=20"

@@ -1,6 +1,6 @@
 /**
- * Tests for src/components/SocialResponses/mentions.js.
- * Run with: npm test   (Node 22 or newer; Node's built-in test runner)
+ * Tests for src/shared/responses.js.
+ * Run with: npm test   (Node's built-in test runner)
  * Docs: https://nodejs.org/api/test.html
  */
 import { test } from "node:test";
@@ -11,12 +11,17 @@ import {
   groupMentions,
   initialOf,
   addressVariants,
+  blueskyPostRef,
   handleOf,
+  quoteEntries,
+  quotesApiUrl,
+  resolveHandleUrl,
+  withoutQuotes,
   mentionsApiUrl,
   networkName,
   safeUrl,
   syndicationUrls,
-} from "../src/components/SocialResponses/mentions.js";
+} from "../src/shared/responses.js";
 
 test("safeUrl allows only http and https addresses", () => {
   assert.equal(safeUrl("https://a.social/@me"), "https://a.social/@me");
@@ -101,4 +106,40 @@ test("handleOf reads handles from profile addresses", () => {
   assert.equal(handleOf("https://example.com/about/"), "example.com/about");
   assert.equal(handleOf("javascript:alert(1)"), "");
   assert.equal(handleOf(null), "");
+});
+
+test("blueskyPostRef reads Bluesky post addresses only", () => {
+  assert.deepEqual(blueskyPostRef("https://bsky.app/profile/me.bsky.social/post/3n34"), { actor: "me.bsky.social", postId: "3n34" });
+  assert.deepEqual(blueskyPostRef("https://bsky.app/profile/did:plc:abc/post/xyz"), { actor: "did:plc:abc", postId: "xyz" });
+  assert.equal(blueskyPostRef("https://mastodon.social/@me/1"), null);
+  assert.equal(blueskyPostRef("https://bsky.app/profile/me.bsky.social"), null);
+});
+
+test("Bluesky API requests", () => {
+  assert.equal(resolveHandleUrl("me.bsky.social"), "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=me.bsky.social");
+  const url = new URL(quotesApiUrl("did:plc:abc", "3n34"));
+  assert.equal(url.pathname, "/xrpc/app.bsky.feed.getQuotes");
+  assert.equal(url.searchParams.get("uri"), "at://did:plc:abc/app.bsky.feed.post/3n34");
+});
+
+test("quoteEntries shapes quotes like replies, safely and oldest first", () => {
+  const entries = quoteEntries([
+    { uri: "at://did:plc:b/app.bsky.feed.post/2", author: { did: "did:plc:b", handle: "b.bsky.social", avatar: "javascript:x" }, record: { text: " Later ", createdAt: "2026-11-25T10:00:00Z" } },
+    { uri: "at://did:plc:a/app.bsky.feed.post/1", author: { did: "did:plc:a", handle: "a.bsky.social", displayName: "A", avatar: "https://cdn.bsky.app/a.jpg" }, record: { text: "First", createdAt: "2026-11-24T10:00:00Z" } },
+    { uri: "broken" },
+    null,
+  ]);
+  assert.deepEqual(entries.map((e) => [e.url, e.author.name, e.text]), [
+    ["https://bsky.app/profile/a.bsky.social/post/1", "A", "First"],
+    ["https://bsky.app/profile/b.bsky.social/post/2", "@b.bsky.social", "Later"],
+  ]);
+  assert.equal(entries[1].author.photo, null, "unsafe picture addresses are dropped");
+  assert.deepEqual(quoteEntries(undefined), []);
+});
+
+test("withoutQuotes drops replies that are really quotes", () => {
+  const quotes = quoteEntries([{ uri: "at://did:plc:a/app.bsky.feed.post/q1", author: { handle: "a.bsky.social" }, record: { text: "q" } }]);
+  const replies = [{ url: "https://bsky.app/profile/a.bsky.social/post/q1" }, { url: "https://mastodon.social/@x/9" }];
+  assert.deepEqual(withoutQuotes(replies, quotes), [replies[1]]);
+  assert.equal(withoutQuotes(replies, []), replies);
 });

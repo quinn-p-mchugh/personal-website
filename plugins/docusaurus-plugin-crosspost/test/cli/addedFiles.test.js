@@ -1,6 +1,6 @@
 /**
  * Tests for src/cli/addedFiles.js, in a throwaway git repository.
- * Run with: npm test   (Node 22 or newer; needs git)
+ * Run with: npm test   (needs git)
  */
 import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
