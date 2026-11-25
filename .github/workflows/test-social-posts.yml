@@ -63,12 +63,10 @@ jobs:
           cache: npm
 
       # The hashtag tests read tags files with Docusaurus's own code, so the
-      # site's packages are needed. "npm install", like Vercel's build, rather
-      # than "npm ci": package-lock.json is currently out of step with
-      # package.json (missing optional peers), which "npm ci" refuses.
+      # site's packages are needed, exactly as listed in package-lock.json.
       # Docs: https://docs.npmjs.com/cli/commands/npm-ci
       - name: Install the site's packages
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Run the tests
         run: npm test

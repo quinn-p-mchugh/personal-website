@@ -170,10 +170,29 @@ const config = {
   ],
   baseUrl: "/",
   onBrokenLinks: "throw",
-  onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.ico",
   markdown: {
     mermaid: true,
+    hooks: {
+      // Moved here from the top-level onBrokenMarkdownLinks in Docusaurus 3.9.
+      // Docs: https://docusaurus.io/docs/api/docusaurus-config#markdown
+      onBrokenMarkdownLinks: "warn",
+    },
+  },
+
+  /**
+   * Docusaurus Faster: builds with Rspack, SWC and Lightning CSS instead of
+   * webpack, Babel and Terser. A full build of this site took 46 s instead
+   * of 174 s on a 2-CPU machine (Vercel Hobby's size), with the same pages.
+   * Stable since Docusaurus 3.10 and on by default in Docusaurus 4.
+   * "faster" needs the "v4.removeLegacyPostBuildHeadAttribute" flag; it only
+   * affects plugins that read page heads after the build, and none here do.
+   * To go back to webpack, set faster to false and delete the v4 line.
+   * Docs: https://docusaurus.io/docs/api/docusaurus-config#future
+   */
+  future: {
+    faster: true,
+    v4: { removeLegacyPostBuildHeadAttribute: true },
   },
 
   // GitHub pages deployment config.
