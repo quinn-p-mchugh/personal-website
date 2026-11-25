@@ -1,6 +1,9 @@
-button {
+/* .rss-button: a link styled like these buttons (see RSSButton.js). */
+button,
+.rss-button {
   appearance: none;
-  background-color: #2ea44f;
+  /* #1a7f37 keeps white text at 5:1 contrast (WCAG AA); #2ea44f was 3.2:1. */
+  background-color: #1a7f37;
   border: 1px solid rgba(27, 31, 35, 0.15);
   border-radius: 6px;
   box-shadow: rgba(27, 31, 35, 0.1) 0 1px 0;
@@ -29,13 +32,18 @@ button:focus:not(:focus-visible):not(.focus-visible) {
   outline: none;
 }
 
-button:hover {
-  background-color: #2c974b;
+button:hover,
+.rss-button:hover {
+  background-color: #156a2e;
+  color: #fff;
+  text-decoration: none;
 }
 
-button:focus {
-  box-shadow: rgba(46, 164, 79, 0.4) 0 0 0 3px;
-  outline: none;
+/* Keyboard focus: a solid ring that stays visible (WCAG 2.4.7). Mouse clicks
+   don't show it, thanks to the :not(:focus-visible) rule above. */
+button:focus-visible {
+  outline: 2px solid var(--ifm-color-primary-darkest);
+  outline-offset: 2px;
 }
 
 button:disabled {
@@ -46,6 +54,6 @@ button:disabled {
 }
 
 button:active {
-  background-color: #298e46;
+  background-color: #11592a;
   box-shadow: rgba(20, 70, 32, 0.2) 0 1px 0 inset;
 }

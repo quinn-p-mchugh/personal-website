@@ -12,7 +12,7 @@ import remarkMath from "remark-math";
 import remarkA11yEmoji from "@fec/remark-a11y-emoji";
 //import remarkCodeTitle from 'remark-code-title';
 import remarkCodeSandbox from "remark-codesandbox";
-import remarkCopyLinkedFiles from "remark-copy-linked-files";
+//import remarkCopyLinkedFiles from "remark-copy-linked-files";
 import remarkDefinitionList from "remark-definition-list";
 import remarkFlexibleCodeTitles from "remark-flexible-code-titles";
 import remarkWikiLinkPlus from "remark-wiki-link-plus";
@@ -94,7 +94,9 @@ const plugins = {
     [remarkA11yEmoji, {}], // https://github.com/remarkjs/remark-frontmatter?tab=readme-ov-file#options
     //[remarkCodeTitle, {}],        // https://github.com/remarkjs/remark-frontmatter?tab=readme-ov-file#options
     [remarkCodeSandbox, {}], // https://github.com/kevin940726/remark-codesandbox?tab=readme-ov-file#options
-    [remarkCopyLinkedFiles, {}], // https://github.com/sergioramos/remark-copy-linked-files
+    // remarkCopyLinkedFiles is off: Docusaurus already copies linked files, and this
+    // plugin emptied the text of links to them (e.g. on /things-i-recommend).
+    //[remarkCopyLinkedFiles, {}], // https://github.com/sergioramos/remark-copy-linked-files
     [remarkDefinitionList, {}], // https://github.com/wataru-chocola/remark-definition-list
     [remarkFlexibleCodeTitles, {}], // https://github.com/ipikuka/remark-flexible-code-titles?tab=readme-ov-file#options
     [remarkWikiLinkPlus, {}], // https://github.com/datopian/remark-wiki-link-plus?tab=readme-ov-file#configuration-options
@@ -110,7 +112,11 @@ const plugins = {
 
 
 const contentConfig = {
-  tags: "../content-tags.yml",
+  // No predefined tags file: tags written in each post's front matter are used
+  // as they are. (content-tags.yml only held the Docusaurus example tags, which
+  // made every build print "tags not defined" warnings.)
+  // Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#tags
+  tags: false,
   onInlineTags: "warn",
   blogConfig: { // Blog Plugin Documentation: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog
     sidebarCount: "ALL",
@@ -146,7 +152,8 @@ const contentConfig = {
   },
   docsConfig: { // Docs Plugin Documentation: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-docs
     projects: {
-      linkId: "ea-explorer",
+      // Projects overview page (docs-projects/index.mdx).
+      path: "/projects",
     },
   },
 };
@@ -434,7 +441,10 @@ const config = {
           rehypePlugins: plugins.rehypePlugins,
         },
         gtag: {
-          trackingID: ["G-WSVD3SVT4R", "UA-121689368-1"],
+          // UA-121689368-1 (Universal Analytics) removed: Google stopped
+          // processing standard UA properties on July 1, 2023.
+          // Docs: https://support.google.com/analytics/answer/11583528
+          trackingID: ["G-WSVD3SVT4R"],
           anonymizeIP: true,
         },
       }),
@@ -465,7 +475,7 @@ const config = {
         title: "",
         hideOnScroll: true,
         logo: {
-          alt: "My Site Logo",
+          alt: "Quinn McHugh, home",
           src: "img/logo.svg",
         },
         items: [
@@ -475,7 +485,7 @@ const config = {
           },
           {
             label: "Projects",
-            to: `/projects/${contentConfig.docsConfig.projects.linkId}`,
+            to: contentConfig.docsConfig.projects.path,
             position: "left",
           },
           {
@@ -582,7 +592,7 @@ const config = {
               },
               {
                 label: "Projects",
-                to: `/projects/${contentConfig.docsConfig.projects.linkId}`,
+                to: contentConfig.docsConfig.projects.path,
               },
               {
                 label: "My Library",
@@ -615,12 +625,11 @@ const config = {
             title: "Support my work",
             items: [
               {
-                html: `<a href="https://ko-fi.com/quinnmchugh" rel="noopener" target="_blank">
-                  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" loading="lazy" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;">
-                </a>
-                <br>
-                <b>Found something of value here?</b> Consider buying me a coffee to say thanks and support my work. ☕
-                <br>50% of donations go to <a href="https://www.givewell.org/top-charities-fund">GiveWell's Top Charities Fund</a>.`,
+                html: `<p class="footer-support">
+                  <b>Found something of value here?</b> Consider buying me a coffee to say thanks and support my work. <span aria-hidden="true">☕</span>
+                  <br>50% of donations go to <a href="https://www.givewell.org/top-charities-fund">GiveWell's Top Charities Fund</a>.
+                </p>
+                <a class="footer-support-button" href="https://ko-fi.com/quinnmchugh" rel="noopener">Support me on Ko-fi</a>`,
               },
             ],
           },

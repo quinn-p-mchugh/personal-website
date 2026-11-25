@@ -1,41 +1,44 @@
 import React from "react";
-import clsx from "clsx";
 import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
 
 import styles from "./index.module.css";
-import heroSectionBackground from "@site/static/img/hero-section-bg.png";
+
+// Emoji are decorative here, so screen readers skip them (aria-hidden) and
+// read only the sentence.
+function Emoji({ children }) {
+  return <span aria-hidden="true">{children}</span>;
+}
 
 function HeroSection() {
   return (
-    <div class="hero flex flex-col items-center space-y-10">
-      <div class="flex px-20 flex-col items-center w-screen space-y-10 text-center">
+    <div className={styles.hero}>
+      <div className={styles.heroInner}>
         <img
-          loading="lazy"
           src={require("@site/static/img/quinn-headshot-square.png").default}
           alt="Headshot of Quinn"
-          className="h-36 rounded-full"
+          width="144"
+          height="144"
+          className={styles.headshot}
         />
-        <p style={{ fontSize: "4rem", fontWeight: 250 }}>Hi, I'm Quinn.</p>
+        <h1 className={styles.heroTitle}>Hi, I'm Quinn.</h1>
 
-        <p style={{ fontSize: "2.5rem", fontWeight: 250 }}>
-          I help people 🧑‍🤝‍🧑 and organizations 🌐 build systems ⚙️ that help them
-          thrive. 🌱
+        <p className={styles.heroSubtitle}>
+          I help people <Emoji>🧑‍🤝‍🧑</Emoji> and organizations{" "}
+          <Emoji>🌐</Emoji> build systems <Emoji>⚙️</Emoji> that help them
+          thrive. <Emoji>🌱</Emoji>
         </p>
-        <div
-          class="bg-black bg-opacity-20 p-10"
-          style={{ fontSize: "1.5rem", fontWeight: 250 }}
-        >
-          <p class>
-            As a <span class="font-light">CAPM-certified project manager</span>,{" "}
-            <span class="font-light">software developer</span>, and{" "}
-            <span class="font-light">process improvement engineer</span>, I love
+        <div className={styles.heroIntro}>
+          <p>
+            As a <span className="font-light">CAPM-certified project manager</span>,{" "}
+            <span className="font-light">software developer</span>, and{" "}
+            <span className="font-light">process improvement engineer</span>, I love
             blending information technology, human-centered design, systems
             thinking, and compassionate leadership to{" "}
-            <span class="font-light">co-create systems</span>,{" "}
-            <span class="font-light">processes</span>, and{" "}
-            <span class="font-light">tools</span> that help people do and create
+            <span className="font-light">co-create systems</span>,{" "}
+            <span className="font-light">processes</span>, and{" "}
+            <span className="font-light">tools</span> that help people do and create
             amazing things together.
           </p>
           <p>
@@ -60,7 +63,7 @@ function HeroSection() {
           <p>
             In September 2019, I completed a 4,230 mile bicycle tour across the
             United States to challenge myself, push my comfort zone, and expand
-            my worldview. Learn more here about the journey here —{" "}
+            my worldview. Learn more about the journey here —{" "}
             <a
               href="https://web.archive.org/web/20201128223402/https://tourde10percent.com/"
               target="_blank"
@@ -73,41 +76,13 @@ function HeroSection() {
           <p>
             This site serves as a great aggregator for all of my technical
             projects, design work, and other things I do. You can also view my{" "}
-            <a
-              href="https://quinnmchugh.net/resume"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              resume
-            </a>
-            , my{" "}
-            <a
-              href="https://www.quinnmchugh.net/docs/impossible-list"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Impossible List
-            </a>
-            ,{" "}
-            <a
-              href="https://quinnmchugh.net/books-ive-read"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              books I've read
-            </a>
-            , and the different{" "}
-            <a
-              href="https://quinnmchugh.net/places-ive-been"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              places I've been
-            </a>
-            .
+            <Link to="/resume">resume</Link>, my{" "}
+            <Link to="/impossible-list">Impossible List</Link>,{" "}
+            <Link to="/books">books I've read</Link>, and the different{" "}
+            <Link to="/travels">places I've been</Link>.
           </p>
           <p>
-            In my leisure time, I enjoy listening to though-provoking podcasts,
+            In my leisure time, I enjoy listening to thought-provoking podcasts,
             jamming to{" "}
             <a
               href="https://youtu.be/yhtcG79kPNw"
@@ -116,34 +91,29 @@ function HeroSection() {
             >
               jazz fusion
             </a>
-            , attending to my digital garden, and indugling in BBC Nature
+            , attending to my digital garden, and indulging in BBC Nature
             documentaries.
           </p>
         </div>
       </div>
-      <div
-        class="relative overflow-hidden"
-        style={{ height: "63vh", maxHeight: "45vh", minHeight: "72vh" }}
-      >
-        <img
-          src={require("@site/static/img/quinn-road.png").default}
-          alt="Quinn Road"
-          className="min-w-screen object-contain"
-          style={{ minWidth: "100vw" }}
-        />
-      </div>
-      <div class="flex flex-row">
+      <img
+        src={require("@site/static/img/quinn-road.png").default}
+        alt="Quinn with his loaded touring bicycle beside a sign reading “Quinn Road” on a gravel road through green prairie"
+        loading="lazy"
+        className={styles.bannerPhoto}
+      />
+      <div className={styles.photoPair}>
         <img
           src={require("@site/static/img/quinn-teaching.png").default}
-          alt="Quinn Road"
-          className="relative overflow-hidden object-contain"
-          style={{ height: "50vw" }}
+          alt="Quinn presenting at a whiteboard to a group seated in a circle"
+          loading="lazy"
+          className={styles.pairPhoto}
         />
         <img
           src={require("@site/static/img/quinn-ireland.png").default}
-          alt="Quinn Road"
-          className="relative overflow-hidden object-contain"
-          style={{ height: "50vw" }}
+          alt="Quinn standing at a railing above tall sea cliffs on the Irish coast"
+          loading="lazy"
+          className={styles.pairPhoto}
         />
       </div>
     </div>
@@ -235,37 +205,35 @@ const TestimonialList = [
   },
 ];
 
+// A quote with its source: <figure>, <blockquote> and <figcaption> tell
+// screen readers which words are the quote and who said them.
 function Testimonial({ name, title, quote }) {
   return (
-    <div className={clsx(" col col--4 padding-horiz--md")}>
-      <div className="text--left padding-horiz--md">
-        <p>"{quote}"</p>
-        <p>
-          <ul>
-            <li>
-              <b>{name}</b>
-              <br />
-              <i>{title}</i>
-            </li>
-          </ul>
-        </p>
-      </div>
-    </div>
+    <figure className={styles.testimonial}>
+      <blockquote className={styles.testimonialQuote}>
+        <p>{quote}</p>
+      </blockquote>
+      <figcaption className={styles.testimonialSource}>
+        <b>{name}</b>
+        <br />
+        <i>{title}</i>
+      </figcaption>
+    </figure>
   );
 }
 
 function Testimonials() {
   return (
-    <section>
+    <section
+      className={styles.testimonialsSection}
+      aria-labelledby="testimonials-heading"
+    >
       <div className="container">
-        <h1>Testimonials</h1>
-        <br></br>
-        <div className="testimonials">
-          <div class="flex flex-row space-y-4 p-4 overflow-x-scroll">
-            {TestimonialList.map((props, idx) => (
-              <Testimonial key={idx} {...props} />
-            ))}
-          </div>
+        <h2 id="testimonials-heading">Testimonials</h2>
+        <div className={styles.testimonialGrid}>
+          {TestimonialList.map((props, idx) => (
+            <Testimonial key={idx} {...props} />
+          ))}
         </div>
       </div>
     </section>
@@ -279,8 +247,10 @@ export default function Home() {
       title={`${siteConfig.title}`}
       description="Quinn McHugh's Personal Website"
     >
-      <HeroSection />
-      <Testimonials />
+      <main>
+        <HeroSection />
+        <Testimonials />
+      </main>
     </Layout>
   );
 }

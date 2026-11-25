@@ -1,8 +1,34 @@
 .footer {
   background-color: #082958;
-  padding: 0px;
+  padding: 3rem clamp(1rem, 3vw, 2rem) 2rem;
 }
 
 .footer__links {
-  margin-bottom: 50px;
+  margin-bottom: 2rem;
+}
+
+/* Ko-fi support link in the footer, styled as a button. Dark text on yellow
+   is about 12:1 contrast. */
+.footer-support {
+  margin-bottom: 1rem;
+}
+
+.footer-support a {
+  color: #a7e4f7;
+  text-decoration: underline;
+}
+
+.footer-support-button {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  background-color: #ffdd00;
+  color: #082958;
+  font-weight: 600;
+}
+
+.footer-support-button:hover {
+  background-color: #ffe94d;
+  color: #082958;
+  text-decoration: none;
 }

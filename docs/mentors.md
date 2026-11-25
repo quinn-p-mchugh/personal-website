@@ -21,14 +21,14 @@ This page highlights people I admire, loosely categorized by theme.
 While I don't know most of these people personally, all of them have inspired me at some point in my life. They may do the same for you!
 
 ## Data / Information / Knowledge
-- [Ruffus Pollock](https://rufuspollock.com/)
+- [Rufus Pollock](https://rufuspollock.com/)
 - [Donald Clark](https://knowledgejump.com/index.html)
 
 ## Design
 - [Maggie Appleton](https://maggieappleton.com/)
 
 ## Community / Group Governance
-- [Richard D Bartlet](https://richdecibels.com/)
+- [Richard D. Bartlett](https://richdecibels.com/)
 - [Eugene Eric Kim](https://fasterthan20.com/)
 
 ## Technology for Good
