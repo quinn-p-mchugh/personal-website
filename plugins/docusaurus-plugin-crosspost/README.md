@@ -258,7 +258,7 @@ The "Also on" links and the responses section are theme components, `CrosspostSy
 | `--crosspost-muted-color`, `--crosspost-small-font-size` | Dates, counts and other secondary text |
 | `--crosspost-border-color` | The line above the section |
 | `--crosspost-focus-color` | The keyboard focus outline |
-| `--crosspost-action-color` | "Show all", "Reply" and "View on" links (near-black, or near-white in dark mode, so they pass contrast whatever your link color) |
+| `--crosspost-action-color` | Each reply's "Reply on" link (the muted text color by default, so it passes contrast whatever your link color) |
 | `--crosspost-mastodon-background`, `-background-hover`, `-color` | The "Reply on Mastodon" button |
 | `--crosspost-bluesky-background`, `-background-hover`, `-color` | The "Reply on Bluesky" button |
 
@@ -269,12 +269,12 @@ The reply buttons use Mastodon's and Bluesky's colors. In light mode they're sli
 | Class | Part |
 |---|---|
 | `crosspost-syndication`, `__label`, `__link`, `__link--mastodon`, `__link--bluesky` | "Also on" links |
-| `crosspost-responses`, `__heading`, `__status` | The section, its heading, and its loading / empty / error message |
+| `crosspost-responses`, `__heading`, `__status`, `__reactions` | The section, its heading, and its loading / empty / error message |
 | `crosspost-reply-buttons`, `crosspost-reply-button`, `--mastodon`, `--bluesky` | Reply buttons |
-| `crosspost-reactions`, `--likes`, `--reposts`, `__title`, `__faces`, `__face`, `__link`, `__more`, `__show-all` | Likes and reposts rows |
-| `crosspost-people-dialog`, `__header`, `__title`, `__close`, `__list`, `__person`, `__link`, `__names`, `__name`, `__handle` | The "Show all" dialog |
+| `crosspost-reactions`, `--likes`, `--reposts`, `__title`, `__faces`, `__face`, `__link`, `__more` (the "+N more" button) | Likes and reposts rows |
+| `crosspost-people-dialog`, `__header`, `__title`, `__close`, `__list`, `__person`, `__link`, `__names`, `__name`, `__handle` | The full list of likes or reposts |
 | `crosspost-replies`, `__title`, `__list` | Replies |
-| `crosspost-reply`, `--mastodon`, `--bluesky`, `__avatar-link`, `__body`, `__header`, `__author`, `__handle`, `__date`, `__text`, `__actions`, `__action`, `__action--reply`, `__action--view` | One reply |
+| `crosspost-reply`, `--mastodon`, `--bluesky`, `__avatar-link`, `__body`, `__header`, `__author`, `__when`, `__date`, `__text`, `__action` | One reply |
 | `crosspost-avatar`, `--initial` | A picture, or an initial for people without one |
 | `crosspost-visually-hidden` | Text only screen readers read |
 
@@ -293,8 +293,8 @@ See [Swizzling](https://docusaurus.io/docs/swizzling). The four `BlogPostItem` c
 - Avatars and replies are lists; replies are ordered, oldest first, and each reply's date is a `<time>` element.
 - Avatars in the likes and reposts rows are links named by the person's name.
 - A reply's avatar links to the same profile as the name next to it. Screen readers and the Tab key skip the avatar, so each person is read and reached once.
-- "Show all" opens the browser's own modal dialog. Focus starts on the Close button and stays inside the dialog. Esc or a click outside closes it, and focus goes back to "Show all".
-- Each reply's "Reply" and "View on" links name the person for screen readers, for example "Reply to Quinn on Mastodon".
+- Rows show up to 20 avatars, so a row grows with its count. A "+N more" button after them (for example "+14 more, show all 34 likes" to screen readers) opens the browser's own modal dialog with everyone's name and handle. Focus starts on the Close button and stays inside the dialog. Esc or a click outside closes it, and focus goes back to the button.
+- Each reply's date links to the reply itself. Its "Reply on Mastodon" link adds the person's name for screen readers ("Reply on Mastodon to Quinn"). Visible text always starts the link's name, so voice control works.
 - Links that open a new tab say so to screen readers.
 - Loading and errors are announced through a status message.
 - Focus is always visible, every target is at least 24 by 24 pixels, and buttons keep their outline in forced-colors mode.

@@ -23,11 +23,14 @@
  *   name (their alt text). A reply's avatar links to the same profile as
  *   the name next to it, so it is hidden from screen readers and skipped
  *   by the Tab key: the name is read, and tabbed to, once.
- * - "Show all" opens the full list in a native modal <dialog>, which keeps
- *   focus inside, closes with Esc, and returns focus to the button.
+ * - A "+N more" button after the avatars ("+14 more, show all 34 likes" to
+ *   screen readers)
+ *   opens the full list in a native modal <dialog>, which keeps focus
+ *   inside, closes with Esc, and returns focus to the button.
  *   Docs: https://developer.mozilla.org/docs/Web/HTML/Element/dialog
- * - Each reply's Reply and View links name the person for screen readers
- *   ("Reply to Quinn on Mastodon"), so a list of links still makes sense.
+ * - Each reply's date links to the reply, and its "Reply on Mastodon" link
+ *   names the person for screen readers ("Reply on Mastodon to Quinn"), so
+ *   a list of links still makes sense.
  * - Links that open a new tab say so to screen readers.
  * - Loading and error messages are announced through a status region.
  * - Colors meet WCAG 2.2 AA contrast in light and dark mode; focus is
@@ -53,8 +56,10 @@ import { NEW_TAB_NOTE } from "../CrosspostSyndicationLinks/index.js";
 /** Link attributes for addresses written by other people. */
 const EXTERNAL_LINK = { target: "_blank", rel: "nofollow ugc noopener noreferrer" };
 
-/** Most avatars shown in a likes or reposts row; the rest are counted. */
-export const MAX_FACES = 30;
+/** Most avatars shown in a likes or reposts row. Up to this many, the row
+ * grows with the count, so a popular post looks it; past it (about two
+ * lines on a phone), a "+N more" button opens the full list. */
+export const MAX_FACES = 20;
 
 /** The responses state before webmention.io has answered. */
 const LOADING = { status: "loading", groups: null };
@@ -221,8 +226,8 @@ function PeopleDialog({ title, entries, onClose }) {
 }
 
 /**
- * The likes or reposts row: a heading with the count, avatars, and a
- * "Show all" button that lists everyone with their names.
+ * The likes or reposts row: the count, up to MAX_FACES avatars, and a
+ * "+N more" button that lists everyone with their names when there are more.
  *
  * Args:
  *     props.kind: "likes" or "reposts" (also the CSS modifier).
@@ -258,27 +263,30 @@ function Reactions({ kind, title, entries }) {
           </li>
         ))}
         {hidden > 0 && (
-          <li className="crosspost-reactions__more" aria-hidden="true">
-            {translate({ id: "crosspost.responses.more", message: "+{count} more" }, { count: hidden })}
+          <li className="crosspost-reactions__face">
+            <button
+              type="button"
+              className="crosspost-reactions__more"
+              aria-haspopup="dialog"
+              onClick={() => setShowingAll(true)}>
+              {/* The visible "+12 more" starts the button's name, so people using
+                  voice control can say what they see (WCAG 2.5.3, label in name). */}
+              {translate({ id: "crosspost.responses.more", message: "+{count} more" }, { count: hidden })}
+              <span className="crosspost-visually-hidden">
+                {translate({ id: "crosspost.responses.showAll", message: ", show all {title}" }, { title })}
+              </span>
+            </button>
           </li>
         )}
       </ul>
-      <button
-        type="button"
-        className="crosspost-reactions__show-all"
-        aria-haspopup="dialog"
-        onClick={() => setShowingAll(true)}>
-        {translate({ id: "crosspost.responses.showAll", message: "Show all" })}
-        <span className="crosspost-visually-hidden"> {title}</span>
-      </button>
       {showingAll && <PeopleDialog title={title} entries={entries} onClose={() => setShowingAll(false)} />}
     </div>
   );
 }
 
 /**
- * One reply: avatar, name and handle, date, the text, then links to reply
- * to it and to view it on its network.
+ * One reply: avatar, name and date (linked to the reply), the text, and a
+ * link to reply to it on its network.
  *
  * Args:
  *     props.reply: A reply from groupMentions.
@@ -290,7 +298,6 @@ function Reactions({ kind, title, entries }) {
 function Reply({ reply, locale }) {
   const date = formatDate(reply.published, locale);
   const network = reply.url ? networkName(reply.url) : "";
-  const handle = handleOf(reply.author.url);
   const name = reply.author.name;
   return (
     <li className={`crosspost-reply${network ? ` crosspost-reply--${network.toLowerCase()}` : ""}`}>
@@ -313,36 +320,41 @@ function Reply({ reply, locale }) {
           ) : (
             <span className="crosspost-reply__author">{name}</span>
           )}
-          {handle && <span className="crosspost-reply__handle">{handle}</span>}
           {date && (
-            <span className="crosspost-reply__date">
-              <time dateTime={reply.published}>{date}</time>
+            // No separator character: the smaller, muted date reads as separate,
+            // and nothing is left dangling when a long name wraps.
+            <span className="crosspost-reply__when">
+              {/* The date is the reply's own link, as on Mastodon and Bluesky. */}
+              {reply.url ? (
+                <a className="crosspost-reply__date" href={reply.url} {...EXTERNAL_LINK}>
+                  <time dateTime={reply.published}>{date}</time>
+                  <span className="crosspost-visually-hidden">
+                    {" "}
+                    {translate({ id: "crosspost.responses.dateLink", message: "(view the reply on {network})" }, { network })}
+                  </span>
+                  <NewTabNote />
+                </a>
+              ) : (
+                <time className="crosspost-reply__date" dateTime={reply.published}>
+                  {date}
+                </time>
+              )}
             </span>
           )}
         </p>
         <p className="crosspost-reply__text">{reply.text}</p>
         {reply.url && (
-          <p className="crosspost-reply__actions">
-            {/* Replying happens on the reply's own page; there, Mastodon offers to
-                continue on the reader's own server, and Bluesky has no link that
-                opens a reply directly. */}
-            <a className="crosspost-reply__action crosspost-reply__action--reply" href={reply.url} {...EXTERNAL_LINK}>
-              {translate({ id: "crosspost.responses.replyToReply", message: "Reply" })}
-              <span className="crosspost-visually-hidden">
-                {" "}
-                {translate({ id: "crosspost.responses.replyToReplyFull", message: "to {name} on {network}" }, { name, network })}
-              </span>
-              <NewTabNote />
-            </a>
-            <a className="crosspost-reply__action crosspost-reply__action--view" href={reply.url} {...EXTERNAL_LINK}>
-              {translate({ id: "crosspost.responses.viewOn", message: "View on {network}" }, { network })}
-              <span className="crosspost-visually-hidden">
-                {" "}
-                {translate({ id: "crosspost.responses.viewOnFull", message: "(reply from {name})" }, { name })}
-              </span>
-              <NewTabNote />
-            </a>
-          </p>
+          // Replying happens on the reply's own page: there, Mastodon offers to
+          // continue on the reader's own server, and Bluesky has no link that
+          // opens a reply directly.
+          <a className="crosspost-reply__action" href={reply.url} {...EXTERNAL_LINK}>
+            {translate({ id: "crosspost.responses.replyOnNetwork", message: "Reply on {network}" }, { network })}
+            <span className="crosspost-visually-hidden">
+              {" "}
+              {translate({ id: "crosspost.responses.replyToWhom", message: "to {name}" }, { name })}
+            </span>
+            <NewTabNote />
+          </a>
         )}
       </div>
     </li>
@@ -412,8 +424,12 @@ export default function CrosspostResponses({ pageUrl, syndication }) {
 
       {hasResponses && (
         <>
-          <Reactions kind="likes" title={plural("crosspost.responses.likes", "{count} like|{count} likes", counts.likes)} entries={groups.likes} />
-          <Reactions kind="reposts" title={plural("crosspost.responses.reposts", "{count} repost|{count} reposts", counts.reposts)} entries={groups.reposts} />
+          {counts.likes + counts.reposts > 0 && (
+            <div className="crosspost-responses__reactions">
+              <Reactions kind="likes" title={plural("crosspost.responses.likes", "{count} like|{count} likes", counts.likes)} entries={groups.likes} />
+              <Reactions kind="reposts" title={plural("crosspost.responses.reposts", "{count} repost|{count} reposts", counts.reposts)} entries={groups.reposts} />
+            </div>
+          )}
           {counts.replies > 0 && (
             <div className="crosspost-replies">
               <h3 className="crosspost-replies__title" id={repliesHeadingId}>

@@ -28,6 +28,11 @@
   --ifm-color-primary-lighter: #4ac7ef;
   --ifm-color-primary-lightest: #a7e4f7;
 
+  /* Links: primary-dark (#0e80a5) reaches 4.5:1 contrast on white, as WCAG AA
+     requires for text; primary (#12a0ce) is only 3.0:1. */
+  --ifm-link-color: var(--ifm-color-primary-dark);
+  --ifm-link-hover-color: var(--ifm-color-primary-darker);
+
   --ifm-code-font-size: 95%;
   --ifm-font-family-base: 'Poppins', sans-serif;
 
@@ -49,6 +54,9 @@
   --ifm-color-primary-light: #29d5b0;
   --ifm-color-primary-lighter: #32d8b4;
   --ifm-color-primary-lightest: #4fddbf;
+  /* Dark mode: the primary color itself passes (7.6:1 on the dark background). */
+  --ifm-link-color: var(--ifm-color-primary);
+  --ifm-link-hover-color: var(--ifm-color-primary-lighter);
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
