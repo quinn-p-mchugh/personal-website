@@ -10,7 +10,6 @@
  * What this file does, as a Docusaurus plugin:
  * - getThemePath: adds the theme components that mark posts up for Bridgy
  *   (src/theme/BlogPostItem) and show responses (src/components).
- * - getPathsToWatch: reloads the site when a template file changes.
  * - injectHtmlTags: adds the webmention and rel="me" links to every page.
  * - contentLoaded: shares the few settings those components need.
  * - postBuild: adds each post's social text, hashtags and images, and
@@ -20,7 +19,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { finishPostPages } from "./postPages.js";
-import { loadTemplateFiles, templateFilePaths } from "./templateFiles.js";
+import { loadTemplateFiles } from "./templateFiles.js";
 import { PLUGIN_NAME } from "./shared/names.js";
 
 export { validateOptions } from "./options.js";
@@ -83,10 +82,6 @@ export default function crosspostPlugin(context, options) {
 
   return {
     name: PLUGIN_NAME,
-
-    getPathsToWatch() {
-      return templateFilePaths(options.socialPostTemplates, options.templatesPath, context.siteDir);
-    },
 
     getThemePath() {
       return fileURLToPath(new URL("./theme", import.meta.url));

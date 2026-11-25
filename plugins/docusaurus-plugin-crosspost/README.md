@@ -112,7 +112,7 @@ This happens while the site builds, so **your Markdown files never change**: edi
 
 ### Social post templates
 
-By default, untitled posts go out in full and titled posts go out as "Title: link" (Bridgy's own [article format](https://brid.gy/about#publish)). Templates let you write the text yourself for some or all posts.
+By default, untitled posts go out in full with their tags as hashtags. Titled posts go out as "Title: link", followed by the post's `description` and hashtags when it has them; a titled post with neither is left to Bridgy's own [article format](https://brid.gy/about#publish), which is the same title and link. Templates let you write the text yourself for some or all posts.
 
 ```js
 socialPostTemplates: [
@@ -150,7 +150,9 @@ When a rule has more than one condition, **all** of them must match. `appliesTo:
 
 An unknown placeholder, like `{titel}`, stops the build. A blank line starts a new paragraph. **A line that uses an empty placeholder is left out**, so `{title}` on its own line disappears for untitled posts, and a `{hashtags}` line disappears for posts without tags. Placing `{hashtags}` right after `{content}` adds them to the post's last paragraph when that paragraph is only hashtags.
 
-**What Bridgy does with it.** A templated post goes out as a note: your text, plus the post's images when `images` is on. If it's too long for the network (500 characters on most Mastodon servers, 300 on Bluesky), Bridgy shortens it and adds a link to the post. Template files are watched while `docusaurus start` runs; Windows line endings are fine.
+**What Bridgy does with it.** A templated post goes out as a note: your text, plus the post's images when `images` is on. If it's too long for the network (500 characters on most Mastodon servers, 300 on Bluesky), Bridgy shortens it and adds a link to the post. Windows line endings in templates are fine.
+
+**Checking your templates.** Templates, images and hashtags are added after the site is built, in Docusaurus's [`postBuild`](https://docusaurus.io/docs/api/plugin-methods/lifecycle-apis#postBuild) step, which runs for `docusaurus build` but not for `docusaurus start`. To see the result, run `npm run build` and look inside the `e-bridgy-mastodon-content` element of a post's page in `build/`.
 
 ### Images
 
@@ -159,7 +161,7 @@ Images are read from the built pages, so Markdown images (`![alt](./photo.jpg)`)
 - **Which posts:** untitled posts, and posts sent with a template. Posts that keep the "Title: link" default get no images, so Mastodon and Bluesky show the link's preview card instead.
 - **Shrinking:** Bluesky refuses images over 2,000,000 bytes, and Bridgy doesn't shrink them, so one big photo would make the whole Bluesky post fail. Images that are too big are shrunk into a copy under `/crosspost-images/`. The pictures your readers see are not changed.
 - **Formats:** photos become JPEG; images with transparency become WebP, which keeps it. Animated images that are too big are left out with a warning, because shrinking would freeze them.
-- **Images from other sites:** downloaded during the build and kept in `node_modules/.cache/docusaurus-plugin-crosspost`. Run `docusaurus clear` to download them again.
+- **Images from other sites:** downloaded during the build and kept in `node_modules/.cache/docusaurus-plugin-crosspost`. Run `docusaurus clear` to download them again. Downloads use Node's built-in `fetch`, which ignores proxy settings unless [`NODE_USE_ENV_PROXY=1`](https://nodejs.org/api/cli.html#node_use_env_proxy1) is set (Node 22.21 or newer); set it if your build machine reaches the web through a proxy.
 - **Limits:** only the first 4 images are sent (the limit on both networks); the build warns about the rest. Alt text over 1,500 characters is shortened, the limit on most Mastodon servers.
 
 ## Sending posts to Bridgy
@@ -196,7 +198,7 @@ npx docusaurus-plugin-crosspost send --site-url https://example.com --dry-run
 | `--wait-minutes N` | How long to wait for posts to go live. Default 20. |
 | `--check-every-seconds N` | How often to check while waiting. Default 30. |
 
-It sends a file only if it is a published post: inside a blog folder, not matched by that blog's [`exclude`](https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#exclude) patterns, dated (by its file name, like `2026-11-24-hello.md` or `2026/11/24/hello.md` ([formats](https://docusaurus.io/docs/blog#blog-post-date)), or by a `date` in its front matter), and not `draft: true` or `unlisted: true`. Each skipped file is listed with the reason.
+Run it in your site's folder (the one with `docusaurus.config.js`); file paths are relative to it, which also works when the site is a subfolder of the repository. It sends a file only if it is a published post: inside a blog folder, not matched by that blog's [`exclude`](https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#exclude) patterns, dated (by its file name, like `2026-11-24-hello.md` or `2026/11/24/hello.md` ([formats](https://docusaurus.io/docs/blog#blog-post-date)), or by a `date` in its front matter), and not `draft: true` or `unlisted: true`. Each skipped file is listed with the reason.
 
 ### How it knows what's live: `crosspost.json`
 

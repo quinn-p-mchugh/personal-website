@@ -30,7 +30,7 @@ const DATE_IN_PATH = /^(?<folder>.*)(?<date>\d{4}[-/]\d{1,2}[-/]\d{1,2})[-/]?(?<
  * Finds which blog a file is in.
  *
  * Args:
- *     file: A path relative to the repository root, with "/".
+ *     file: A path relative to the site folder, with "/".
  *     blogs: { path, exclude } for each blog, from crosspost.json.
  *
  * Returns:
@@ -85,11 +85,11 @@ export async function readFrontMatter(file) {
  * Explains why an added file won't be cross-posted.
  *
  * Args:
- *     file: A path relative to the repository root, with "/".
+ *     file: A path relative to the site folder, with "/".
  *     blogs: { path, exclude } for each blog, from crosspost.json.
  *     ignore: Extra glob patterns from --ignore, matched against the path
  *         inside the blog folder.
- *     root: The repository folder.
+ *     root: The site folder.
  *
  * Returns:
  *     A promise of the reason, or null when the file is a post to send.

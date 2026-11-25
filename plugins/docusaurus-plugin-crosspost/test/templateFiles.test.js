@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { loadTemplateFiles, templateFilePaths } from "../src/templateFiles.js";
+import { loadTemplateFiles } from "../src/templateFiles.js";
 
 const site = fs.mkdtempSync(path.join(os.tmpdir(), "crosspost-templates-"));
 fs.mkdirSync(path.join(site, "crosspost-templates"));
@@ -20,7 +20,6 @@ test("template files are read relative to templatesPath, with Windows line endin
   const loaded = loadTemplateFiles(rules, "crosspost-templates", site);
   assert.equal(loaded[0].template, "💡 {title}\n\n{content}");
   assert.equal(loaded[1], rules[1], "inline rules are unchanged");
-  assert.deepEqual(templateFilePaths(rules, "crosspost-templates", site), [path.join(site, "crosspost-templates", "ideas.txt")]);
 });
 
 test("an absolute templatesPath works too", () => {

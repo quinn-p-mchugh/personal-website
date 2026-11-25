@@ -64,6 +64,13 @@ jobs:
   cross-post:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # The folder holding your site's package.json. Change "." if your site
+    # is in a subfolder of the repository, e.g. "website", and add
+    # "cache-dependency-path: website/package-lock.json" under setup-node.
+    # Docs: https://docs.github.com/actions/reference/workflows-and-actions/workflow-syntax#defaultsrun
+    defaults:
+      run:
+        working-directory: .
     steps:
       # Full history (fetch-depth: 0) so the command can see which files a
       # push added; "blob:none" skips old file contents to keep it quick.

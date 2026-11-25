@@ -54,7 +54,7 @@ export async function fetchManifest(siteUrl, request) {
  * Waits until the live site lists some post files.
  *
  * Args:
- *     files: Post files, as paths relative to the repository root.
+ *     files: Post files, as paths relative to the site folder.
  *     siteUrl: The site's address.
  *     timing: { waitMinutes, checkEverySeconds }.
  *     tools: { request, sleep }.

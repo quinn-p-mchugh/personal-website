@@ -64,7 +64,14 @@ const crosspost = {
   // that matches a post wins; posts no rule matches keep the built-in text
   // (untitled posts in full; titled posts as "Title: link"). Example:
   //   { appliesTo: { hasTitle: true }, template: "{title}\n———\n{content}\n\n{hashtags}" },
-  socialPostTemplates: [],
+  socialPostTemplates: [
+    // TEST (remove after the cross-posting test): ideas-blog posts with
+    // #CrosspostTemplateTest use crosspost-templates/crosspost-test.txt.
+    {
+      appliesTo: { blogs: ["blog-ideas"], hashtags: ["#CrosspostTemplateTest"] },
+      templateFile: "crosspost-test.txt",
+    },
+  ],
 };
 
 const plugins = {

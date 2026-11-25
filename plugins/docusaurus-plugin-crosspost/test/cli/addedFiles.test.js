@@ -61,6 +61,11 @@ test("an unknown or all-zero commit means: the current commit's files", () => {
   assert.deepEqual(filesAddedSince("", repo), ["blog/newer.md"]);
 });
 
+test("in a subfolder, paths are relative to it and other files are left out", () => {
+  commit("site/blog/inner.md", "elsewhere.md");
+  assert.deepEqual(filesAddedSince("", path.join(repo, "site")), ["blog/inner.md"]);
+});
+
 test("files added in the last few days", () => {
-  assert.deepEqual(filesAddedInLastDays(3, repo), ["blog/new one.md", "blog/newer.md", "blog/old.md"]);
+  assert.deepEqual(filesAddedInLastDays(3, repo), ["blog/new one.md", "blog/newer.md", "blog/old.md", "elsewhere.md", "site/blog/inner.md"]);
 });

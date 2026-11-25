@@ -10,8 +10,10 @@
  *
  * Files are read once, when Docusaurus loads the plugin, so a missing file
  * or an unknown placeholder stops the build at the start with a message
- * naming the file. During "docusaurus start", editing a template file
- * reloads the site (see getPathsToWatch in src/index.js).
+ * naming the file. Templates are only used by the postBuild step, which
+ * Docusaurus runs for production builds ("docusaurus build"), not while
+ * "docusaurus start" runs, so there is nothing to reload during development.
+ * Docs: https://docusaurus.io/docs/api/plugin-methods/lifecycle-apis#postBuild
  * Tests: test/templateFiles.test.js
  */
 import fs from "node:fs";
@@ -32,22 +34,6 @@ import { unknownPlaceholderMessage, unknownPlaceholders } from "./socialText.js"
  */
 export function templatesFolder(templatesPath, siteDir) {
   return path.resolve(siteDir, templatesPath);
-}
-
-/**
- * Lists the template files the rules use.
- *
- * Args:
- *     rules: The socialPostTemplates setting.
- *     templatesPath: The templatesPath setting.
- *     siteDir: The site folder.
- *
- * Returns:
- *     Absolute paths of the files, without repeats.
- */
-export function templateFilePaths(rules, templatesPath, siteDir) {
-  const folder = templatesFolder(templatesPath, siteDir);
-  return [...new Set(rules.filter((rule) => rule.templateFile).map((rule) => path.resolve(folder, rule.templateFile)))];
 }
 
 /**

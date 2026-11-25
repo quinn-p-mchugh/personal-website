@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { send } from "../../src/cli/send.js";
+import { sameAddress, send } from "../../src/cli/send.js";
 
 const root = fs.mkdtempSync(path.join(os.tmpdir(), "crosspost-send-"));
 const startedIn = process.cwd();
@@ -103,6 +103,12 @@ test("--url sends one address and finds its file", async () => {
   assert.equal(await quietly(() => send(options({ url: "https://x.org/blog/a" }), tools)), 0);
   assert.deepEqual(tools.sent, ["https://x.org/blog/a"]);
   assert.match(fs.readFileSync("blog/2026-11-24-a.md", "utf8"), /bsky\.app/);
+});
+
+test("sameAddress ignores a trailing slash and a #section", () => {
+  assert.equal(sameAddress("https://x.org/blog/a/", "https://x.org/blog/a"), true);
+  assert.equal(sameAddress("https://x.org/blog/a#top", "https://x.org/blog/a"), true);
+  assert.equal(sameAddress("https://x.org/blog/a", "https://x.org/blog/ab"), false);
 });
 
 test("no added files is a successful run", async () => {

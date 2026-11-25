@@ -26,13 +26,29 @@ import { skipReason } from "./posts.js";
 import { saveSyndication } from "./syndication.js";
 
 /**
+ * Tells whether two web addresses name the same page, ignoring a trailing
+ * slash and a "#section" (Docusaurus serves "/post" and "/post/" alike).
+ *
+ * Args:
+ *     a: A web address.
+ *     b: Another web address.
+ *
+ * Returns:
+ *     True if they name the same page.
+ */
+export function sameAddress(a, b) {
+  const tidy = (address) => String(address).replace(/#.*$/, "").replace(/\/+$/, "");
+  return tidy(a) === tidy(b);
+}
+
+/**
  * Lists the files a run should consider.
  *
  * Args:
  *     options: The command's options (see main.js).
  *
  * Returns:
- *     Paths relative to the repository root.
+ *     Paths relative to the site folder (where the command runs).
  */
 export function candidateFiles(options) {
   if (options.files.length) return options.files;
@@ -103,7 +119,7 @@ export async function send(options, tools = defaultTools()) {
       reportError(`Can't read the site's crosspost.json (${problem}).`);
       return 1;
     }
-    const entry = manifest.posts.find((post) => post.url === options.url);
+    const entry = manifest.posts.find((post) => sameAddress(post.url, options.url));
     if (!entry) say(`  note    ${options.url} isn't listed in crosspost.json; addresses won't be saved`);
     const problemForPost = await sendPost(entry ? entry.source : null, options.url, manifest.networks, options, tools);
     if (problemForPost) problems.push(problemForPost);

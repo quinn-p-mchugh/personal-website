@@ -4,7 +4,13 @@
  * Only added files count: edits to existing posts are never re-posted.
  * Needs the repository's history; in GitHub Actions, check out with
  * "fetch-depth: 0".
+ *
+ * Paths are relative to the folder the command runs in (git's --relative),
+ * and files outside it are left out. Run it in the site's folder, so the
+ * paths match the ones in crosspost.json, which are relative to the site
+ * folder; this also works when the site is a subfolder of the repository.
  * Docs: https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203
+ *       https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---relativeltpathgt
  * Tests: test/cli/addedFiles.test.js
  */
 import { execFileSync } from "node:child_process";
@@ -17,7 +23,7 @@ const NO_COMMIT = /^0+$/;
  *
  * Args:
  *     args: git's arguments.
- *     cwd: The repository folder.
+ *     cwd: The folder to run in: the site's folder, inside the repository.
  *
  * Returns:
  *     Non-empty output lines.
@@ -35,7 +41,7 @@ function git(args, cwd) {
  *
  * Args:
  *     commit: A commit hash.
- *     cwd: The repository folder.
+ *     cwd: The folder to run in: the site's folder, inside the repository.
  *
  * Returns:
  *     True if git knows the commit.
@@ -56,16 +62,16 @@ function commitExists(commit, cwd) {
  *     since: The commit before the push (GitHub's "before"). When it's
  *         empty, all zeros (a new branch) or unknown (after a force-push),
  *         the files added by the current commit alone are used.
- *     cwd: The repository folder.
+ *     cwd: The folder to run in: the site's folder, inside the repository.
  *
  * Returns:
- *     Paths relative to the repository root, sorted, without repeats.
+ *     Paths relative to cwd, sorted, without repeats.
  */
 export function filesAddedSince(since, cwd = process.cwd()) {
   if (!since || NO_COMMIT.test(since) || !commitExists(since, cwd)) {
-    return [...new Set(git(["diff-tree", "--root", "--no-commit-id", "-r", "--name-only", "--diff-filter=A", "HEAD"], cwd))].sort();
+    return [...new Set(git(["diff-tree", "--root", "--no-commit-id", "-r", "--relative", "--name-only", "--diff-filter=A", "HEAD"], cwd))].sort();
   }
-  return [...new Set(git(["diff", "--name-only", "--diff-filter=A", since, "HEAD"], cwd))].sort();
+  return [...new Set(git(["diff", "--relative", "--name-only", "--diff-filter=A", since, "HEAD"], cwd))].sort();
 }
 
 /**
@@ -73,11 +79,11 @@ export function filesAddedSince(since, cwd = process.cwd()) {
  *
  * Args:
  *     days: How many days back to look.
- *     cwd: The repository folder.
+ *     cwd: The folder to run in: the site's folder, inside the repository.
  *
  * Returns:
- *     Paths relative to the repository root, sorted, without repeats.
+ *     Paths relative to cwd, sorted, without repeats.
  */
 export function filesAddedInLastDays(days, cwd = process.cwd()) {
-  return [...new Set(git(["log", `--since=${days} days ago`, "--diff-filter=A", "--name-only", "--pretty=format:"], cwd))].sort();
+  return [...new Set(git(["log", `--since=${days} days ago`, "--relative", "--diff-filter=A", "--name-only", "--pretty=format:"], cwd))].sort();
 }
