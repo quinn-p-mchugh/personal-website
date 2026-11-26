@@ -2,6 +2,7 @@ import React from "react";
 import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
+import FloatingSchedulingButton from "@site/src/components/FloatingSchedulingButton";
 
 import styles from "./index.module.css";
 
@@ -251,6 +252,7 @@ export default function Home() {
         <HeroSection />
         <Testimonials />
       </main>
+      <FloatingSchedulingButton />
     </Layout>
   );
 }

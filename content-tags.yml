@@ -1,0 +1,9 @@
+tag1:
+  label: 'Tag 1'
+  description: 'Tag 1 description'
+  permalink: /tag-1-permalink
+
+tag2:
+  label: 'Tag 2'
+  description: 'Tag 2 description'
+  permalink: /tag-2-permalink

@@ -108,11 +108,7 @@ const plugins = {
 
 
 const contentConfig = {
-  // No predefined tags file: tags written in each post's front matter are used
-  // as they are. (content-tags.yml only held the Docusaurus example tags, which
-  // made every build print "tags not defined" warnings.)
-  // Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#tags
-  tags: false,
+  tags: "../content-tags.yml",
   onInlineTags: "warn",
   blogConfig: { // Blog Plugin Documentation: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog
     sidebarCount: "ALL",
