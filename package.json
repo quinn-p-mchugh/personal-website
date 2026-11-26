@@ -13,6 +13,7 @@
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
     "test": "npm test --workspace docusaurus-plugin-crosspost",
+    "test:site": "playwright test",
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids"
@@ -51,8 +52,10 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.1",
     "@docusaurus/module-type-aliases": "^3.10.2",
     "@fec/remark-a11y-emoji": "^4.0.2",
+    "@playwright/test": "^1.65.1",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
     "remark-codesandbox": "^0.10.1",

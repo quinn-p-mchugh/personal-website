@@ -1,0 +1,81 @@
+# Checks the built site in a real browser on every pull request, so problems
+# show as a red X before they reach the live site:
+#   - accessibility: every page in the sitemap, at a desktop and a phone
+#     screen size, checked with axe-core (Deque's accessibility checker)
+#     against the WCAG 2.0, 2.1 and 2.2 A and AA rules it can test;
+#   - the homepage's "Book a call" button.
+#
+# The checks live in tests/browser/ and their settings in
+# playwright.config.js. Run the same checks locally with:
+#   npm run build && npm run test:site
+#
+# If it fails: open the failed run, read the list of problems in the log
+# (each has a "How to fix" link), or download the "browser-check-report"
+# file at the bottom of the run's summary page for the full report.
+#
+# This doesn't stop Vercel from publishing; it only reports.
+#
+# GitHub Actions docs: https://docs.github.com/actions
+# Playwright on GitHub Actions: https://playwright.dev/docs/ci-intro
+
+name: Check the site
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  # "Run workflow" button on the Actions tab.
+  workflow_dispatch:
+
+# Read-only: the checks change nothing.
+# Docs: https://docs.github.com/actions/security-for-github-actions/security-guides/automatic-token-authentication
+permissions:
+  contents: read
+
+# A newer push to the same pull request cancels the older, unfinished run.
+# Docs: https://docs.github.com/actions/writing-workflows/choosing-what-your-workflow-does/control-the-concurrency-of-workflows-and-jobs
+concurrency:
+  group: check-site-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      # Actions are pinned to an exact commit, so a changed or compromised
+      # tag can't alter what runs; the comment says which release it is.
+      # Docs: https://docs.github.com/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions#using-third-party-actions
+      - name: Get the repository's files
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+
+      - name: Set up Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install the site's packages
+        run: npm ci --no-audit --no-fund
+
+      # Chromium, the open-source engine behind Chrome, plus the system
+      # libraries it needs.
+      # Docs: https://playwright.dev/docs/browsers#install-system-dependencies
+      - name: Install the test browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Build the site
+        run: npm run build
+
+      - name: Run the browser checks
+        run: npm run test:site
+
+      # The full report, kept for 14 days, only when a check failed.
+      # Docs: https://github.com/actions/upload-artifact
+      - name: Save the report
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: browser-check-report
+          path: playwright-report/
+          retention-days: 14

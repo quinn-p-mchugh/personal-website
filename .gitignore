@@ -11,6 +11,10 @@ plugins/*/node_modules
 .docusaurus
 .cache-loader
 
+# Results of the browser checks (npm run test:site)
+/test-results
+/playwright-report
+
 # misc
 .DS_Store
 .env.local
