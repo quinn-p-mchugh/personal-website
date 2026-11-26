@@ -1,6 +1,8 @@
 import Cal, { getCalApi } from "@calcom/embed-react";
 import React, { useEffect } from "react";
 
+import { CAL_LINK } from "@site/src/utils/calBooking";
+
 export default function BookingPage() {
   useEffect(() => {
     (async function () {
@@ -13,7 +15,7 @@ export default function BookingPage() {
   }, []);
   return (
     <Cal
-      calLink="quinnm/meet"
+      calLink={CAL_LINK}
       style={{ width: "100%", height: "100%", overflow: "scroll" }}
     />
   );

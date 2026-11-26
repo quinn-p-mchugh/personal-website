@@ -1,0 +1,36 @@
+/* "Book a call" button.
+   White on navy is 14:1 contrast (WCAG AA needs 4.5:1). 48px tall, above the
+   24px minimum tap size (WCAG 2.5.8). */
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0.75rem 1.25rem;
+  border: 2px solid #65d9ff; /* keeps its shape visible on dark backgrounds */
+  border-radius: 999px;
+  background-color: #072957;
+  color: #ffffff;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.button:hover {
+  background-color: #0b3c7d;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+/* A two-tone ring, visible on both light and dark backgrounds (WCAG 2.4.7). */
+.button:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 0;
+  box-shadow: 0 0 0 6px #072957;
+}
+
+.icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}

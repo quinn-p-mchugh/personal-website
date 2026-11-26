@@ -1,0 +1,26 @@
+/* Places BookCallButton in the bottom-right corner, above page content. */
+.floating {
+  position: fixed;
+  right: clamp(0.75rem, 2vw, 1.5rem);
+  bottom: clamp(0.75rem, 2vw, 1.5rem);
+  z-index: calc(var(--ifm-z-index-fixed) + 1);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 25%);
+}
+
+@media print {
+  .floating {
+    display: none;
+  }
+}
+
+/* Room for the button on the page that shows it (this class is on <html>):
+   - extra space under the footer, so the button never covers its last line;
+   - when moving through links with the keyboard, the browser scrolls the
+     focused link clear of the button (WCAG 2.4.11). */
+.pageWithFloatingButton {
+  scroll-padding-bottom: 6rem;
+}
+
+.pageWithFloatingButton :global(.footer) {
+  padding-bottom: 6rem;
+}

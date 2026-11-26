@@ -9,8 +9,6 @@
  @import url('button.css');
  @import url('footer.css');
  @import url('navbar.css');
- @import url('hero.css');
- @import url('testimonials.css');
  @import url('article.css');
 
 @tailwind base;
@@ -20,18 +18,23 @@
 /* You can override the default Infima variables here. */
 
 :root {
-  --ifm-color-primary: #12a0ce;
-  --ifm-color-primary-dark: #0e80a5;
-  --ifm-color-primary-darker: #0b607c;
-  --ifm-color-primary-darkest: #074052;
-  --ifm-color-primary-light: #74d4f3;
-  --ifm-color-primary-lighter: #4ac7ef;
-  --ifm-color-primary-lightest: #a7e4f7;
+  /* Primary color for text on light pages: links, the active menu item,
+     breadcrumbs and the "On this page" list all use it. #0b6d8c has at least
+     5:1 contrast on white and on Docusaurus's light-gray menu and table
+     backgrounds, so it passes WCAG AA (4.5:1) everywhere. The old #12a0ce
+     was only 2.7-3.0:1. The bright brand blues on the dark navbar and
+     homepage are set separately (navbar.css, index.module.css).
+     Contrast checker: https://webaim.org/resources/contrastchecker/ */
+  --ifm-color-primary: #0b6d8c;
+  --ifm-color-primary-dark: #0a627e;
+  --ifm-color-primary-darker: #095d77;
+  --ifm-color-primary-darkest: #084c62;
+  --ifm-color-primary-light: #0c789a;
+  --ifm-color-primary-lighter: #0d7da1;
+  --ifm-color-primary-lightest: #0e8eb6;
 
-  /* Links: primary-dark (#0e80a5) reaches 4.5:1 contrast on white, as WCAG AA
-     requires for text; primary (#12a0ce) is only 3.0:1. */
-  --ifm-link-color: var(--ifm-color-primary-dark);
-  --ifm-link-hover-color: var(--ifm-color-primary-darker);
+  --ifm-link-color: var(--ifm-color-primary);
+  --ifm-link-hover-color: var(--ifm-color-primary-darkest);
 
   --ifm-code-font-size: 95%;
   --ifm-font-family-base: 'Poppins', sans-serif;
@@ -60,7 +63,53 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
-.container {
-  top: 20em;
-  margin: 100px;
+/* Navbar height, used by Docusaurus for sticky offsets and for scrolling to
+   #anchors so headings don't hide under the bar. Docs:
+   https://docusaurus.io/docs/styling-layout#styling-your-site-with-infima */
+:root {
+  --ifm-navbar-height: 4.5rem;
+}
+
+/* Keyboard focus: a clear ring on every focusable element (WCAG 2.4.7). */
+:focus-visible {
+  outline: 2px solid var(--ifm-color-primary-dark);
+  outline-offset: 2px;
+}
+
+/* Respect the "reduce motion" system setting. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Author social icons under blog posts: pad them to a 24px tap target
+   (WCAG 2.5.8). The icons themselves stay 16px. */
+[class*="authorSocialLink"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+}
+
+/* Underline links in page and post text, so they don't rely on color alone
+   to stand out from the words around them (WCAG 1.4.1). */
+/* (Not the link cards on overview pages, which are boxes, not text.) */
+.markdown a:not(.card),
+.mdx-page main article a:not(.card) {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+/* Search page: the small "Powered by" label next to Algolia's logo is light
+   gray by default (2.9:1 contrast); darken it to pass WCAG AA (4.5:1). */
+/* (".row" makes this rule outrank Docusaurus's own, which loads later.) */
+.row [class*="searchLogoColumn"] span {
+  color: var(--ifm-color-emphasis-700);
 }
