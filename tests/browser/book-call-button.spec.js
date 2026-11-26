@@ -45,6 +45,13 @@ test("the button goes to the booking page when Cal.com can't load", async ({ pag
 test("the button doesn't cover the end of the page", async ({ page, baseURL }) => {
   await blockOutsideRequests(page, baseURL);
   await page.goto("/");
+
+  // Load every photo now (normally they load as you scroll to them), so the
+  // page has its final height, then scroll to the bottom.
+  await page.evaluate(() => {
+    for (const image of document.images) image.loading = "eager";
+  });
+  await page.waitForFunction(() => [...document.images].every((image) => image.complete));
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
 
   const buttonTop = (await page.getByRole("link", { name: "Book a call" }).boundingBox()).y;

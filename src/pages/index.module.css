@@ -79,11 +79,14 @@
   outline-offset: 2px;
 }
 
-/* Full-width road photo, cropped to a wide strip on large screens. */
+/* Full-width road photo, cropped to a wide strip. The fixed shape
+   (aspect-ratio) reserves its space before it loads, so the page doesn't
+   jump as it appears. */
 .bannerPhoto {
   display: block;
   width: 100%;
   height: auto;
+  aspect-ratio: 2 / 1;
   max-height: 75vh;
   object-fit: cover;
 }

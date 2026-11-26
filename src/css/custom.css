@@ -106,3 +106,10 @@
   text-decoration: underline;
   text-underline-offset: 0.15em;
 }
+
+/* Search page: the small "Powered by" label next to Algolia's logo is light
+   gray by default (2.9:1 contrast); darken it to pass WCAG AA (4.5:1). */
+/* (".row" makes this rule outrank Docusaurus's own, which loads later.) */
+.row [class*="searchLogoColumn"] span {
+  color: var(--ifm-color-emphasis-700);
+}
