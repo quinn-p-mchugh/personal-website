@@ -113,3 +113,19 @@
 .row [class*="searchLogoColumn"] span {
   color: var(--ifm-color-emphasis-700);
 }
+
+/* A wide table that scrolls sideways inside its own box instead of
+   stretching the page. Usage in .mdx:
+     <div className="table-scroll" role="region" aria-label="What the table shows" tabIndex={0}>
+       <table>...</table>
+     </div>
+   The role, label and tabIndex let keyboard users focus the box and scroll it
+   with the arrow keys (WCAG 2.1.1). */
+.table-scroll {
+  overflow-x: auto;
+  margin-bottom: var(--ifm-spacing-vertical);
+}
+
+.table-scroll table {
+  margin-bottom: 0;
+}
