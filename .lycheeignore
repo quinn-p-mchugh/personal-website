@@ -1,0 +1,7 @@
+# Links the monthly link check (.github/workflows/check-links.yml) skips.
+# One regular expression per line, matched against each link.
+# Docs: https://lychee.cli.rs/recipes/excluding-links/
+
+# Search engine and font services: not real links, just preloads.
+^https://fonts\.googleapis\.com
+^https://fonts\.gstatic\.com
