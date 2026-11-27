@@ -89,6 +89,7 @@
   aspect-ratio: 2 / 1;
   max-height: 75vh;
   object-fit: cover;
+  object-position: 50% 20%; /* crop from the bottom, keeping heads in frame */
 }
 
 /* Two photos side by side; stacked on phones. */
