@@ -1,6 +1,7 @@
 ---
 created: 2024-03-23T08:53:59-0400
 title: 'Candidate Breadth v.s. Depth'
+description: "A hunch about hiring: interviews tend to measure a candidate's depth of knowledge more than the breadth of experience that could give them outsized impact."
 tags: ["Hiring", "Innovation", "Creativity"]
 authors: qmchugh
 hide_table_of_contents: true

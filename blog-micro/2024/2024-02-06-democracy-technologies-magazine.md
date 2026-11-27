@@ -1,7 +1,7 @@
 ---
 title: "Democracy Technologies: A magazine of the Innovation Politics Institute"
 #slug:
-#description:
+description: "Democracy Technologies, a magazine of the Innovation Politics Institute, offers a database of participatory decision-making tools, introductory articles on digital democracy, and news and case studies."
 #keywords: []
 tags:
   [
