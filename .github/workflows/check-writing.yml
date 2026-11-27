@@ -57,8 +57,12 @@ jobs:
           json=$(printf '%s\n' "$files" | jq --raw-input --slurp --compact-output 'split("\n") | map(select(length > 0))')
           echo "files=$json" >> "$GITHUB_OUTPUT"
 
+      # continue-on-error: the notes still appear on the pull request, but
+      # alerts never turn the check red (the action's fail_on_error setting
+      # alone doesn't cover reviewdog's exit status).
       - name: Check the writing with Vale
         if: steps.changed.outputs.files != '[]'
+        continue-on-error: true
         uses: errata-ai/vale-action@85f9f7f2c5f449ac0ae5b66662961bae3f77ca6a # v2.1.2
         with:
           files: ${{ steps.changed.outputs.files }}
