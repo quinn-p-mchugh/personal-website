@@ -40,6 +40,54 @@ export function templatesFolder(templatesPath, siteDir) {
 }
 
 /**
+ * Works out how a template file is read, from its extension.
+ *
+ * Args:
+ *     file: The template file's path.
+ *     label: How to name the rule in messages, like
+ *         'socialPostTemplates[0] names the template file "a.html"'.
+ *
+ * Returns:
+ *     "text" (.txt) or "markdown" (.md), in any letter case.
+ *
+ * Raises:
+ *     Error: For any other extension, with a hint for .mdx.
+ */
+export function templateFormat(file, label) {
+  const extension = path.extname(file).toLowerCase();
+  const format = TEMPLATE_FORMATS[extension];
+  if (format) return format;
+  const hint = extension === ".mdx" ? "; MDX isn't supported, so use .md." : ".";
+  throw new Error(`[${PLUGIN_NAME}] ${label}. Template files must end in .txt (plain text) or .md (Markdown)${hint}`);
+}
+
+/**
+ * Reads a template file's text.
+ *
+ * Args:
+ *     file: The template file's path.
+ *     label: How to name the rule in messages (see templateFormat).
+ *     templatesPath: The templatesPath setting, for the message.
+ *
+ * Returns:
+ *     The text, with "\n" line endings and without a byte order mark
+ *     (which some Windows editors add).
+ *
+ * Raises:
+ *     Error: If the file can't be read.
+ */
+export function readTemplateText(file, label, templatesPath) {
+  try {
+    return fs.readFileSync(file, "utf8").replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
+  } catch (error) {
+    throw new Error(
+      `[${PLUGIN_NAME}] ${label}, but ${file} can't be read (${error.code}). ` +
+        `Template files are relative to templatesPath ("${templatesPath}").`
+    );
+  }
+}
+
+/**
  * Reads each rule's template file into its "template".
  *
  * Args:
@@ -50,7 +98,8 @@ export function templatesFolder(templatesPath, siteDir) {
  * Returns:
  *     The rules, each with "template" holding its text, "format" ("text" or
  *     "markdown") and "file" (its path); rules written inline are
- *     returned unchanged. A file's final line break is removed.
+ *     returned unchanged. A Markdown file's front matter and any file's
+ *     final line break are removed.
  *
  * Raises:
  *     Error: If a file has another extension, can't be read or uses an
@@ -61,25 +110,10 @@ export function loadTemplateFiles(rules, templatesPath, siteDir) {
   return rules.map((rule, index) => {
     if (!rule.templateFile) return rule;
     const file = path.resolve(folder, rule.templateFile);
-    const format = TEMPLATE_FORMATS[path.extname(file).toLowerCase()];
-    if (!format) {
-      throw new Error(
-        `[${PLUGIN_NAME}] socialPostTemplates[${index}] names the template file "${rule.templateFile}". ` +
-          `Template files must end in .txt (plain text) or .md (Markdown)` +
-          (path.extname(file).toLowerCase() === ".mdx" ? "; MDX isn't supported, so use .md." : ".")
-      );
-    }
-    let text;
-    try {
-      // A byte order mark, which some Windows editors add, isn't text.
-      text = fs.readFileSync(file, "utf8").replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
-    } catch (error) {
-      throw new Error(
-        `[${PLUGIN_NAME}] socialPostTemplates[${index}] names the template file "${rule.templateFile}", ` +
-          `but ${file} can't be read (${error.code}). Template files are relative to templatesPath ("${templatesPath}").`
-      );
-    }
-    if (format !== "text") text = withoutFrontMatter(text);
+    const label = `socialPostTemplates[${index}] names the template file "${rule.templateFile}"`;
+    const format = templateFormat(file, label);
+    let text = readTemplateText(file, label, templatesPath);
+    if (format === "markdown") text = withoutFrontMatter(text);
     text = text.replace(/\n$/, "");
     const unknown = unknownPlaceholders(text);
     if (unknown.length) throw new Error(`[${PLUGIN_NAME}] Template file ${file} ${unknownPlaceholderMessage(unknown)}`);

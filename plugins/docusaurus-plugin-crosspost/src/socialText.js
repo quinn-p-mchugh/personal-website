@@ -248,23 +248,44 @@ export function appendToHashtagParagraph(contentHtml, hashtagsHtml) {
  */
 export function renderTemplate(template, post) {
   const values = placeholderValues(post);
+  const contentHtml = post.contentHtml.trim();
   const blocks = [];
   let previousWasContent = false;
   // Windows line endings ("\r\n") count as plain newlines.
   for (const block of template.replace(/\r\n?/g, "\n").split(/\n[ \t]*\n/)) {
     const trimmed = block.trim();
     if (trimmed === "{content}") {
-      if (post.contentHtml.trim()) blocks.push(post.contentHtml.trim());
-      previousWasContent = Boolean(post.contentHtml.trim());
+      if (contentHtml) blocks.push(contentHtml);
+      previousWasContent = Boolean(contentHtml);
       continue;
     }
-    const lines = trimmed.split("\n").map((line) => renderLine(line.trim(), values)).filter((line) => line);
-    if (lines.length === 0) continue;
-    const html = lines.join("<br>");
+    const html = renderTextBlock(trimmed, values);
+    // A paragraph whose lines were all left out doesn't count, so
+    // "{hashtags}" can still follow "{content}" across it.
+    if (!html) continue;
     const merged = trimmed === "{hashtags}" && previousWasContent && appendToHashtagParagraph(blocks.at(-1), html);
     if (merged) blocks[blocks.length - 1] = merged;
     else blocks.push(`<p>${html}</p>`);
     previousWasContent = false;
   }
   return blocks.join("");
+}
+
+/**
+ * Renders one paragraph of a plain text template.
+ *
+ * Args:
+ *     block: The paragraph's text, without blank lines.
+ *     values: From placeholderValues.
+ *
+ * Returns:
+ *     Its lines as HTML, joined by line breaks (<br>), or "" when every
+ *     line was left out.
+ */
+function renderTextBlock(block, values) {
+  return block
+    .split("\n")
+    .map((line) => renderLine(line.trim(), values))
+    .filter((line) => line)
+    .join("<br>");
 }
