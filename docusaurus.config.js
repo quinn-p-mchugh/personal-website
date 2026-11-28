@@ -25,6 +25,8 @@ import tailwindPlugin from "./plugins/tailwind.config.cjs";
 //import rehypeRetext from 'rehype-retext';
 
 const { themes } = require("prism-react-renderer");
+// Labels for posts without a title (sidebar, browser tab, feeds).
+const untitledPosts = require("./src/utils/untitledPosts");
 const lightCodeTheme = themes.github;
 const darkCodeTheme = themes.dracula;
 
@@ -278,12 +280,14 @@ const config = {
         showLastUpdateTime: true,
         onInlineTags: contentConfig.onInlineTags,
         onUntruncatedBlogPosts: contentConfig.blogConfig.onUntruncatedBlogPosts,
+        processBlogPosts: untitledPosts.labelUntitledPosts,
         feedOptions: {
           title: contentConfig.blogConfig.ideasBlog.title,
           description: contentConfig.blogConfig.ideasBlog.description,
           type: contentConfig.blogConfig.feedType,
           copyright: contentConfig.blogConfig.copyright,
           limit: contentConfig.blogConfig.feedLimit,
+          createFeedItems: untitledPosts.createFeedItems,
           xslt: true,
         },
         remarkPlugins: plugins.remarkPlugins,
@@ -318,12 +322,14 @@ const config = {
         showLastUpdateTime: true,
         onInlineTags: contentConfig.onInlineTags,
         onUntruncatedBlogPosts: contentConfig.blogConfig.onUntruncatedBlogPosts,
+        processBlogPosts: untitledPosts.labelUntitledPosts,
         feedOptions: {
           title: contentConfig.blogConfig.microBlog.title,
           description: contentConfig.blogConfig.microBlog.description,
           type: contentConfig.blogConfig.feedType,
           copyright: contentConfig.blogConfig.copyright,
           limit: contentConfig.blogConfig.feedLimit,
+          createFeedItems: untitledPosts.createFeedItems,
           xslt: true,
         },
         remarkPlugins: plugins.remarkPlugins,
@@ -358,12 +364,14 @@ const config = {
         showLastUpdateTime: true,
         onInlineTags: contentConfig.onInlineTags,
         onUntruncatedBlogPosts: contentConfig.blogConfig.onUntruncatedBlogPosts,
+        processBlogPosts: untitledPosts.labelUntitledPosts,
         feedOptions: {
           title: contentConfig.blogConfig.resourcesBlog.title,
           description: contentConfig.blogConfig.resourcesBlog.description,
           type: contentConfig.blogConfig.feedType,
           copyright: contentConfig.blogConfig.copyright,
           limit: contentConfig.blogConfig.feedLimit,
+          createFeedItems: untitledPosts.createFeedItems,
           xslt: true,
         },
         remarkPlugins: plugins.remarkPlugins,
@@ -398,12 +406,14 @@ const config = {
         showLastUpdateTime: true,
         onInlineTags: contentConfig.onInlineTags,
         onUntruncatedBlogPosts: contentConfig.blogConfig.onUntruncatedBlogPosts,
+        processBlogPosts: untitledPosts.labelUntitledPosts,
         feedOptions: {
           title: contentConfig.blogConfig.highlightsBlog.title,
           description: contentConfig.blogConfig.highlightsBlog.description,
           type: contentConfig.blogConfig.feedType,
           copyright: contentConfig.blogConfig.copyright,
           limit: contentConfig.blogConfig.feedLimit,
+          createFeedItems: untitledPosts.createFeedItems,
           xslt: true,
         },
         remarkPlugins: plugins.remarkPlugins,
@@ -443,12 +453,14 @@ const config = {
           showLastUpdateTime: true,
           onInlineTags: contentConfig.onInlineTags,
           onUntruncatedBlogPosts: contentConfig.blogConfig.onUntruncatedBlogPosts,
+          processBlogPosts: untitledPosts.labelUntitledPosts,
           feedOptions: {
             title: contentConfig.blogConfig.blog.title,
             description: contentConfig.blogConfig.blog.description,
             type: contentConfig.blogConfig.feedType,
             copyright: contentConfig.blogConfig.copyright,
             limit: contentConfig.blogConfig.feedLimit,
+            createFeedItems: untitledPosts.createFeedItems,
             xslt: true,
           },
           remarkPlugins: plugins.remarkPlugins,
