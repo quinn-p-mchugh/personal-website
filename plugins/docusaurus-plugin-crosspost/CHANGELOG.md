@@ -2,6 +2,11 @@
 
 All notable changes to this plugin. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Before 1.0.0, a minor version (0.x.0) may change settings in ways that need your config updated; each such change is listed under **Changed** with what to do.
 
+## [Unreleased]
+
+### Added
+- `crosspost: false` in a post's front matter stops the `send` command from posting it, for posts already on Mastodon and Bluesky (like imported ones).
+
 ## [0.2.0] - 2026-11-25
 
 ### Changed
