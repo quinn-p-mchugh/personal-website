@@ -44,6 +44,7 @@ import { hashtagNamesFromTags, hashtagsIn, newHashtagNames } from "./shared/hash
 import { BLOG_PLUGIN_NAME, PLUGIN_NAME } from "./shared/names.js";
 import { hasTitle, postAddress, tagsWithKeys } from "./shared/posts.js";
 import { chooseTemplate, escapeHtml, renderTemplate } from "./socialText.js";
+import { renderMarkdownTemplate } from "./markupTemplates.js";
 
 const require = createRequire(import.meta.url);
 
@@ -326,8 +327,10 @@ export async function finishPostPage(metadata, blog, tagLabels, options, context
 
   const address = postAddress(metadata.permalink, { url: context.siteUrl, baseUrl: context.baseUrl, trailingSlash: context.trailingSlash });
   const post = describePost(metadata, page.content, blog, address, tagLabels, options.tagsToHashtags);
-  const { template, fromSettings } = chooseTemplate(options.socialPostTemplates, post);
-  const socialText = template ? renderTemplate(template, post) : "";
+  const { template, format, file: templateFile, fromSettings } = chooseTemplate(options.socialPostTemplates, post);
+  let socialText = "";
+  if (template && format === "text") socialText = renderTemplate(template, post);
+  else if (template) socialText = await renderMarkdownTemplate(template, post, templateFile);
   const attachImages = options.images.enabled && (post.title === "" || (fromSettings && socialText !== ""));
 
   const images = DomUtils.findAll((el) => el.name === "img", [page.content]);

@@ -56,11 +56,11 @@ test("chooseTemplate: first matching rule, else the built-in text", () => {
     { appliesTo: { blogs: ["blog-ideas"] }, template: "idea" },
     { appliesTo: {}, template: "everything else" },
   ];
-  assert.deepEqual(chooseTemplate(rules, post({ blogFolder: "blog-ideas" })), { template: "idea", fromSettings: true });
-  assert.deepEqual(chooseTemplate(rules, post()), { template: "everything else", fromSettings: true });
-  assert.deepEqual(chooseTemplate([], post()), { template: "{content}\n\n{hashtags}", fromSettings: false });
+  assert.deepEqual(chooseTemplate(rules, post({ blogFolder: "blog-ideas" })), { template: "idea", format: "text", file: undefined, fromSettings: true });
+  assert.deepEqual(chooseTemplate(rules, post()), { template: "everything else", format: "text", file: undefined, fromSettings: true });
+  assert.deepEqual(chooseTemplate([], post()), { template: "{content}\n\n{hashtags}", format: "text", file: undefined, fromSettings: false });
   assert.equal(chooseTemplate([], post({ title: "T", tagHashtags: ["A"] })).template, "{title}: {url}\n\n{description}\n\n{hashtags}");
-  assert.deepEqual(chooseTemplate([], post({ title: "T" })), { template: null, fromSettings: false }, "plain titled posts are left to Bridgy");
+  assert.deepEqual(chooseTemplate([], post({ title: "T" })), { template: null, format: "text", file: undefined, fromSettings: false }, "plain titled posts are left to Bridgy");
 });
 
 test("renderTemplate: paragraphs, line breaks, links and escaping", () => {

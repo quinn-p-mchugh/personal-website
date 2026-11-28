@@ -5,7 +5,9 @@
  * ("templateFile"). Files live in the folder set by templatesPath, which is
  * relative to the site folder, like a blog's "path" setting; each
  * templateFile is relative to that folder, like a blog's "tags" file is
- * relative to the blog's folder.
+ * relative to the blog's folder. The extension says how a file is read:
+ * .txt as plain text and .md as Markdown (see markupTemplates.js). A .md
+ * file may start with front matter, which is left out, as in Docusaurus.
  * Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#configuration
  *
  * Files are read once, when Docusaurus loads the plugin, so a missing file
@@ -20,6 +22,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { PLUGIN_NAME } from "./shared/names.js";
 import { unknownPlaceholderMessage, unknownPlaceholders } from "./socialText.js";
+import { TEMPLATE_FORMATS, withoutFrontMatter } from "./markupTemplates.js";
 
 /**
  * Finds the folder holding template files.
@@ -45,29 +48,41 @@ export function templatesFolder(templatesPath, siteDir) {
  *     siteDir: The site folder.
  *
  * Returns:
- *     The rules, each with "template" holding its text; rules written
- *     inline are returned unchanged. A file's final line break is removed.
+ *     The rules, each with "template" holding its text, "format" ("text" or
+ *     "markdown") and "file" (its path); rules written inline are
+ *     returned unchanged. A file's final line break is removed.
  *
  * Raises:
- *     Error: If a file can't be read or uses an unknown placeholder,
- *         naming the file.
+ *     Error: If a file has another extension, can't be read or uses an
+ *         unknown placeholder, naming the file.
  */
 export function loadTemplateFiles(rules, templatesPath, siteDir) {
   const folder = templatesFolder(templatesPath, siteDir);
   return rules.map((rule, index) => {
     if (!rule.templateFile) return rule;
     const file = path.resolve(folder, rule.templateFile);
+    const format = TEMPLATE_FORMATS[path.extname(file).toLowerCase()];
+    if (!format) {
+      throw new Error(
+        `[${PLUGIN_NAME}] socialPostTemplates[${index}] names the template file "${rule.templateFile}". ` +
+          `Template files must end in .txt (plain text) or .md (Markdown)` +
+          (path.extname(file).toLowerCase() === ".mdx" ? "; MDX isn't supported, so use .md." : ".")
+      );
+    }
     let text;
     try {
-      text = fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n").replace(/\n$/, "");
+      // A byte order mark, which some Windows editors add, isn't text.
+      text = fs.readFileSync(file, "utf8").replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
     } catch (error) {
       throw new Error(
         `[${PLUGIN_NAME}] socialPostTemplates[${index}] names the template file "${rule.templateFile}", ` +
           `but ${file} can't be read (${error.code}). Template files are relative to templatesPath ("${templatesPath}").`
       );
     }
+    if (format !== "text") text = withoutFrontMatter(text);
+    text = text.replace(/\n$/, "");
     const unknown = unknownPlaceholders(text);
     if (unknown.length) throw new Error(`[${PLUGIN_NAME}] Template file ${file} ${unknownPlaceholderMessage(unknown)}`);
-    return { ...rule, template: text };
+    return { ...rule, template: text, format, file };
   });
 }
