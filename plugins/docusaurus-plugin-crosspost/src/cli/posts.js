@@ -132,6 +132,8 @@ export async function skipReason(file, blogs, choices, root = process.cwd()) {
   const frontMatter = await readFrontMatter(fullPath);
   if (frontMatter.draft === true) return "draft: true";
   if (frontMatter.unlisted === true) return "unlisted: true";
+  // For posts that are already on Mastodon and Bluesky, like imported ones.
+  if (frontMatter.crosspost === false) return "crosspost: false";
   if (skipUndated && !frontMatter.date && !hasDateInPath(located.relative)) return "no date in its file name or front matter (--skip-undated)";
   return null;
 }

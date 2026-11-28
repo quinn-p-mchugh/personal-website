@@ -69,6 +69,7 @@ test("a blog's include patterns decide what counts as a post", async () => {
 test("everything else is skipped, with a reason for blog files", async () => {
   write("blog/2026-11-24-draft.md", "---\ndraft: true\n---\n");
   write("blog/2026-11-24-unlisted.md", "---\nunlisted: true\n---\n");
+  write("blog/2026-11-24-imported.md", "---\ncrosspost: false\n---\n");
   write("blog/_template.md", "---\n---\n");
   write("blog-ideas/draft/2026-11-24-a.md", "---\n---\n");
   write("blog/2026-11-24-ignored.md", "---\n---\n");
@@ -78,6 +79,7 @@ test("everything else is skipped, with a reason for blog files", async () => {
     "blog/image.png": "",
     "blog/2026-11-24-draft.md": "draft: true",
     "blog/2026-11-24-unlisted.md": "unlisted: true",
+    "blog/2026-11-24-imported.md": "crosspost: false",
     "blog/_template.md": "exclude",
     "blog-ideas/draft/2026-11-24-a.md": "exclude",
     "blog/2026-11-24-gone.md": "no longer exists",
