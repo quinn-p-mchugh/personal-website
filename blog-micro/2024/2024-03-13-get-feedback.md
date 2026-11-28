@@ -1,6 +1,7 @@
 ---
 created: 2024-03-13T14:17:08-0400
 title: 'Get Feedback: A goal everyone should have'
+description: "Whatever your goals, and whatever stage of life you're at, one of them should be to get feedback."
 tags: ["Goals", "Feedback", "Systems"]
 authors: qmchugh
 hide_table_of_contents: true

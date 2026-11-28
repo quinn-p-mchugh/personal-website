@@ -3,7 +3,7 @@ dg-publish: false
 title: Analysis and Comparison of an I-Beams Structural Stability
 #sidebar_label: ""
 slug: /analysis-and-comparison-of-an-i-beams-structural-stability
-#description: ""
+description: "A first-year engineering project: a SolidWorks bending simulation testing whether the I-beam really is the most structurally efficient shape, compared with a billet, a rod, a triangular rod and a slab."
 #keywords: []
 tags: []
 #image: ""

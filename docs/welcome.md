@@ -1,9 +1,9 @@
 ---
 dg-publish: false
-title: "Welcome!"
-#sidebar_label: ""
-slug: welcome
-#description: 
+title: "About me"
+sidebar_label: "About me"
+slug: /about
+description: "Who Quinn McHugh is beyond his resume: what he believes, what he's working toward, the people who inspire him, and how he likes to work."
 #keywords: []
 tags: []
 #image: 
@@ -13,7 +13,11 @@ publish: true
 publish-path: docs
 publish-filename: 
 created: 2023-07-01T11:53:11-04:00
-modified: 2023-07-06T21:54:43-04:00
+modified: 2026-11-27T00:30:00-05:00
 ---
 
-This is the `docs` section of my website. It contains any projects, pages, or blog posts that I want to designate a standalone page for. You can navigate this repository using the sidebar on the left.
+import SidebarCards from "@site/src/components/SidebarCards";
+
+Who I am beyond my resume: what I believe, what I'm working toward, the people who inspire me, and how I like to work.
+
+<SidebarCards />

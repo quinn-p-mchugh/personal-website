@@ -130,6 +130,9 @@ const contentConfig = {
     copyright: `Copyright © 2017-${new Date().getFullYear()} Quinn McHugh`,
     authorsMapPath: "../content-authors.yml",
     onUntruncatedBlogPosts: 'warn',
+    // Each blog's description shows under its title at the top of its first
+    // page (src/theme/BlogPostItems) and in search results and link previews.
+    // Keep it to a couple of sentences.
     blog: {
       title: "Quinn McHugh's Blog",
       description: "The blog of Quinn McHugh",
@@ -137,22 +140,22 @@ const contentConfig = {
     microBlog: {
       title: "Quinn McHugh's Micro Blog",
       description:
-        "A microblog of miscellaneous musings, tips, and thoughts from Quinn McHugh",
+        'This is my microblog. It consists of random ideas, tips, and musings from my everyday life. Some of these "seedling" posts may grow into larger blog posts.',
     },
     ideasBlog: {
       title: "Quinn McHugh's Idea Feed",
       description:
-        "Half-baked, outlandish, and occasionally good ideas from Quinn McHugh",
+        "Ideas are cheap, so it's often best to share them freely. This blog is for sharing my half-baked, outlandish, and occasionally good ideas with the world, most of which I'll never bring to life. You're welcome to grab any of these and run with them. Just remember: the execution is on you.",
     },
     resourcesBlog: {
       title: "Quinn McHugh's Resources",
       description:
-        "Useful tools, articles, and other finds from around the web, shared by Quinn McHugh",
+        "This is my resources blog. It's where I share useful tools, articles, and other finds from around the web, mostly straight from my bookmarks.",
     },
     highlightsBlog: {
       title: "Quinn McHugh's Highlights",
       description:
-        "Passages worth remembering from what Quinn McHugh reads, watches, and listens to",
+        "This is my highlights blog. It collects passages worth remembering from what I read, watch, and listen to.",
     },
   },
   docsConfig: { // Docs Plugin Documentation: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-docs
@@ -171,6 +174,15 @@ const config = {
     // Giscus comments show on docs pages only; blog posts show Mastodon and
     // Bluesky responses instead (see crosspost above).
     forbiddenGiscusPaths: [], // See GiscusComponent.js - Example: "/docs/tutorials/intro"
+    // Title and intro at the top of each blog's first page, keyed by the
+    // blog's address. Both come from contentConfig.blogConfig above.
+    blogIntros: {
+      "/blog": contentConfig.blogConfig.blog,
+      "/blog-micro": contentConfig.blogConfig.microBlog,
+      "/ideas": contentConfig.blogConfig.ideasBlog,
+      "/resources": contentConfig.blogConfig.resourcesBlog,
+      "/highlights": contentConfig.blogConfig.highlightsBlog,
+    },
   },
   url: "https://quinnmchugh.net",
   baseUrl: "/",
@@ -215,6 +227,14 @@ const config = {
 
   plugins: [
     tailwindPlugin,
+    // Old addresses that now live somewhere else, so existing links keep
+    // working. Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-client-redirects
+    [
+      "@docusaurus/plugin-client-redirects",
+      {
+        redirects: [{ from: "/welcome", to: "/about" }],
+      },
+    ],
     "docusaurus-plugin-zooming",
     ["drawio", {}],
     [
@@ -461,6 +481,10 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      // Picture shown when a page is shared on social media or in chat apps,
+      // unless the page sets its own "image" in front matter. 1200x630 pixels.
+      // Docs: https://docusaurus.io/docs/api/themes/configuration#meta-image
+      image: "img/social-card.png",
       tableOfContents: {
         minHeadingLevel: 2,
         maxHeadingLevel: 6,
@@ -499,10 +523,6 @@ const config = {
             position: "left",
             items: [
               {
-                label: "Docs",
-                to: "/welcome",
-              },
-              {
                 label: "Highlights",
                 href: "https://readwise.io/@quinnmchugh",
               },
@@ -533,6 +553,10 @@ const config = {
             label: "About",
             position: "left",
             items: [
+              {
+                label: "About me",
+                to: "/about",
+              },
               {
                 label: "Now",
                 to: `/now`,

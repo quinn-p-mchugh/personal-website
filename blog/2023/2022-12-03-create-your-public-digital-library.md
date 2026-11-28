@@ -1,7 +1,7 @@
 ---
 title: "Creating a public digital library for curating and sharing resources with others in your life"
 slug: create-your-public-digital-library
-#description: ""
+description: "How to create a public Zotero library for collecting resources and sharing them with friends, colleagues and groups you're a part of."
 #keywords: []
 tags: ["Personal Knowledge Management", "Knowledge Sharing", "Learn in Public"]
 authors: qmchugh

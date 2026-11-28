@@ -1,0 +1,12 @@
+# Links the monthly link check (.github/workflows/check-links.yml) skips.
+# One regular expression per line, matched against each link.
+# Docs: https://lychee.cli.rs/recipes/excluding-links/
+
+# Google Fonts addresses: preload hints, not real links.
+^https://fonts\.googleapis\.com
+^https://fonts\.gstatic\.com
+
+# This site itself: pages within the site are already checked when it builds
+# (onBrokenLinks in docusaurus.config.js), and new pages aren't live yet when
+# a pull request is checked.
+^https?://(www\.)?quinnmchugh\.net

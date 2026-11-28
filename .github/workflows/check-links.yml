@@ -1,0 +1,70 @@
+# Checks every link on the built site with lychee (https://lychee.cli.rs), a
+# fast, open-source link checker, and lists any that are broken.
+#
+# When it runs:
+#   - on the 1st of every month (a failed run sends you GitHub's usual
+#     "workflow failed" email);
+#   - from the Actions tab ("Run workflow");
+#   - on pull requests that change this file or .lycheeignore (as a report
+#     only, never a red X).
+#
+# Where to see the results: open the run and read its summary page.
+#
+# Links to sites that block automated checkers can be skipped by adding them
+# to .lycheeignore, one pattern per line.
+#
+# lychee action docs: https://github.com/lycheeverse/lychee-action
+
+name: Check links
+
+on:
+  schedule:
+    - cron: "17 9 1 * *" # 09:17 UTC on the 1st of each month
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/check-links.yml"
+      - ".lycheeignore"
+
+permissions:
+  contents: read
+
+jobs:
+  lychee:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      # Actions are pinned to an exact commit; the comment says which release.
+      - name: Get the repository's files
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+
+      - name: Set up Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install the site's packages
+        run: npm ci --no-audit --no-fund
+
+      - name: Build the site
+        run: npm run build
+
+      # Checks the links in every built page. --root-dir resolves links like
+      # /books against the built site. 403 ("forbidden"), 429 ("too many
+      # requests") and 999 (LinkedIn's "no bots") usually mean the site is up
+      # but refused an automated checker, so they don't count as broken.
+      # Options: https://lychee.cli.rs/usage/cli/
+      - name: Check the links
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: >-
+            --no-progress
+            --root-dir "${{ github.workspace }}/build"
+            --accept "100..=103,200..=299,403,429,999"
+            --max-concurrency 8
+            --timeout 30
+            --max-retries 2
+            "build/**/*.html"
+          fail: ${{ github.event_name != 'pull_request' }}
+          jobSummary: true

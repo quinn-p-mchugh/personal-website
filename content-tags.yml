@@ -1,9 +1,222 @@
-tag1:
-  label: 'Tag 1'
-  description: 'Tag 1 description'
-  permalink: /tag-1-permalink
+# Tags used on the site. Each key is a tag exactly as written in a post's
+# or page's front matter ("tags:"). A tag that isn't listed here still works,
+# but the build warns about it: add it here when you start using it.
+#
+#   label:       the name shown on the site
+#   permalink:   the tag page's address, after /tags (keep it once published,
+#                so links to the tag page keep working)
+#   description: optional; shown on the tag page and in search results
+#
+# Docs: https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog#tags-file
 
-tag2:
-  label: 'Tag 2'
-  description: 'Tag 2 description'
-  permalink: /tag-2-permalink
+"Animal Welfare":
+  label: "Animal Welfare"
+  permalink: /animal-welfare
+
+"Branding & Marketing":
+  label: "Branding & Marketing"
+  permalink: /branding-marketing
+
+"Collaboration":
+  label: "Collaboration"
+  permalink: /collaboration
+
+"Collaborative Innovation":
+  label: "Collaborative Innovation"
+  permalink: /collaborative-innovation
+
+"Collective Decision-Making":
+  label: "Collective Decision-Making"
+  permalink: /collective-decision-making
+
+"Community":
+  label: "Community"
+  permalink: /community
+
+"Creativity":
+  label: "Creativity"
+  permalink: /creativity
+
+"Data Visualization":
+  label: "Data Visualization"
+  permalink: /data-visualization
+
+"Decision-Making":
+  label: "Decision-Making"
+  permalink: /decision-making
+
+"Decision-Making Effectiveness":
+  label: "Decision-Making Effectiveness"
+  permalink: /decision-making-effectiveness
+
+"Democratic Technology":
+  label: "Democratic Technology"
+  permalink: /democratic-technology
+
+"Design":
+  label: "Design"
+  permalink: /design
+
+"Digital Democracy":
+  label: "Digital Democracy"
+  permalink: /digital-democracy
+
+"Feedback":
+  label: "Feedback"
+  permalink: /feedback
+
+"Focus":
+  label: "Focus"
+  permalink: /focus
+
+"Goals":
+  label: "Goals"
+  permalink: /goals
+
+"Google Calendar":
+  label: "Google Calendar"
+  permalink: /google-calendar
+
+"Google Sheets":
+  label: "Google Sheets"
+  permalink: /google-sheets
+
+"Group Governance":
+  label: "Group Governance"
+  permalink: /group-governance
+
+"Hiring":
+  label: "Hiring"
+  permalink: /hiring
+
+"Incentives":
+  label: "Incentives"
+  permalink: /incentives
+
+"Information Architecture":
+  label: "Information Architecture"
+  permalink: /information-architecture
+
+"Information Management":
+  label: "Information Management"
+  permalink: /information-management
+
+"Innovation":
+  label: "Innovation"
+  permalink: /innovation
+
+"Knowledge":
+  label: "Knowledge"
+  permalink: /knowledge
+
+"Knowledge Management":
+  label: "Knowledge Management"
+  permalink: /knowledge-management
+
+"Knowledge Sharing":
+  label: "Knowledge Sharing"
+  permalink: /knowledge-sharing
+
+"Leadership":
+  label: "Leadership"
+  permalink: /leadership
+
+"Learn in Public":
+  label: "Learn in Public"
+  permalink: /learn-in-public
+
+"Life":
+  label: "Life"
+  permalink: /life
+
+"Management":
+  label: "Management"
+  permalink: /management
+
+"Meaning":
+  label: "Meaning"
+  permalink: /meaning
+
+"Mental Health":
+  label: "Mental Health"
+  permalink: /mental-health
+
+"Open Standards":
+  label: "Open Standards"
+  permalink: /open-standards
+
+"Org Design":
+  label: "Org Design"
+  permalink: /org-design
+
+"Organizational Culture":
+  label: "Organizational Culture"
+  permalink: /organizational-culture
+
+"Participatory Decision-Making":
+  label: "Participatory Decision-Making"
+  permalink: /participatory-decision-making
+
+"Personal Effectiveness":
+  label: "Personal Effectiveness"
+  permalink: /personal-effectiveness
+
+"Personal Information Management (PIM)":
+  label: "Personal Information Management (PIM)"
+  permalink: /personal-information-management-pim
+
+"Personal Knowledge Management":
+  label: "Personal Knowledge Management"
+  permalink: /personal-knowledge-management
+
+"Personal Knowledge Management (PKM)":
+  label: "Personal Knowledge Management (PKM)"
+  permalink: /personal-knowledge-management-pkm
+
+"Productivity":
+  label: "Productivity"
+  permalink: /productivity
+
+"Purpose":
+  label: "Purpose"
+  permalink: /purpose
+
+"RSS":
+  label: "RSS"
+  permalink: /rss
+
+"Slack":
+  label: "Slack"
+  permalink: /slack
+
+"Social Change":
+  label: "Social Change"
+  permalink: /social-change
+
+"Social Innovation":
+  label: "Social Innovation"
+  permalink: /social-innovation
+
+"Social Media":
+  label: "Social Media"
+  permalink: /social-media
+
+"Social Policy":
+  label: "Social Policy"
+  permalink: /social-policy
+
+"Systems":
+  label: "Systems"
+  permalink: /systems
+
+"Values":
+  label: "Values"
+  permalink: /values
+
+"Web Development":
+  label: "Web Development"
+  permalink: /web-development
+
+"Writing":
+  label: "Writing"
+  permalink: /writing

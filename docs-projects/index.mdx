@@ -7,20 +7,8 @@ sidebar_position: 0
 hide_table_of_contents: true
 ---
 
-import DocCardList from "@theme/DocCardList";
-import { useDocsSidebar } from "@docusaurus/plugin-content-docs/client";
-
-{/* Cards for every project and category in the sidebar, except this page.
-    They update on their own as projects are added.
-    Docs: https://docusaurus.io/docs/sidebar/items#embedding-generated-index */}
-export const AllProjects = () => {
-  const sidebar = useDocsSidebar();
-  const items = (sidebar?.items ?? []).filter(
-    (item) => !(item.type === "link" && item.docId === "index"),
-  );
-  return <DocCardList items={items} />;
-};
+import SidebarCards from "@site/src/components/SidebarCards";
 
 Things I've built, from tools and spreadsheets to my undergraduate engineering projects.
 
-<AllProjects />
+<SidebarCards />

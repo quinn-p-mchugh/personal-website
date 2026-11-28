@@ -1,6 +1,7 @@
 ---
 created: 2024-02-52T09:56:06-0500
 title: 'Deliberating limiting your Slack message history'
+description: "An idea from the Thoughtworks Technology Podcast: set an expiration date on your team's Slack messages, so important information ends up in a wiki or decision log."
 tags: ["Slack", "Knowledge Management", "Incentives"]
 authors: qmchugh
 hide_table_of_contents: true
