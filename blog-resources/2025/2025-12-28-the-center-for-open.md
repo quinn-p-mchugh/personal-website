@@ -8,7 +8,7 @@ authors: qmchugh
 #image:
 hide_table_of_contents: true
 draft: false
-date: 2025-12-28T10:31:07-05:00
+date: 2025-12-28T10:31:07
 crosspost: false
 syndication:
   - https://mastodon.social/@quinnmchugh/115797909370710456
