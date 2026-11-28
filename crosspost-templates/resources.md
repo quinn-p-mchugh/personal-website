@@ -1,0 +1,5 @@
+#RandomResourceDrop 🪂🎁
+
+{content}
+
+#Resource {hashtags}

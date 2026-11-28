@@ -89,7 +89,8 @@ const templateRule = Joi.object({
   }).default({}),
   // The text, written here...
   template: Joi.string().custom(knownPlaceholders),
-  // ...or in a file, relative to templatesPath.
+  // ...or in a file, relative to templatesPath: .txt (plain text) or .md
+  // (Markdown).
   templateFile: Joi.string().min(1),
 })
   .xor("template", "templateFile")

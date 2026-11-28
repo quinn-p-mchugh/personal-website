@@ -134,17 +134,21 @@ export function sameFolder(a, b) {
  *     post: The post's details.
  *
  * Returns:
- *     { template, fromSettings }: the template text, and whether it came
- *     from a socialPostTemplates rule (false for the built-in text).
+ *     { template, format, file, fromSettings }: the template text; how to
+ *     read it ("text" or "markdown", from the template file's
+ *     extension; inline and built-in templates are "text"); the template
+ *     file's path, if any; and whether it came from a socialPostTemplates
+ *     rule (false for the built-in text).
  *     template is null when the post should get no text of its own (a
  *     titled post with no description or hashtags, and no matching rule).
  */
 export function chooseTemplate(rules, post) {
   const rule = rules.find((candidate) => ruleAppliesTo(candidate.appliesTo || {}, post));
-  if (rule) return { template: rule.template, fromSettings: true };
-  if (post.title === "") return { template: BUILT_IN_TEMPLATES.untitled, fromSettings: false };
-  if (post.description || post.tagHashtags.length) return { template: BUILT_IN_TEMPLATES.titled, fromSettings: false };
-  return { template: null, fromSettings: false };
+  if (rule) return { template: rule.template, format: rule.format || "text", file: rule.file, fromSettings: true };
+  const builtIn = (template) => ({ template, format: "text", file: undefined, fromSettings: false });
+  if (post.title === "") return builtIn(BUILT_IN_TEMPLATES.untitled);
+  if (post.description || post.tagHashtags.length) return builtIn(BUILT_IN_TEMPLATES.titled);
+  return builtIn(null);
 }
 
 /**

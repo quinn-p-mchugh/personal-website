@@ -78,15 +78,16 @@ const crosspost = {
   //   { appliesTo: { hasTitle: true }, template: "{title}\n———\n{content}\n\n{hashtags}" },
   socialPostTemplates: [
     // Same layout as the posts that came from Micro.blog: the series
-    // hashtag first, the post, then its hashtags. Docs: plugin README,
-    // "Social post templates".
+    // hashtag first, the post, then its hashtags. The text is in
+    // crosspost-templates/ (the templatesPath default). Docs: plugin
+    // README, "Social post templates".
     {
       appliesTo: { blogs: ["blog-resources"] },
-      template: "#RandomResourceDrop 🪂🎁\n\n{content}\n\n#Resource {hashtags}",
+      templateFile: "resources.md",
     },
     {
       appliesTo: { blogs: ["blog-highlights"] },
-      template: "{content}\n\n#Quote #ReadwiseReview {hashtags}",
+      templateFile: "highlights.md",
     },
   ],
 };

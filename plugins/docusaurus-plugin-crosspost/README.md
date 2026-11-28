@@ -155,7 +155,14 @@ socialPostTemplates: [
 
 When a rule has more than one condition, **all** of them must match. `appliesTo: {}` matches every post, so it works as a catch-all at the end. Hashtags and tags are compared loosely, as above.
 
-**Writing the text.** Give either `template` (the text itself) or `templateFile` (a file in the `templatesPath` folder), not both. The placeholders are:
+**Writing the text.** Give either `template` (the text itself) or `templateFile` (a file in the `templatesPath` folder), not both. A template file is read the way its extension says:
+
+| Extension | Read as |
+|---|---|
+| `.txt` | Plain text, like an inline `template`. A single line break stays a line break, and Markdown stays as typed. |
+| `.md` | [Markdown](https://docusaurus.io/docs/markdown-features), with [GitHub's extensions](https://github.github.com/gfm/), as Docusaurus reads it: `**bold**`, `_italics_`, `[links]({url})`, lists, headings and HTML work. A single line break joins two lines into one paragraph; end a line with two spaces to keep the break. Front matter at the top and `<!-- comments -->` are left out, so they can hold notes to yourself. Write `\{title\}` for braces that aren't a placeholder. |
+
+Any other extension, including `.mdx`, stops the build. A placeholder's value is always text: a title with `*stars*` in it isn't read as Markdown. Bridgy turns the result into the post's text, so formatting Mastodon or Bluesky can't show, like bold, is dropped there; links stay. The placeholders work the same way in every format:
 
 | Placeholder | Becomes |
 |---|---|

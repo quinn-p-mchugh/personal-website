@@ -5,6 +5,7 @@ All notable changes to this plugin. The format follows [Keep a Changelog](https:
 ## [Unreleased]
 
 ### Added
+- Template files are read by extension: `.txt` as plain text and `.md` as Markdown, with front matter and comments left out of `.md`. Other extensions, including `.mdx`, stop the build.
 - `crosspost: false` in a post's front matter stops the `send` command from posting it, for posts already on Mastodon and Bluesky (like imported ones).
 
 ## [0.2.0] - 2026-11-25

@@ -1,0 +1,3 @@
+{content}
+
+#Quote #ReadwiseReview {hashtags}
