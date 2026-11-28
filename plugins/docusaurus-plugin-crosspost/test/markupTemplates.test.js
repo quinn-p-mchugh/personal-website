@@ -58,6 +58,7 @@ test("Markdown: {url} is a link, or its text inside a link or an address", async
 test("Markdown: lines with empty placeholders go, as in plain text", async () => {
   assert.equal(await md("{title}\n\nTags: {tags}\n\n{content}\n{description}"), post().contentHtml);
   assert.equal(await md("{content}", { contentHtml: "", contentText: "" }), "");
+  assert.equal(await md("{content}\nmore", { contentHtml: "<p><img src=\"a.png\"></p>", contentText: "" }), "<p>more</p>", "inside a paragraph, {content} is text");
   const photo = { contentHtml: '<p><img src="a.png" alt=""></p>', contentText: "" };
   assert.equal(await md("{content}", photo), renderTemplate("{content}", post(photo)), "a post with only a photo keeps it");
   assert.equal(await md("\\{title\\} {title}", { title: "T" }), "<p>{title} T</p>", "a backslash keeps braces as typed");
@@ -75,6 +76,13 @@ test("Markdown: comments and front matter are notes; HTML in the template works"
 test("Markdown: text in a post that looks like a marker stays as written", async () => {
   const html = await md("{content}", { contentHtml: "<p>QCROSSPOSTaaaatitleQ</p>" });
   assert.equal(html, "<p>QCROSSPOSTaaaatitleQ</p>");
+});
+
+test("both formats: {hashtags} still joins {content} across a paragraph that was left out", async () => {
+  const p = { contentHtml: "<p>Hi</p><p>#Quote</p>", contentText: "Hi #Quote", tagHashtags: ["A"] };
+  const template = "{content}\n\n{title}\n\n{hashtags}";
+  assert.equal(renderTemplate(template, post(p)), "<p>Hi</p><p>#Quote #A</p>");
+  assert.equal(await md(template, p), "<p>Hi</p><p>#Quote #A</p>");
 });
 
 test("plain text: Markdown stays as typed", () => {
